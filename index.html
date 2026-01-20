@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn English with The Pitt | Episode 1: 7:00 A.M.</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Ambient Background -->
+    <div class="ambient-bg"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+                        <path d="M12 6v7"/>
+                        <path d="M8 9h8"/>
+                    </svg>
+                </span>
+                <span class="logo-text">LearnTV</span>
+            </div>
+            <nav class="nav">
+                <a href="#vocabulary" class="nav-link">Vocabulary</a>
+                <a href="#grammar" class="nav-link">Grammar</a>
+                <a href="#expressions" class="nav-link">Expressions</a>
+                <a href="#exercises" class="nav-link">Exercises</a>
+            </nav>
+            <div class="progress-indicator">
+                <span class="progress-label">Progress</span>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <span class="progress-value" id="progressValue">0%</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="show-badge">
+                <span class="badge-live"></span>
+                THE PITT
+            </div>
+            <h1 class="hero-title">
+                <span class="episode-label">EPISODE 01</span>
+                <span class="episode-name">7:00 A.M.</span>
+            </h1>
+            <p class="hero-description">
+                Learn medical English, workplace expressions, and natural American dialogue
+                from HBO's intense emergency room drama.
+            </p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">24</span>
+                    <span class="stat-label">New Words</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">8</span>
+                    <span class="stat-label">Grammar Points</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">12</span>
+                    <span class="stat-label">Expressions</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">15</span>
+                    <span class="stat-label">Exercises</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="time-display">
+                <span class="time-hour">07</span>
+                <span class="time-separator">:</span>
+                <span class="time-minutes">00</span>
+                <span class="time-period">AM</span>
+            </div>
+            <div class="pulse-ring"></div>
+            <div class="pulse-ring delay-1"></div>
+            <div class="pulse-ring delay-2"></div>
+        </div>
+    </section>
+
+    <!-- Episode Context -->
+    <section class="context-section">
+        <div class="container">
+            <div class="context-card">
+                <div class="context-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v6l4 2"/>
+                    </svg>
+                </div>
+                <div class="context-content">
+                    <h3>Episode Context</h3>
+                    <p>Dr. Michael "Robby" Robinavitch begins his 15-hour shift at Pittsburgh Trauma Medical Hospital on the fourth anniversary of his mentor's death. He welcomes new medical students while managing multiple trauma cases, including a subway rescue victim and a marathon runner in cardiac arrest.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vocabulary Section -->
+    <section class="section vocabulary-section" id="vocabulary">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">01</span>
+                <h2 class="section-title">Vocabulary</h2>
+                <p class="section-subtitle">Medical terms, workplace words, and everyday expressions</p>
+            </div>
+
+            <!-- Vocabulary Categories -->
+            <div class="vocab-categories">
+                <button class="category-btn active" data-category="medical">Medical Terms</button>
+                <button class="category-btn" data-category="workplace">Workplace</button>
+                <button class="category-btn" data-category="informal">Informal Speech</button>
+            </div>
+
+            <!-- Vocabulary Grid -->
+            <div class="vocab-grid" id="vocabGrid">
+                <!-- Medical Terms -->
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">trauma</span>
+                        <span class="phonetic">/ˈtrɔːmə/</span>
+                        <button class="audio-btn" data-word="trauma">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">A serious injury or shock to the body, often requiring emergency medical treatment.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"We've got a <strong>trauma</strong> coming in from the subway station."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Common</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">cardiac arrest</span>
+                        <span class="phonetic">/ˈkɑːrdiæk əˈrest/</span>
+                    </div>
+                    <span class="vocab-type">noun phrase</span>
+                    <p class="vocab-definition">When the heart suddenly stops beating effectively.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"The marathon runner went into <strong>cardiac arrest</strong> from hyperkalemia."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Medical</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">hyperkalemia</span>
+                        <span class="phonetic">/ˌhaɪpərkəˈliːmiə/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">Dangerously high levels of potassium in the blood, which can cause heart problems.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">Context:</span>
+                        <p>"Exercise-induced <strong>hyperkalemia</strong> can be fatal if not treated quickly."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty hard">Advanced Medical</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">triage</span>
+                        <span class="phonetic">/ˈtriːɑːʒ/</span>
+                    </div>
+                    <span class="vocab-type">noun / verb</span>
+                    <p class="vocab-definition">The process of deciding which patients need treatment first based on how serious their condition is.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"Dana attempts to explain the <strong>triage</strong> system to patients."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Medical</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">AMA</span>
+                        <span class="phonetic">/eɪ em eɪ/</span>
+                    </div>
+                    <span class="vocab-type">abbreviation</span>
+                    <p class="vocab-definition">Against Medical Advice — when a patient leaves the hospital without the doctor's approval.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"He must fill out an <strong>AMA</strong> form before he can be allowed to leave."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Medical Jargon</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="medical">
+                    <div class="vocab-word">
+                        <span class="word">rhabdomyolysis</span>
+                        <span class="phonetic">/ˌræbdoʊmaɪˈɒlɪsɪs/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">Breakdown of muscle tissue that releases harmful proteins into the blood, often from extreme exercise.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">Context:</span>
+                        <p>"The triathlete's <strong>rhabdomyolysis</strong> led to kidney complications."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty hard">Advanced Medical</span>
+                    </div>
+                </div>
+
+                <!-- Workplace Terms -->
+                <div class="vocab-card" data-category="workplace" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">shift</span>
+                        <span class="phonetic">/ʃɪft/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">A set period of time that someone works, especially in a job that operates 24 hours.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"Robby begins his 15-hour <strong>shift</strong>."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Common</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="workplace" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">charge nurse</span>
+                        <span class="phonetic">/tʃɑːrdʒ nɜːrs/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">A nurse who supervises other nurses during a shift and manages the department.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"This is Dana. She's our <strong>charge nurse</strong>. She is the ringleader of our circus."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Workplace</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="workplace" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">Press Ganey scores</span>
+                        <span class="phonetic">/pres ˈɡeɪni/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">Patient satisfaction survey scores used to evaluate hospital performance in the US.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"Your department is at 8% very satisfied. Our goal is 36%."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Industry Term</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="workplace" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">intern</span>
+                        <span class="phonetic">/ˈɪntɜːrn/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">A recent medical school graduate in their first year of hospital training.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">Context:</span>
+                        <p>"Robby introduces a fresh batch of <strong>interns</strong> to life in the ER."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Common</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="workplace" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">attending</span>
+                        <span class="phonetic">/əˈtendɪŋ/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">A fully trained doctor who supervises residents and interns (short for "attending physician").</p>
+                    <div class="vocab-example">
+                        <span class="example-label">Context:</span>
+                        <p>"Dr. Robby is the chief <strong>attending</strong> in the emergency department."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Medical Hierarchy</span>
+                    </div>
+                </div>
+
+                <!-- Informal Speech -->
+                <div class="vocab-card" data-category="informal" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">keeps on giving</span>
+                        <span class="phonetic">idiom</span>
+                    </div>
+                    <span class="vocab-type">phrase</span>
+                    <p class="vocab-definition">Something that continuously provides (usually used sarcastically for negative things).</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"This is the job that <strong>keeps on giving</strong>. Nightmares. Ulcers. Suicidal tendencies."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty medium">Sarcasm</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="informal" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">ringleader</span>
+                        <span class="phonetic">/ˈrɪŋliːdər/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">The leader of a group, especially one involved in mischief or chaos (used humorously here).</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"She is the <strong>ringleader</strong> of our circus."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Informal</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="informal" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">shut us down</span>
+                        <span class="phonetic">phrasal verb</span>
+                    </div>
+                    <span class="vocab-type">verb phrase</span>
+                    <p class="vocab-definition">To close a business, department, or operation permanently.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"They're always threatening to <strong>shut us down</strong>, but they never do."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Common</span>
+                    </div>
+                </div>
+
+                <div class="vocab-card" data-category="informal" style="display: none;">
+                    <div class="vocab-word">
+                        <span class="word">morning sickness</span>
+                        <span class="phonetic">/ˈmɔːrnɪŋ ˈsɪknəs/</span>
+                    </div>
+                    <span class="vocab-type">noun</span>
+                    <p class="vocab-definition">Nausea and vomiting that pregnant women often experience, especially in the morning.</p>
+                    <div class="vocab-example">
+                        <span class="example-label">From the episode:</span>
+                        <p>"I'd like to say it goes away, but I had <strong>morning sickness</strong> for six months."</p>
+                    </div>
+                    <div class="vocab-extra">
+                        <span class="difficulty easy">Common</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Grammar Section -->
+    <section class="section grammar-section" id="grammar">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">02</span>
+                <h2 class="section-title">Grammar in Action</h2>
+                <p class="section-subtitle">Real grammar patterns from natural dialogue</p>
+            </div>
+
+            <div class="grammar-grid">
+                <!-- Grammar Point 1 -->
+                <div class="grammar-card">
+                    <div class="grammar-header">
+                        <span class="grammar-tag">Present Continuous for Complaints</span>
+                        <span class="grammar-level">Intermediate</span>
+                    </div>
+                    <div class="grammar-content">
+                        <div class="grammar-example">
+                            <p class="dialogue">"They're <span class="highlight">always threatening</span> to shut us down."</p>
+                            <span class="speaker">— Robby</span>
+                        </div>
+                        <div class="grammar-explanation">
+                            <h4>Pattern: Subject + BE + ALWAYS + verb-ING</h4>
+                            <p>We use <strong>always + present continuous</strong> to express annoyance or criticism about repeated actions. It suggests the action happens too often and is irritating.</p>
+                            <div class="more-examples">
+                                <h5>More examples:</h5>
+                                <ul>
+                                    <li>"He's <strong>always complaining</strong> about the food."</li>
+                                    <li>"You're <strong>always leaving</strong> your clothes on the floor."</li>
+                                    <li>"The system is <strong>always crashing</strong> during peak hours."</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Point 2 -->
+                <div class="grammar-card">
+                    <div class="grammar-header">
+                        <span class="grammar-tag">Conditional with "Just So You Know"</span>
+                        <span class="grammar-level">Upper-Intermediate</span>
+                    </div>
+                    <div class="grammar-content">
+                        <div class="grammar-example">
+                            <p class="dialogue">"<span class="highlight">Just so you know</span>, Robby's working today. Today's the day Doc Adamson died."</p>
+                            <span class="speaker">— Dana</span>
+                        </div>
+                        <div class="grammar-explanation">
+                            <h4>Usage: Softening important information</h4>
+                            <p><strong>"Just so you know"</strong> is used to introduce information the listener needs but might not expect. It's softer than "You should know that..." and implies friendly warning.</p>
+                            <div class="more-examples">
+                                <h5>Similar expressions:</h5>
+                                <ul>
+                                    <li>"<strong>For your information</strong>..." (more formal, can be passive-aggressive)</li>
+                                    <li>"<strong>FYI</strong>..." (casual, often written)</li>
+                                    <li>"<strong>Heads up</strong>..." (very casual warning)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Point 3 -->
+                <div class="grammar-card">
+                    <div class="grammar-header">
+                        <span class="grammar-tag">Reported Speech with "that" clause</span>
+                        <span class="grammar-level">Intermediate</span>
+                    </div>
+                    <div class="grammar-content">
+                        <div class="grammar-example">
+                            <p class="dialogue">"Simi told Hector <span class="highlight">that</span> Dr. Deranjian <span class="highlight">said</span> the hospital was up for sale."</p>
+                            <span class="speaker">— Perlah</span>
+                        </div>
+                        <div class="grammar-explanation">
+                            <h4>Pattern: Person + told/said + (that) + clause</h4>
+                            <p>This shows <strong>chain reporting</strong> — when information passes through multiple people. Notice the tense shift: "is" becomes "was" in reported speech.</p>
+                            <div class="more-examples">
+                                <h5>Structure breakdown:</h5>
+                                <ul>
+                                    <li>Original: "The hospital is up for sale."</li>
+                                    <li>Reported once: Dr. Deranjian <strong>said</strong> it was up for sale.</li>
+                                    <li>Reported twice: Simi <strong>told</strong> Hector that Dr. D <strong>said</strong>...</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grammar Point 4 -->
+                <div class="grammar-card">
+                    <div class="grammar-header">
+                        <span class="grammar-tag">"I'd like to say... but"</span>
+                        <span class="grammar-level">Intermediate</span>
+                    </div>
+                    <div class="grammar-content">
+                        <div class="grammar-example">
+                            <p class="dialogue">"<span class="highlight">I'd like to say</span> it goes away, <span class="highlight">but</span> I had morning sickness for six months."</p>
+                            <span class="speaker">— Dana</span>
+                        </div>
+                        <div class="grammar-explanation">
+                            <h4>Usage: Delivering disappointing truth gently</h4>
+                            <p>This structure shows empathy before giving bad news. It means: "I wish I could tell you something positive, but the truth is..."</p>
+                            <div class="more-examples">
+                                <h5>More examples:</h5>
+                                <ul>
+                                    <li>"<strong>I'd like to say</strong> the job gets easier, <strong>but</strong> it doesn't."</li>
+                                    <li>"<strong>I'd love to tell you</strong> we're almost done, <strong>but</strong> we have hours to go."</li>
+                                    <li>"<strong>I wish I could say</strong> yes, <strong>but</strong> it's not possible."</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Expressions Section -->
+    <section class="section expressions-section" id="expressions">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">03</span>
+                <h2 class="section-title">Natural Expressions</h2>
+                <p class="section-subtitle">Phrases native speakers actually use</p>
+            </div>
+
+            <div class="expressions-list">
+                <div class="expression-item">
+                    <div class="expression-quote">
+                        <span class="quote-mark">"</span>
+                        This is an emergency department, not a Taco Bell.
+                        <span class="quote-mark">"</span>
+                    </div>
+                    <div class="expression-info">
+                        <span class="expression-speaker">— Robby</span>
+                        <div class="expression-meaning">
+                            <strong>Meaning:</strong> "This isn't fast food — you can't expect instant service."
+                            <br><strong>Usage:</strong> Comparing something serious to a casual/fast place to emphasize it deserves respect. Shows frustration with unrealistic expectations.
+                            <br><strong>Pattern:</strong> "This is [serious place], not a [casual place]."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expression-item">
+                    <div class="expression-quote">
+                        <span class="quote-mark">"</span>
+                        She is the ringleader of our circus.
+                        <span class="quote-mark">"</span>
+                    </div>
+                    <div class="expression-info">
+                        <span class="expression-speaker">— Robby (about Dana)</span>
+                        <div class="expression-meaning">
+                            <strong>Meaning:</strong> "She's the boss of this chaotic place."
+                            <br><strong>Usage:</strong> Affectionate way to describe someone who manages chaos. The "circus" metaphor suggests controlled madness.
+                            <br><strong>Tone:</strong> Humorous, respectful
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expression-item">
+                    <div class="expression-quote">
+                        <span class="quote-mark">"</span>
+                        No. It gets a lot busier.
+                        <span class="quote-mark">"</span>
+                    </div>
+                    <div class="expression-info">
+                        <span class="expression-speaker">— Cassie (when asked if the ER is always this busy)</span>
+                        <div class="expression-meaning">
+                            <strong>Meaning:</strong> "You think this is busy? Wait until you see real chaos."
+                            <br><strong>Usage:</strong> Understated warning. The dry delivery makes it memorable.
+                            <br><strong>Tone:</strong> Dry humor, ominous
+                        </div>
+                    </div>
+                </div>
+
+                <div class="expression-item">
+                    <div class="expression-quote">
+                        <span class="quote-mark">"</span>
+                        The job that keeps on giving.
+                        <span class="quote-mark">"</span>
+                    </div>
+                    <div class="expression-info">
+                        <span class="expression-speaker">— Robby</span>
+                        <div class="expression-meaning">
+                            <strong>Meaning:</strong> Sarcastic version of "the gift that keeps on giving" — usually something that continuously causes problems.
+                            <br><strong>Original phrase:</strong> "The gift that keeps on giving" (something wonderful that provides ongoing benefits)
+                            <br><strong>Robby's usage:</strong> Dark humor — the job keeps "giving" nightmares, ulcers, depression.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Exercises Section -->
+    <section class="section exercises-section" id="exercises">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number">04</span>
+                <h2 class="section-title">Practice Exercises</h2>
+                <p class="section-subtitle">Test your understanding</p>
+            </div>
+
+            <!-- Exercise Tabs -->
+            <div class="exercise-tabs">
+                <button class="exercise-tab active" data-exercise="fill-blank">Fill in the Blanks</button>
+                <button class="exercise-tab" data-exercise="matching">Matching</button>
+                <button class="exercise-tab" data-exercise="quiz">Quiz</button>
+            </div>
+
+            <!-- Fill in the Blanks -->
+            <div class="exercise-content active" id="fill-blank">
+                <div class="exercise-instructions">
+                    <p>Complete the sentences using words from the episode.</p>
+                </div>
+
+                <div class="fill-blank-exercises">
+                    <div class="fill-blank-item" data-answer="trauma">
+                        <span class="fb-number">1.</span>
+                        <p class="fb-sentence">We've got a <input type="text" class="fb-input" placeholder="t_____"> coming in from the subway station.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+
+                    <div class="fill-blank-item" data-answer="shift">
+                        <span class="fb-number">2.</span>
+                        <p class="fb-sentence">Robby begins his 15-hour <input type="text" class="fb-input" placeholder="s____"> at the hospital.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+
+                    <div class="fill-blank-item" data-answer="triage">
+                        <span class="fb-number">3.</span>
+                        <p class="fb-sentence">Dana explains the <input type="text" class="fb-input" placeholder="t_____"> system to waiting patients.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+
+                    <div class="fill-blank-item" data-answer="charge nurse">
+                        <span class="fb-number">4.</span>
+                        <p class="fb-sentence">Dana is the <input type="text" class="fb-input" placeholder="c_____ n____"> who manages the department.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+
+                    <div class="fill-blank-item" data-answer="cardiac arrest">
+                        <span class="fb-number">5.</span>
+                        <p class="fb-sentence">The marathon runner went into <input type="text" class="fb-input" placeholder="c______ a_____"> and needed immediate help.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+
+                    <div class="fill-blank-item" data-answer="shut us down">
+                        <span class="fb-number">6.</span>
+                        <p class="fb-sentence">They're always threatening to <input type="text" class="fb-input" placeholder="s___ __ d___">, but they never do.</p>
+                        <button class="check-btn">Check</button>
+                        <span class="fb-feedback"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Matching Exercise -->
+            <div class="exercise-content" id="matching">
+                <div class="exercise-instructions">
+                    <p>Match the terms with their definitions. Drag and drop or click to match.</p>
+                </div>
+
+                <div class="matching-container">
+                    <div class="matching-terms" id="matchingTerms">
+                        <div class="match-term" data-match="1">AMA</div>
+                        <div class="match-term" data-match="2">triage</div>
+                        <div class="match-term" data-match="3">intern</div>
+                        <div class="match-term" data-match="4">attending</div>
+                        <div class="match-term" data-match="5">rhabdomyolysis</div>
+                    </div>
+                    <div class="matching-definitions" id="matchingDefs">
+                        <div class="match-def" data-match="3">A first-year doctor in training</div>
+                        <div class="match-def" data-match="1">Leaving the hospital against doctor's orders</div>
+                        <div class="match-def" data-match="5">Muscle breakdown that releases harmful proteins</div>
+                        <div class="match-def" data-match="4">A fully trained supervising doctor</div>
+                        <div class="match-def" data-match="2">Prioritizing patients by severity</div>
+                    </div>
+                </div>
+                <div class="matching-result"></div>
+                <button class="primary-btn check-matching-btn">Check Answers</button>
+            </div>
+
+            <!-- Quiz -->
+            <div class="exercise-content" id="quiz">
+                <div class="quiz-container">
+                    <div class="quiz-progress">
+                        <span>Question <span id="currentQ">1</span> of <span id="totalQ">5</span></span>
+                        <div class="quiz-progress-bar">
+                            <div class="quiz-progress-fill" id="quizProgressFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="quiz-question" id="quizQuestion">
+                        <h3 class="question-text">What does Robby mean when he says the ER is "the job that keeps on giving"?</h3>
+                        <div class="quiz-options">
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz" value="a">
+                                <span class="option-text">The job provides many rewards and benefits</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz" value="b">
+                                <span class="option-text">The job continuously causes stress and problems (sarcastic)</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz" value="c">
+                                <span class="option-text">The job offers many opportunities for promotion</span>
+                            </label>
+                            <label class="quiz-option">
+                                <input type="radio" name="quiz" value="d">
+                                <span class="option-text">The job is very generous with vacation time</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="quiz-actions">
+                        <button class="secondary-btn" id="prevQuestion" disabled>Previous</button>
+                        <button class="primary-btn" id="nextQuestion">Next</button>
+                    </div>
+
+                    <div class="quiz-result" id="quizResult" style="display: none;">
+                        <div class="result-score">
+                            <span class="score-number" id="scoreNumber">0</span>
+                            <span class="score-total">/ 5</span>
+                        </div>
+                        <p class="result-message" id="resultMessage"></p>
+                        <button class="primary-btn" id="retryQuiz">Try Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>Learn English naturally through TV shows you love.</p>
+                <p class="footer-disclaimer">This is a personal learning tool. All TV content belongs to its respective owners.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
