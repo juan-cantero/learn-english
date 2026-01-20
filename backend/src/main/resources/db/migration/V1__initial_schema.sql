@@ -1,0 +1,4 @@
+-- V1__initial_schema.sql
+-- Initial schema setup
+-- UUIDs are generated in application code (Java), no database extension needed
+-- This migration serves as a baseline marker
