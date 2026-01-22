@@ -1,0 +1,37 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* Custom theme matching LearnTV prototype */
+@theme {
+  --color-bg-dark: #0a0a0a;
+  --color-bg-card: #141414;
+  --color-bg-card-hover: #1a1a1a;
+  --color-accent-primary: #dc2626;
+  --color-accent-secondary: #991b1b;
+  --color-accent-light: #fecaca;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #b3b3b3;
+  --color-border: #262626;
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+
+  --font-display: "Space Grotesk", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+/* Base styles */
+@layer base {
+  body {
+    @apply bg-bg-dark text-text-primary font-display antialiased;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-semibold tracking-tight;
+  }
+
+  a {
+    @apply text-accent-primary hover:text-accent-light transition-colors;
+  }
+}
