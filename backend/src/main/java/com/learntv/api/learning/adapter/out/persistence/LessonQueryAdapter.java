@@ -85,7 +85,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .exampleSentence(rs.getString("example_sentence"))
                         .contextTimestamp(rs.getString("context_timestamp"))
                         .build(),
-                episodeId.toString());
+                episodeId);
     }
 
     private List<GrammarPoint> loadGrammarPoints(UUID episodeId) {
@@ -106,7 +106,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .example(rs.getString("example"))
                         .contextQuote(rs.getString("context_quote"))
                         .build(),
-                episodeId.toString());
+                episodeId);
     }
 
     private List<Expression> loadExpressions(UUID episodeId) {
@@ -126,7 +126,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .contextQuote(rs.getString("context_quote"))
                         .usageNote(rs.getString("usage_note"))
                         .build(),
-                episodeId.toString());
+                episodeId);
     }
 
     private List<Exercise> loadExercises(UUID episodeId) {
@@ -148,6 +148,6 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .matchingPairs(rs.getString("matching_pairs"))
                         .points(rs.getInt("points"))
                         .build(),
-                episodeId.toString());
+                episodeId);
     }
 }

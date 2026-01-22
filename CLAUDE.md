@@ -58,6 +58,13 @@ Architecture documents outline future migration to a full-stack application:
 
 Key database entities: Shows, Episodes, Vocabulary, GrammarPoints, Expressions, Exercises, UserProgress
 
+## Vibe Kanban Workflow
+
+When completing agent tasks:
+- **Always update the task description** with results/findings (append under a "## Results" section)
+- Vibe Kanban doesn't have a comments API, so use the description field to document outcomes
+- Include date, summary of findings, and key file references
+
 ## Coding Conventions
 
 - Use CSS custom properties for any new colors or spacing values

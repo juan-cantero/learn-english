@@ -33,3 +33,5 @@ npm-debug.log*
 
 # Repomix output
 repomix-output.txt
+.playwright-mcp/
+frontend/.vite/

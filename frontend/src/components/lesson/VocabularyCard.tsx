@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import type { Vocabulary } from '../../types/lesson';
 
 interface VocabularyCardProps {
@@ -14,11 +15,31 @@ const categoryColors = {
 };
 
 export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
-  const handleSpeak = () => {
-    if ('speechSynthesis' in window) {
-      const utterance = new SpeechSynthesisUtterance(vocabulary.term);
-      utterance.lang = 'en-US';
-      speechSynthesis.speak(utterance);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleSpeak = async () => {
+    if (isPlaying) return;
+
+    setIsPlaying(true);
+    try {
+      // Use Piper TTS endpoint
+      const url = `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(vocabulary.term)}`;
+
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+
+      const audio = new Audio(url);
+      audioRef.current = audio;
+
+      audio.onended = () => setIsPlaying(false);
+      audio.onerror = () => setIsPlaying(false);
+
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      setIsPlaying(false);
     }
   };
 
@@ -39,17 +60,28 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
           </span>
           <button
             onClick={handleSpeak}
-            className="rounded-lg p-3 text-text-secondary transition-colors hover:bg-bg-dark hover:text-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-card"
+            disabled={isPlaying}
+            className={`rounded-lg p-3 transition-colors focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-card ${
+              isPlaying
+                ? 'text-accent-primary bg-accent-primary/10'
+                : 'text-text-secondary hover:bg-bg-dark hover:text-accent-primary'
+            }`}
             title="Listen to pronunciation"
           >
-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
-              />
-            </svg>
+            {isPlaying ? (
+              <svg className="h-4 w-4 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+              </svg>
+            ) : (
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"
+                />
+              </svg>
+            )}
           </button>
         </div>
       </div>
