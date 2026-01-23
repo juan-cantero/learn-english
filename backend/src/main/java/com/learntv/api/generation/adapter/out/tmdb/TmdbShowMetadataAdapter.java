@@ -79,11 +79,32 @@ public class TmdbShowMetadataAdapter implements ShowMetadataPort {
                 ? TMDB_IMAGE_BASE_URL + tmdbResult.poster_path()
                 : null;
 
+        Integer year = extractYear(tmdbResult.first_air_date());
+
         return new ShowSearchResult(
                 String.valueOf(tmdbResult.id()),
                 tmdbResult.name(),
                 tmdbResult.overview(),
-                posterPath
+                posterPath,
+                year
         );
+    }
+
+    /**
+     * Extracts the year from a date string in format "YYYY-MM-DD".
+     *
+     * @param dateString the date string
+     * @return the year, or null if parsing fails
+     */
+    private Integer extractYear(String dateString) {
+        if (dateString == null || dateString.length() < 4) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(dateString.substring(0, 4));
+        } catch (NumberFormatException e) {
+            log.warn("Could not parse year from date: {}", dateString);
+            return null;
+        }
     }
 }
