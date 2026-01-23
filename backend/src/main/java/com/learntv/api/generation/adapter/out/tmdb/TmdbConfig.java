@@ -18,7 +18,6 @@ public class TmdbConfig {
     public WebClient tmdbWebClient() {
         return WebClient.builder()
                 .baseUrl(baseUrl)
-                .defaultHeader("Authorization", "Bearer " + apiKey)
                 .defaultHeader("Accept", "application/json")
                 .build();
     }

@@ -17,9 +17,11 @@ public class TmdbClient {
     private static final Logger log = LoggerFactory.getLogger(TmdbClient.class);
 
     private final WebClient tmdbWebClient;
+    private final String apiKey;
 
-    public TmdbClient(WebClient tmdbWebClient) {
+    public TmdbClient(WebClient tmdbWebClient, TmdbConfig tmdbConfig) {
         this.tmdbWebClient = tmdbWebClient;
+        this.apiKey = tmdbConfig.getApiKey();
     }
 
     /**
@@ -35,6 +37,7 @@ public class TmdbClient {
             TmdbSearchResponse response = tmdbWebClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/search/tv")
+                            .queryParam("api_key", apiKey)
                             .queryParam("query", query)
                             .queryParam("include_adult", false)
                             .queryParam("language", "en-US")
@@ -71,6 +74,7 @@ public class TmdbClient {
             TmdbShowDetails response = tmdbWebClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/tv/{id}")
+                            .queryParam("api_key", apiKey)
                             .queryParam("append_to_response", "external_ids")
                             .queryParam("language", "en-US")
                             .build(tmdbId))
@@ -109,6 +113,7 @@ public class TmdbClient {
             TmdbSeasonDetails response = tmdbWebClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/tv/{id}/season/{season_number}")
+                            .queryParam("api_key", apiKey)
                             .queryParam("language", "en-US")
                             .build(tmdbId, seasonNumber))
                     .retrieve()
