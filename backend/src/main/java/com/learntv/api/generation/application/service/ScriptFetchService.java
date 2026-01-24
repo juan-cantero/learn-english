@@ -8,25 +8,26 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * Service for fetching episode scripts with caching.
- * First checks the cache, then fetches from external API if needed.
+ * Service for fetching episode scripts.
+ * First checks if script is stored, then fetches from external API if needed.
+ * Scripts are stored permanently for future regeneration.
  */
 @Service
 public class ScriptFetchService {
 
     private static final Logger log = LoggerFactory.getLogger(ScriptFetchService.class);
 
-    private final ScriptCacheService cacheService;
+    private final EpisodeScriptService episodeScriptService;
     private final SubtitleFetchPort subtitleFetchPort;
 
-    public ScriptFetchService(ScriptCacheService cacheService, SubtitleFetchPort subtitleFetchPort) {
-        this.cacheService = cacheService;
+    public ScriptFetchService(EpisodeScriptService episodeScriptService, SubtitleFetchPort subtitleFetchPort) {
+        this.episodeScriptService = episodeScriptService;
         this.subtitleFetchPort = subtitleFetchPort;
     }
 
     /**
      * Fetch the parsed script for an episode.
-     * Uses cache if available, otherwise fetches from OpenSubtitles and caches.
+     * Uses stored script if available, otherwise fetches from OpenSubtitles and stores.
      *
      * @param imdbId   the IMDB ID
      * @param season   season number
@@ -37,15 +38,15 @@ public class ScriptFetchService {
     public Optional<String> fetchScript(String imdbId, int season, int episode, String language) {
         log.info("Fetching script for {} S{}E{} ({})", imdbId, season, episode, language);
 
-        // Check cache first
-        Optional<String> cached = cacheService.getCachedScript(imdbId, season, episode, language);
-        if (cached.isPresent()) {
-            log.info("Returning cached script for {} S{}E{}", imdbId, season, episode);
-            return cached;
+        // Check if script is already stored
+        Optional<String> stored = episodeScriptService.getScript(imdbId, season, episode, language);
+        if (stored.isPresent()) {
+            log.info("Returning stored script for {} S{}E{}", imdbId, season, episode);
+            return stored;
         }
 
-        // Fetch from external API
-        log.info("Cache miss, fetching from OpenSubtitles for {} S{}E{}", imdbId, season, episode);
+        // Fetch from external API (first time only)
+        log.info("Script not found, fetching from OpenSubtitles for {} S{}E{}", imdbId, season, episode);
         Optional<String> rawContent = subtitleFetchPort.fetchSubtitle(imdbId, season, episode, language);
 
         if (rawContent.isEmpty()) {
@@ -53,8 +54,8 @@ public class ScriptFetchService {
             return Optional.empty();
         }
 
-        // Cache and return parsed content
-        String parsedText = cacheService.cacheScript(imdbId, season, episode, language, rawContent.get());
+        // Store permanently and return parsed content
+        String parsedText = episodeScriptService.storeScript(imdbId, season, episode, language, rawContent.get());
         return Optional.of(parsedText);
     }
 
@@ -63,5 +64,13 @@ public class ScriptFetchService {
      */
     public Optional<String> fetchScript(String imdbId, int season, int episode) {
         return fetchScript(imdbId, season, episode, "en");
+    }
+
+    /**
+     * Check if a script exists for the given episode.
+     * Useful for determining if CREATE or RECREATE should be shown.
+     */
+    public boolean hasScript(String imdbId, int season, int episode, String language) {
+        return episodeScriptService.hasScript(imdbId, season, episode, language);
     }
 }

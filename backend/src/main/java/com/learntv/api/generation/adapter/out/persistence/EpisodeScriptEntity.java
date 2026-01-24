@@ -5,9 +5,14 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
+/**
+ * Permanently stored script for an episode.
+ * Scripts are fetched once from OpenSubtitles and stored forever.
+ * Used as source of truth for content generation and regeneration.
+ */
 @Entity
-@Table(name = "cached_scripts")
-public class CachedScriptEntity {
+@Table(name = "episode_scripts")
+public class EpisodeScriptEntity {
 
     @Id
     private UUID id;
@@ -33,15 +38,12 @@ public class CachedScriptEntity {
     @Column(name = "downloaded_at", nullable = false)
     private Instant downloadedAt;
 
-    @Column(name = "expires_at", nullable = false)
-    private Instant expiresAt;
-
-    protected CachedScriptEntity() {
+    protected EpisodeScriptEntity() {
     }
 
-    public CachedScriptEntity(UUID id, String imdbId, int seasonNumber, int episodeNumber,
-                               String language, String rawContent, String parsedText,
-                               Instant downloadedAt, Instant expiresAt) {
+    public EpisodeScriptEntity(UUID id, String imdbId, int seasonNumber, int episodeNumber,
+                                String language, String rawContent, String parsedText,
+                                Instant downloadedAt) {
         this.id = id;
         this.imdbId = imdbId;
         this.seasonNumber = seasonNumber;
@@ -50,7 +52,6 @@ public class CachedScriptEntity {
         this.rawContent = rawContent;
         this.parsedText = parsedText;
         this.downloadedAt = downloadedAt;
-        this.expiresAt = expiresAt;
     }
 
     public UUID getId() {
@@ -83,13 +84,5 @@ public class CachedScriptEntity {
 
     public Instant getDownloadedAt() {
         return downloadedAt;
-    }
-
-    public Instant getExpiresAt() {
-        return expiresAt;
-    }
-
-    public boolean isExpired() {
-        return Instant.now().isAfter(expiresAt);
     }
 }
