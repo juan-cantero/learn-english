@@ -20,6 +20,10 @@ external-apis:
   tmdb:
     api-key: ${TMDB_API_KEY:}
     base-url: https://api.themoviedb.org/3
+  opensubtitles:
+    api-key: ${OPENSUBTITLES_API_KEY:}
+    base-url: https://api.opensubtitles.com/api/v1
+    user-agent: LearnTV v1.0
 
 ---
 # Development profile - PostgreSQL via Docker
