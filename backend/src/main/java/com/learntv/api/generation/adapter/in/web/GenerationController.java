@@ -1,11 +1,16 @@
 package com.learntv.api.generation.adapter.in.web;
 
+import com.learntv.api.generation.adapter.in.web.dto.ContentExtractionResponse;
 import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
+import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort.ShowSearchResult;
 import com.learntv.api.generation.application.port.out.SubtitleFetchPort;
 import com.learntv.api.generation.application.service.ScriptFetchService;
+import com.learntv.api.generation.domain.model.ExtractedExpression;
+import com.learntv.api.generation.domain.model.ExtractedGrammar;
+import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -36,6 +41,7 @@ public class GenerationController {
     private final ShowMetadataPort showMetadataPort;
     private final SubtitleFetchPort subtitleFetchPort;
     private final ScriptFetchService scriptFetchService;
+    private final ContentExtractionPort contentExtractionPort;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -140,6 +146,83 @@ public class GenerationController {
 
         return scriptFetchService.fetchScript(imdbId, season, episode, language)
                 .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/extract/vocabulary/{imdbId}")
+    @Operation(
+            summary = "Extract vocabulary from episode",
+            description = "Extract vocabulary items from an episode script using AI. Returns 15-25 vocabulary items with definitions and examples."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Vocabulary extracted successfully"),
+            @ApiResponse(responseCode = "404", description = "Script not found for this episode")
+    })
+    public ResponseEntity<ContentExtractionResponse> extractVocabulary(
+            @Parameter(description = "IMDB ID", example = "tt0903747")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode,
+            @Parameter(description = "Show genre for context", example = "drama")
+            @RequestParam(defaultValue = "drama") String genre) {
+
+        return scriptFetchService.fetchScript(imdbId, season, episode)
+                .map(script -> {
+                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, genre);
+                    return ResponseEntity.ok(ContentExtractionResponse.ofVocabulary(vocabulary));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/extract/grammar/{imdbId}")
+    @Operation(
+            summary = "Extract grammar points from episode",
+            description = "Extract grammar patterns from an episode script using AI. Returns 4-6 grammar points with explanations and examples."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Grammar extracted successfully"),
+            @ApiResponse(responseCode = "404", description = "Script not found for this episode")
+    })
+    public ResponseEntity<ContentExtractionResponse> extractGrammar(
+            @Parameter(description = "IMDB ID", example = "tt0903747")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode) {
+
+        return scriptFetchService.fetchScript(imdbId, season, episode)
+                .map(script -> {
+                    List<ExtractedGrammar> grammar = contentExtractionPort.extractGrammar(script);
+                    return ResponseEntity.ok(ContentExtractionResponse.ofGrammar(grammar));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/extract/expressions/{imdbId}")
+    @Operation(
+            summary = "Extract expressions from episode",
+            description = "Extract idiomatic expressions and phrases from an episode script using AI. Returns 6-10 expressions with meanings and usage notes."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Expressions extracted successfully"),
+            @ApiResponse(responseCode = "404", description = "Script not found for this episode")
+    })
+    public ResponseEntity<ContentExtractionResponse> extractExpressions(
+            @Parameter(description = "IMDB ID", example = "tt0903747")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode) {
+
+        return scriptFetchService.fetchScript(imdbId, season, episode)
+                .map(script -> {
+                    List<ExtractedExpression> expressions = contentExtractionPort.extractExpressions(script);
+                    return ResponseEntity.ok(ContentExtractionResponse.ofExpressions(expressions));
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
