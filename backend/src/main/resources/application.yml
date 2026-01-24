@@ -24,6 +24,11 @@ external-apis:
     api-key: ${OPENSUBTITLES_API_KEY:}
     base-url: https://api.opensubtitles.com/api/v1
     user-agent: LearnTV v1.0
+  openai:
+    api-key: ${OPENAI_API_KEY:}
+    base-url: https://api.openai.com/v1
+    model: gpt-4o-mini
+    max-tokens: 4000
 
 ---
 # Development profile - PostgreSQL via Docker
