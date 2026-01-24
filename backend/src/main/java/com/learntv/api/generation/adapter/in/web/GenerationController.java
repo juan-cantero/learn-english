@@ -5,6 +5,7 @@ import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort.ShowSearchResult;
 import com.learntv.api.generation.application.port.out.SubtitleFetchPort;
+import com.learntv.api.generation.application.service.ScriptFetchService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +35,7 @@ public class GenerationController {
 
     private final ShowMetadataPort showMetadataPort;
     private final SubtitleFetchPort subtitleFetchPort;
+    private final ScriptFetchService scriptFetchService;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -95,15 +97,15 @@ public class GenerationController {
 
     @GetMapping("/subtitles/{imdbId}")
     @Operation(
-            summary = "Fetch subtitles",
-            description = "Fetch subtitles for an episode from OpenSubtitles. Returns the SRT content as plain text."
+            summary = "Fetch raw subtitles",
+            description = "Fetch raw SRT subtitles for an episode from OpenSubtitles. Returns the SRT content with timestamps."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Subtitles found and returned"),
             @ApiResponse(responseCode = "404", description = "No subtitles found for this episode")
     })
     public ResponseEntity<String> fetchSubtitles(
-            @Parameter(description = "IMDB ID", example = "tt31938062")
+            @Parameter(description = "IMDB ID", example = "tt0903747")
             @PathVariable String imdbId,
             @Parameter(description = "Season number", example = "1")
             @RequestParam(defaultValue = "1") int season,
@@ -113,6 +115,30 @@ public class GenerationController {
             @RequestParam(defaultValue = "en") String language) {
 
         return subtitleFetchPort.fetchSubtitle(imdbId, season, episode, language)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/scripts/{imdbId}")
+    @Operation(
+            summary = "Fetch parsed script",
+            description = "Fetch clean dialogue text for an episode. Uses caching (30-day TTL) and returns parsed text without timestamps."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Script found and returned"),
+            @ApiResponse(responseCode = "404", description = "No script found for this episode")
+    })
+    public ResponseEntity<String> fetchScript(
+            @Parameter(description = "IMDB ID", example = "tt0903747")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode,
+            @Parameter(description = "Language code", example = "en")
+            @RequestParam(defaultValue = "en") String language) {
+
+        return scriptFetchService.fetchScript(imdbId, season, episode, language)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
