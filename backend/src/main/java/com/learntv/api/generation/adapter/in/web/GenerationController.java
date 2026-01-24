@@ -4,6 +4,7 @@ import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort.ShowSearchResult;
+import com.learntv.api.generation.application.port.out.SubtitleFetchPort;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,6 +33,7 @@ import java.util.List;
 public class GenerationController {
 
     private final ShowMetadataPort showMetadataPort;
+    private final SubtitleFetchPort subtitleFetchPort;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -89,6 +91,30 @@ public class GenerationController {
         }
 
         return ResponseEntity.ok(imdbId);
+    }
+
+    @GetMapping("/subtitles/{imdbId}")
+    @Operation(
+            summary = "Fetch subtitles",
+            description = "Fetch subtitles for an episode from OpenSubtitles. Returns the SRT content as plain text."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Subtitles found and returned"),
+            @ApiResponse(responseCode = "404", description = "No subtitles found for this episode")
+    })
+    public ResponseEntity<String> fetchSubtitles(
+            @Parameter(description = "IMDB ID", example = "tt31938062")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode,
+            @Parameter(description = "Language code", example = "en")
+            @RequestParam(defaultValue = "en") String language) {
+
+        return subtitleFetchPort.fetchSubtitle(imdbId, season, episode, language)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**

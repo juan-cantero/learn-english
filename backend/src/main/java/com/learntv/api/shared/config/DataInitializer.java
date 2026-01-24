@@ -34,7 +34,7 @@ public class DataInitializer {
                     .genre(Genre.MEDICAL)
                     .accent(AccentType.AMERICAN)
                     .difficulty(DifficultyLevel.INTERMEDIATE)
-                    .imageUrl("/images/the-pitt.jpg")
+                    .imageUrl("https://image.tmdb.org/t/p/w500/kvFSpESyBZMjaeOJDx7RS3P1jey.jpg")
                     .totalSeasons(1)
                     .totalEpisodes(15)
                     .build();
