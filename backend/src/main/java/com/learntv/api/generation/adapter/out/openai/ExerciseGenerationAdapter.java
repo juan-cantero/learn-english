@@ -1,0 +1,124 @@
+package com.learntv.api.generation.adapter.out.openai;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
+import com.learntv.api.generation.domain.model.ExtractedExpression;
+import com.learntv.api.generation.domain.model.ExtractedGrammar;
+import com.learntv.api.generation.domain.model.ExtractedVocabulary;
+import com.learntv.api.generation.domain.model.GeneratedExercise;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * OpenAI implementation of ExerciseGenerationPort.
+ * Generates exercises based on extracted vocabulary, grammar, and expressions.
+ */
+@Component
+public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
+
+    private static final Logger log = LoggerFactory.getLogger(ExerciseGenerationAdapter.class);
+
+    private final OpenAiClient openAiClient;
+    private final ObjectMapper objectMapper;
+
+    public ExerciseGenerationAdapter(OpenAiClient openAiClient, ObjectMapper objectMapper) {
+        this.openAiClient = openAiClient;
+        this.objectMapper = objectMapper;
+    }
+
+    @Override
+    public List<GeneratedExercise> generateExercises(
+            List<ExtractedVocabulary> vocabulary,
+            List<ExtractedGrammar> grammar,
+            List<ExtractedExpression> expressions) {
+
+        log.info("Generating exercises from {} vocabulary, {} grammar, {} expressions",
+                vocabulary.size(), grammar.size(), expressions.size());
+
+        String systemPrompt = """
+            You are an expert English teacher creating exercises for intermediate learners.
+            Generate 12-15 varied exercises based on the provided vocabulary, grammar points, and expressions.
+            
+            Exercise types to include:
+            1. FILL_IN_BLANK (5-6 exercises): Sentences with a blank to fill with vocabulary words
+               - Provide the sentence with "___" for the blank
+               - correctAnswer is the word that fills the blank
+               - options should include 4 choices (including the correct one)
+            
+            2. MULTIPLE_CHOICE (4-5 exercises): Questions about definitions or grammar usage
+               - Question asks about meaning or correct usage
+               - 4 options with one correct answer
+            
+            3. MATCHING (2-3 exercises): Match terms with their definitions
+               - question contains the term to match
+               - options contain possible definitions
+               - correctAnswer is the matching definition
+            
+            4. LISTENING (2-3 exercises): Type what you hear exercises
+               - question is "Listen and type what you hear: [word]"
+               - correctAnswer is the vocabulary term
+               - options should be null or empty for listening exercises
+            
+            Each exercise should have:
+            - type: one of "FILL_IN_BLANK", "MULTIPLE_CHOICE", "MATCHING", "LISTENING"
+            - question: the exercise prompt
+            - correctAnswer: the correct response
+            - options: array of 4 choices (can be null for LISTENING)
+            - points: difficulty score (1-3 points)
+            
+            Return a JSON object with an "exercises" array.
+            """;
+
+        String userPrompt = buildUserPrompt(vocabulary, grammar, expressions);
+
+        String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
+        return parseExercisesResponse(response);
+    }
+
+    private String buildUserPrompt(
+            List<ExtractedVocabulary> vocabulary,
+            List<ExtractedGrammar> grammar,
+            List<ExtractedExpression> expressions) {
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("Generate exercises using this content:\n\n");
+
+        sb.append("## Vocabulary\n");
+        for (ExtractedVocabulary v : vocabulary) {
+            sb.append(String.format("- %s: %s (Example: %s)\n",
+                    v.term(), v.definition(), v.exampleSentence()));
+        }
+
+        sb.append("\n## Grammar Points\n");
+        for (ExtractedGrammar g : grammar) {
+            sb.append(String.format("- %s: %s\n  Structure: %s\n  Examples: %s\n",
+                    g.title(), g.explanation(), g.structure(),
+                    String.join("; ", g.examples())));
+        }
+
+        sb.append("\n## Expressions\n");
+        for (ExtractedExpression e : expressions) {
+            sb.append(String.format("- \"%s\": %s\n  Usage: %s\n",
+                    e.phrase(), e.meaning(), e.usageNote()));
+        }
+
+        return sb.toString();
+    }
+
+    private List<GeneratedExercise> parseExercisesResponse(String response) {
+        try {
+            JsonNode root = objectMapper.readTree(response);
+            JsonNode exercisesArray = root.path("exercises");
+            return objectMapper.convertValue(exercisesArray, new TypeReference<List<GeneratedExercise>>() {});
+        } catch (Exception e) {
+            log.error("Failed to parse exercises response: {}", response, e);
+            throw new RuntimeException("Failed to parse exercise generation response", e);
+        }
+    }
+}

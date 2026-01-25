@@ -4,6 +4,7 @@ import com.learntv.api.generation.adapter.in.web.dto.ContentExtractionResponse;
 import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
 import com.learntv.api.generation.application.port.out.ContentExtractionPort;
+import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort.ShowSearchResult;
 import com.learntv.api.generation.application.port.out.SubtitleFetchPort;
@@ -11,6 +12,7 @@ import com.learntv.api.generation.application.service.ScriptFetchService;
 import com.learntv.api.generation.domain.model.ExtractedExpression;
 import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
+import com.learntv.api.generation.domain.model.GeneratedExercise;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,6 +44,7 @@ public class GenerationController {
     private final SubtitleFetchPort subtitleFetchPort;
     private final ScriptFetchService scriptFetchService;
     private final ContentExtractionPort contentExtractionPort;
+    private final ExerciseGenerationPort exerciseGenerationPort;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -222,6 +225,42 @@ public class GenerationController {
                 .map(script -> {
                     List<ExtractedExpression> expressions = contentExtractionPort.extractExpressions(script);
                     return ResponseEntity.ok(ContentExtractionResponse.ofExpressions(expressions));
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/exercises/{imdbId}")
+    @Operation(
+            summary = "Generate exercises for episode",
+            description = "Generate 12-15 exercises based on extracted vocabulary, grammar, and expressions. " +
+                    "Includes fill-in-blank, multiple choice, matching, and listening exercises."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Exercises generated successfully"),
+            @ApiResponse(responseCode = "404", description = "Script not found for this episode")
+    })
+    public ResponseEntity<List<GeneratedExercise>> generateExercises(
+            @Parameter(description = "IMDB ID", example = "tt0903747")
+            @PathVariable String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam(defaultValue = "1") int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam(defaultValue = "1") int episode,
+            @Parameter(description = "Show genre for context", example = "drama")
+            @RequestParam(defaultValue = "drama") String genre) {
+
+        return scriptFetchService.fetchScript(imdbId, season, episode)
+                .map(script -> {
+                    // Extract content first
+                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, genre);
+                    List<ExtractedGrammar> grammar = contentExtractionPort.extractGrammar(script);
+                    List<ExtractedExpression> expressions = contentExtractionPort.extractExpressions(script);
+
+                    // Generate exercises from extracted content
+                    List<GeneratedExercise> exercises = exerciseGenerationPort.generateExercises(
+                            vocabulary, grammar, expressions);
+
+                    return ResponseEntity.ok(exercises);
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
