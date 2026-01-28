@@ -4,7 +4,10 @@ export type VocabularyCategory =
   | 'SLANG'
   | 'IDIOM'
   | 'PROFESSIONAL'
-  | 'EVERYDAY';
+  | 'EVERYDAY'
+  | 'EMOTIONAL'
+  | 'COLLOQUIAL'
+  | 'ACTION';
 
 export type ExerciseType =
   | 'FILL_IN_BLANK'
