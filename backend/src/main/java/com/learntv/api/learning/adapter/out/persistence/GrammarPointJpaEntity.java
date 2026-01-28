@@ -33,6 +33,18 @@ public class GrammarPointJpaEntity {
     protected GrammarPointJpaEntity() {
     }
 
+    public static GrammarPointJpaEntity create(UUID episodeId, String title, String explanation,
+                                                String structure, String example) {
+        GrammarPointJpaEntity entity = new GrammarPointJpaEntity();
+        entity.id = UUID.randomUUID();
+        entity.episodeId = episodeId;
+        entity.title = title;
+        entity.explanation = explanation;
+        entity.structure = structure;
+        entity.example = example;
+        return entity;
+    }
+
     public GrammarPoint toDomain() {
         return GrammarPoint.builder()
                 .id(id)

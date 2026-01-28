@@ -39,6 +39,21 @@ public class EpisodeJpaEntity {
     protected EpisodeJpaEntity() {
     }
 
+    public static EpisodeJpaEntity create(UUID showId, String showSlug, int seasonNumber,
+                                           int episodeNumber, String title, String synopsis) {
+        EpisodeJpaEntity entity = new EpisodeJpaEntity();
+        entity.id = UUID.randomUUID();
+        entity.showId = showId;
+        entity.showSlug = showSlug;
+        entity.seasonNumber = seasonNumber;
+        entity.episodeNumber = episodeNumber;
+        entity.title = title;
+        entity.slug = showSlug + "-s" + seasonNumber + "e" + episodeNumber;
+        entity.synopsis = synopsis;
+        entity.durationMinutes = 45; // default
+        return entity;
+    }
+
     public static EpisodeJpaEntity fromDomain(Episode episode) {
         EpisodeJpaEntity entity = new EpisodeJpaEntity();
         entity.id = episode.getId().value();

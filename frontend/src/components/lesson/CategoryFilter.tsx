@@ -15,6 +15,9 @@ const categoryLabels: Record<VocabularyCategory | 'ALL', string> = {
   IDIOM: 'Idioms',
   PROFESSIONAL: 'Professional',
   EVERYDAY: 'Everyday',
+  EMOTIONAL: 'Emotional',
+  COLLOQUIAL: 'Colloquial',
+  ACTION: 'Action',
 };
 
 export function CategoryFilter({ categories, selected, onSelect, counts }: CategoryFilterProps) {

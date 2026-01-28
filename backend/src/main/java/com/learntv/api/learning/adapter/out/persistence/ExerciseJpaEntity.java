@@ -36,6 +36,19 @@ public class ExerciseJpaEntity {
     protected ExerciseJpaEntity() {
     }
 
+    public static ExerciseJpaEntity create(UUID episodeId, ExerciseType type, String question,
+                                            String correctAnswer, String options, int points) {
+        ExerciseJpaEntity entity = new ExerciseJpaEntity();
+        entity.id = UUID.randomUUID();
+        entity.episodeId = episodeId;
+        entity.type = type;
+        entity.question = question;
+        entity.correctAnswer = correctAnswer;
+        entity.options = options;
+        entity.points = points;
+        return entity;
+    }
+
     public Exercise toDomain() {
         return Exercise.builder()
                 .id(id)
