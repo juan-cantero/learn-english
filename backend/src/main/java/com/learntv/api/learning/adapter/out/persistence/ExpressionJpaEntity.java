@@ -30,6 +30,18 @@ public class ExpressionJpaEntity {
     protected ExpressionJpaEntity() {
     }
 
+    public static ExpressionJpaEntity create(UUID episodeId, String phrase, String meaning,
+                                              String contextQuote, String usageNote) {
+        ExpressionJpaEntity entity = new ExpressionJpaEntity();
+        entity.id = UUID.randomUUID();
+        entity.episodeId = episodeId;
+        entity.phrase = phrase;
+        entity.meaning = meaning;
+        entity.contextQuote = contextQuote;
+        entity.usageNote = usageNote;
+        return entity;
+    }
+
     public Expression toDomain() {
         return Expression.builder()
                 .id(id)

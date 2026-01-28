@@ -36,6 +36,20 @@ public class VocabularyJpaEntity {
     protected VocabularyJpaEntity() {
     }
 
+    public static VocabularyJpaEntity create(UUID episodeId, String term, String definition,
+                                              String phonetic, VocabularyCategory category,
+                                              String exampleSentence) {
+        VocabularyJpaEntity entity = new VocabularyJpaEntity();
+        entity.id = UUID.randomUUID();
+        entity.episodeId = episodeId;
+        entity.term = term;
+        entity.definition = definition;
+        entity.phonetic = phonetic;
+        entity.category = category;
+        entity.exampleSentence = exampleSentence;
+        return entity;
+    }
+
     public Vocabulary toDomain() {
         return Vocabulary.builder()
                 .id(id)

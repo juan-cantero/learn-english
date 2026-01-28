@@ -14,4 +14,7 @@ public interface EpisodeJpaRepository extends JpaRepository<EpisodeJpaEntity, UU
 
     // No cross-context join - queries within learning context only
     Optional<EpisodeJpaEntity> findByShowSlugAndSlug(String showSlug, String slug);
+
+    Optional<EpisodeJpaEntity> findByShowIdAndSeasonNumberAndEpisodeNumber(
+            UUID showId, int seasonNumber, int episodeNumber);
 }

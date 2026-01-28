@@ -6,6 +6,9 @@ import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
 import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
+import com.learntv.api.generation.application.service.LessonGenerationService;
+import com.learntv.api.generation.application.service.LessonGenerationService.GeneratedLessonResult;
+import com.learntv.api.generation.application.service.LessonGenerationService.LessonGenerationRequest;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort.ShowSearchResult;
 import com.learntv.api.generation.application.port.out.SubtitleFetchPort;
 import com.learntv.api.generation.application.service.ScriptFetchService;
@@ -45,6 +48,7 @@ public class GenerationController {
     private final ScriptFetchService scriptFetchService;
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
+    private final LessonGenerationService lessonGenerationService;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -263,6 +267,41 @@ public class GenerationController {
                     return ResponseEntity.ok(exercises);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/lessons/create")
+    @Operation(
+            summary = "Generate and save a complete lesson",
+            description = "Generate vocabulary, grammar, expressions, and exercises for an episode and save to database. " +
+                    "The lesson will then be viewable in the frontend."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lesson generated and saved successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Generation failed")
+    })
+    public ResponseEntity<GeneratedLessonResult> createLesson(
+            @Parameter(description = "IMDB ID of the episode", example = "tt0959621")
+            @RequestParam String imdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam int episode,
+            @Parameter(description = "Show title", example = "Breaking Bad")
+            @RequestParam String showTitle,
+            @Parameter(description = "Episode title (optional)", example = "Pilot")
+            @RequestParam(required = false) String episodeTitle,
+            @Parameter(description = "Show genre", example = "drama")
+            @RequestParam(defaultValue = "drama") String genre,
+            @Parameter(description = "Show image URL (optional)")
+            @RequestParam(required = false) String imageUrl) {
+
+        LessonGenerationRequest request = new LessonGenerationRequest(
+                imdbId, season, episode, showTitle, episodeTitle, genre, imageUrl
+        );
+
+        GeneratedLessonResult result = lessonGenerationService.generateAndSaveLesson(request);
+        return ResponseEntity.ok(result);
     }
 
     /**
