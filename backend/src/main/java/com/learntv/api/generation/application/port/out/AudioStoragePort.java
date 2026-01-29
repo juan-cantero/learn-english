@@ -1,6 +1,7 @@
 package com.learntv.api.generation.application.port.out;
 
 public interface AudioStoragePort {
-    void upload(String key, byte[] data, String contentType);
+    String upload(String key, byte[] data, String contentType);
+    void delete(String key);
     String getPublicUrl(String key);
 }
