@@ -29,6 +29,10 @@ external-apis:
     base-url: https://api.openai.com/v1
     model: gpt-4o-mini
     max-tokens: 4000
+  piper:
+    model-path: ${PIPER_MODEL_PATH:${user.home}/.local/share/piper/en_US-lessac-medium.onnx}
+    timeout-seconds: 10
+    ffmpeg-quality: 6
 
 ---
 # Development profile - PostgreSQL via Docker
