@@ -59,7 +59,8 @@ public record LessonWithProgressResponse(
             String phonetic,
             String category,
             String exampleSentence,
-            String contextTimestamp
+            String contextTimestamp,
+            String audioUrl
     ) {
         public static VocabularyResponse fromDomain(Vocabulary vocab) {
             return new VocabularyResponse(
@@ -69,7 +70,8 @@ public record LessonWithProgressResponse(
                     vocab.getPhonetic(),
                     vocab.getCategory().name(),
                     vocab.getExampleSentence(),
-                    vocab.getContextTimestamp()
+                    vocab.getContextTimestamp(),
+                    vocab.getAudioUrl()
             );
         }
     }

@@ -33,12 +33,15 @@ public class VocabularyJpaEntity {
 
     private String contextTimestamp;
 
+    @Column(name = "audio_url", length = 500)
+    private String audioUrl;
+
     protected VocabularyJpaEntity() {
     }
 
     public static VocabularyJpaEntity create(UUID episodeId, String term, String definition,
                                               String phonetic, VocabularyCategory category,
-                                              String exampleSentence) {
+                                              String exampleSentence, String audioUrl) {
         VocabularyJpaEntity entity = new VocabularyJpaEntity();
         entity.id = UUID.randomUUID();
         entity.episodeId = episodeId;
@@ -47,6 +50,7 @@ public class VocabularyJpaEntity {
         entity.phonetic = phonetic;
         entity.category = category;
         entity.exampleSentence = exampleSentence;
+        entity.audioUrl = audioUrl;
         return entity;
     }
 
@@ -60,6 +64,7 @@ public class VocabularyJpaEntity {
                 .category(category)
                 .exampleSentence(exampleSentence)
                 .contextTimestamp(contextTimestamp)
+                .audioUrl(audioUrl)
                 .build();
     }
 
