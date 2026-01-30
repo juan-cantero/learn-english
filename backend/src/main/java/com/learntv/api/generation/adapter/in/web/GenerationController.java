@@ -1,10 +1,12 @@
 package com.learntv.api.generation.adapter.in.web;
 
 import com.learntv.api.generation.adapter.in.web.dto.ContentExtractionResponse;
+import com.learntv.api.generation.adapter.in.web.dto.JobStatusResponse;
 import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
 import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
+import com.learntv.api.generation.application.port.out.GenerationJobRepository;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.service.LessonGenerationService;
 import com.learntv.api.generation.application.service.LessonGenerationService.GeneratedLessonResult;
@@ -16,6 +18,7 @@ import com.learntv.api.generation.domain.model.ExtractedExpression;
 import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import com.learntv.api.generation.domain.model.GeneratedExercise;
+import com.learntv.api.generation.domain.model.GenerationJob;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * REST controller for episode generation features.
@@ -49,6 +53,7 @@ public class GenerationController {
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
     private final LessonGenerationService lessonGenerationService;
+    private final GenerationJobRepository generationJobRepository;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -302,6 +307,30 @@ public class GenerationController {
 
         GeneratedLessonResult result = lessonGenerationService.generateAndSaveLesson(request);
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/jobs/{jobId}")
+    @Operation(
+            summary = "Get job status",
+            description = "Get the current status of an async lesson generation job. " +
+                    "Returns progress, current step, and result episode ID when completed."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Job status retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = JobStatusResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Job not found")
+    })
+    public ResponseEntity<JobStatusResponse> getJobStatus(
+            @Parameter(description = "Job ID", example = "550e8400-e29b-41d4-a716-446655440000")
+            @PathVariable UUID jobId) {
+
+        return generationJobRepository.findById(jobId)
+                .map(JobStatusResponse::fromDomain)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     /**
