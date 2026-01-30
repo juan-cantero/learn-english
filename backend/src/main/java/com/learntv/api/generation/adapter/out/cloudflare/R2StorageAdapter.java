@@ -4,6 +4,7 @@ import com.learntv.api.generation.application.port.out.AudioStoragePort;
 import com.learntv.api.generation.domain.exception.AudioStorageException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -16,6 +17,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
  * R2 is S3-compatible, so we use the AWS S3 SDK.
  */
 @Component
+@Profile("production")
 public class R2StorageAdapter implements AudioStoragePort {
 
     private static final Logger log = LoggerFactory.getLogger(R2StorageAdapter.class);
