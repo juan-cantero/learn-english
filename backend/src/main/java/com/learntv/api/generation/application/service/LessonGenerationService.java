@@ -117,7 +117,8 @@ public class LessonGenerationService {
                     v.definition(),
                     v.phonetic(),
                     VocabularyCategory.fromString(v.category()),
-                    v.exampleSentence()
+                    v.exampleSentence(),
+                    v.audioUrl()
             );
             vocabularyRepository.save(vocab);
         }

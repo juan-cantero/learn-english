@@ -13,6 +13,7 @@ public class Vocabulary {
     private final VocabularyCategory category;
     private final String exampleSentence;
     private final String contextTimestamp;
+    private final String audioUrl;
 
     private Vocabulary(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id is required");
@@ -23,6 +24,7 @@ public class Vocabulary {
         this.category = Objects.requireNonNull(builder.category, "category is required");
         this.exampleSentence = builder.exampleSentence;
         this.contextTimestamp = builder.contextTimestamp;
+        this.audioUrl = builder.audioUrl;
     }
 
     public static Builder builder() {
@@ -61,6 +63,10 @@ public class Vocabulary {
         return contextTimestamp;
     }
 
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
     public static class Builder {
         private UUID id;
         private UUID episodeId;
@@ -70,6 +76,7 @@ public class Vocabulary {
         private VocabularyCategory category;
         private String exampleSentence;
         private String contextTimestamp;
+        private String audioUrl;
 
         public Builder id(UUID id) {
             this.id = id;
@@ -108,6 +115,11 @@ public class Vocabulary {
 
         public Builder contextTimestamp(String contextTimestamp) {
             this.contextTimestamp = contextTimestamp;
+            return this;
+        }
+
+        public Builder audioUrl(String audioUrl) {
+            this.audioUrl = audioUrl;
             return this;
         }
 
