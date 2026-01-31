@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { GenerationIndicator } from './GenerationIndicator';
 
 export function Header() {
   return (
@@ -12,7 +13,9 @@ export function Header() {
             <span className="text-xl font-semibold text-text-primary">LearnTV</span>
           </Link>
 
-          <nav className="flex items-center gap-6">
+          <div className="flex items-center gap-6">
+            <GenerationIndicator />
+            <nav className="flex items-center gap-6">
             <Link
               to="/"
               className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
@@ -31,7 +34,8 @@ export function Header() {
             >
               My Progress
             </Link>
-          </nav>
+            </nav>
+          </div>
         </div>
       </div>
     </header>

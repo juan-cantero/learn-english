@@ -1,29 +1,40 @@
 import { useState } from 'react';
-import { Link, useParams, useNavigate } from '@tanstack/react-router';
+import { Link, useParams } from '@tanstack/react-router';
 import { useSeasonEpisodes, useStartGeneration } from '../../hooks/useGeneration';
+import { useGenerationContext } from '../../context/GenerationContext';
 import { GenreSelector } from '../../components/generation/GenreSelector';
 import { GenerateButton } from '../../components/generation/GenerateButton';
-import { GenerationProgress } from '../../components/generation/GenerationProgress';
 import type { Genre } from '../../types/show';
+
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
 
 export function EpisodeConfirmationPage() {
   const { tmdbId, season, episode } = useParams({
     from: '/generate/shows/$tmdbId/seasons/$season/episodes/$episode',
   });
-  const navigate = useNavigate();
   const seasonNumber = parseInt(season, 10);
   const episodeNumber = parseInt(episode, 10);
 
   const { data, isLoading, error: loadError } = useSeasonEpisodes(tmdbId, seasonNumber);
-  const { mutate: startGeneration, isPending, error: genError } = useStartGeneration();
+  const { mutate: startGenerationMutation, isPending, error: genError } = useStartGeneration();
+  const { startGeneration, hasActiveJob } = useGenerationContext();
 
   const [selectedGenre, setSelectedGenre] = useState<Genre>('DRAMA');
-  const [generationJobId, setGenerationJobId] = useState<string | null>(null);
+  const [generationStarted, setGenerationStarted] = useState(false);
 
   const selectedEpisode = data?.episodes.find((ep) => ep.episodeNumber === episodeNumber);
 
   const handleGenerate = () => {
-    startGeneration(
+    if (!data) return;
+
+    startGenerationMutation(
       {
         tmdbId,
         season: seasonNumber,
@@ -32,18 +43,19 @@ export function EpisodeConfirmationPage() {
       },
       {
         onSuccess: (job) => {
-          setGenerationJobId(job.jobId);
+          // Start tracking in global context
+          startGeneration({
+            jobId: job.jobId,
+            tmdbId,
+            showTitle: data.showTitle,
+            showSlug: generateSlug(data.showTitle),
+            season: seasonNumber,
+            episode: episodeNumber,
+          });
+          setGenerationStarted(true);
         },
       }
     );
-  };
-
-  const handleGenerationComplete = (episodeId: string) => {
-    navigate({ to: `/shows/${episodeId}/episodes/${episodeId}` });
-  };
-
-  const handleGenerationError = () => {
-    setGenerationJobId(null);
   };
 
   if (isLoading) {
@@ -77,19 +89,6 @@ export function EpisodeConfirmationPage() {
     );
   }
 
-  // Show progress if generation has started
-  if (generationJobId) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <GenerationProgress
-          jobId={generationJobId}
-          onComplete={handleGenerationComplete}
-          onError={handleGenerationError}
-        />
-      </div>
-    );
-  }
-
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Breadcrumb */}
@@ -103,6 +102,23 @@ export function EpisodeConfirmationPage() {
         </svg>
         Back to Season {seasonNumber}
       </Link>
+
+      {/* Success Message */}
+      {generationStarted && (
+        <div className="mb-6 rounded-lg border border-success/50 bg-success/10 p-4">
+          <div className="flex items-center gap-3">
+            <svg className="h-5 w-5 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <div>
+              <p className="font-medium text-success">Generation started!</p>
+              <p className="text-sm text-text-secondary">
+                You can continue browsing. Check the indicator in the header for progress.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Episode Summary */}
       <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
@@ -142,8 +158,19 @@ export function EpisodeConfirmationPage() {
 
       {/* Generate Button */}
       <div className="flex justify-center">
-        <GenerateButton onClick={handleGenerate} disabled={false} isLoading={isPending} />
+        <GenerateButton
+          onClick={handleGenerate}
+          disabled={generationStarted || hasActiveJob}
+          isLoading={isPending}
+        />
       </div>
+
+      {/* Already generating hint */}
+      {hasActiveJob && !generationStarted && (
+        <p className="mt-4 text-center text-sm text-text-secondary">
+          A lesson is already being generated. Check the header for progress.
+        </p>
+      )}
     </div>
   );
 }
