@@ -176,9 +176,36 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
     }
 
     private ShowJpaEntity findOrCreateShow(String tmdbId, String genre, String imageUrl) {
-        // For now, create a generic show based on TMDB ID
-        // In a real implementation, you would fetch full show details from TMDB
-        String showTitle = "Show " + tmdbId; // Placeholder
+        // Fetch show details from TMDB
+        var showWithSeasons = showMetadataPort.getShowWithSeasons(tmdbId);
+
+        String showTitle;
+        String description;
+        String posterUrl;
+        int totalSeasons;
+        int totalEpisodes;
+
+        if (showWithSeasons.isPresent()) {
+            var tmdbShow = showWithSeasons.get();
+            showTitle = tmdbShow.title();
+            description = tmdbShow.overview() != null ? tmdbShow.overview() : "TV Show";
+            posterUrl = tmdbShow.posterUrl();
+            totalSeasons = tmdbShow.seasons().size();
+            totalEpisodes = tmdbShow.seasons().stream()
+                    .mapToInt(ShowMetadataPort.Season::episodeCount)
+                    .sum();
+            log.info("Fetched show metadata from TMDB: {} ({} seasons, {} episodes)",
+                    showTitle, totalSeasons, totalEpisodes);
+        } else {
+            // Fallback if TMDB fetch fails
+            log.warn("Could not fetch show metadata from TMDB for ID: {}", tmdbId);
+            showTitle = "Show " + tmdbId;
+            description = "TV Show";
+            posterUrl = imageUrl;
+            totalSeasons = 1;
+            totalEpisodes = 1;
+        }
+
         String slug = generateSlug(showTitle);
 
         return showRepository.findBySlug(slug)
@@ -188,13 +215,13 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                             .id(ShowId.of(UUID.randomUUID()))
                             .title(showTitle)
                             .slug(slug)
-                            .description("Generated show for TMDB ID: " + tmdbId)
+                            .description(description)
                             .genre(mapGenre(genre))
                             .accent(AccentType.AMERICAN)
                             .difficulty(DifficultyLevel.INTERMEDIATE)
-                            .imageUrl(imageUrl)
-                            .totalSeasons(1)
-                            .totalEpisodes(1)
+                            .imageUrl(posterUrl)
+                            .totalSeasons(totalSeasons)
+                            .totalEpisodes(totalEpisodes)
                             .build();
                     return showRepository.save(ShowJpaEntity.fromDomain(show));
                 });
