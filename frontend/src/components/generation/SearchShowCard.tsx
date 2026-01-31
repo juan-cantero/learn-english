@@ -31,16 +31,16 @@ export function SearchShowCard({ show }: SearchShowCardProps) {
         )}
       </div>
 
-      <div className="p-4">
-        <h3 className="mb-1 text-lg font-semibold text-text-primary group-hover:text-accent-primary">
+      <div className="p-3 sm:p-4">
+        <h3 className="mb-1 text-sm font-semibold text-text-primary group-hover:text-accent-primary sm:text-lg">
           {show.title}
         </h3>
 
-        <p className="mb-2 font-mono text-xs text-text-secondary">
+        <p className="font-mono text-xs text-text-secondary">
           {show.year}
         </p>
 
-        <p className="line-clamp-3 text-sm text-text-secondary">
+        <p className="mt-2 hidden line-clamp-2 text-sm text-text-secondary sm:block sm:line-clamp-3">
           {show.overview}
         </p>
       </div>

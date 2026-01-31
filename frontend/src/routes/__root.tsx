@@ -1,5 +1,6 @@
 import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
 import { Header } from '../components/layout/Header';
+import { BottomNavigation } from '../components/layout/BottomNavigation';
 import { HomePage } from './index';
 import { ShowPage } from './shows/$slug';
 import { LessonPage } from './shows/$slug.episodes.$episodeSlug';
@@ -13,9 +14,10 @@ const rootRoute = createRootRoute({
   component: () => (
     <div className="min-h-screen bg-bg-dark">
       <Header />
-      <main>
+      <main className="pb-20 md:pb-0">
         <Outlet />
       </main>
+      <BottomNavigation />
     </div>
   ),
 });

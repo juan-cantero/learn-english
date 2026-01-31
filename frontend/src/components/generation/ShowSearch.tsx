@@ -43,15 +43,15 @@ export function ShowSearch() {
       )}
 
       {isLoading && (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="aspect-[2/3] rounded-t-xl bg-bg-card" />
-              <div className="rounded-b-xl bg-bg-card p-4">
-                <div className="mb-2 h-5 w-3/4 rounded bg-bg-dark" />
+              <div className="rounded-b-xl bg-bg-card p-3 sm:p-4">
+                <div className="mb-2 h-4 w-3/4 rounded bg-bg-dark sm:h-5" />
                 <div className="mb-2 h-3 w-1/4 rounded bg-bg-dark" />
-                <div className="h-4 w-full rounded bg-bg-dark" />
-                <div className="mt-1 h-4 w-5/6 rounded bg-bg-dark" />
+                <div className="hidden h-4 w-full rounded bg-bg-dark sm:block" />
+                <div className="mt-1 hidden h-4 w-5/6 rounded bg-bg-dark sm:block" />
               </div>
             </div>
           ))}
@@ -71,7 +71,7 @@ export function ShowSearch() {
       )}
 
       {shows && shows.length > 0 && (
-        <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
           {shows.map((show) => (
             <SearchShowCard key={show.tmdbId} show={show} />
           ))}
