@@ -1,12 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 import { ShowSearch } from '../components/generation/ShowSearch';
 import { EpisodeSelector } from '../components/generation/EpisodeSelector';
 import { GenerateButton } from '../components/generation/GenerateButton';
+import { GenerationProgress } from '../components/generation/GenerationProgress';
 import { useStartGeneration } from '../hooks/useGeneration';
 import type { TMDBShow } from '../types/generation';
 import type { Genre } from '../types/show';
 
 export function GeneratePage() {
+  const navigate = useNavigate();
   const [selectedShow, setSelectedShow] = useState<TMDBShow | null>(null);
   const [selectedSeason, setSelectedSeason] = useState<number>(1);
   const [selectedEpisode, setSelectedEpisode] = useState<number>(1);
@@ -43,6 +46,16 @@ export function GeneratePage() {
     );
   };
 
+  const handleGenerationComplete = (episodeId: string) => {
+    // Navigate to the lesson page
+    navigate({ to: `/lesson/${episodeId}` });
+  };
+
+  const handleGenerationError = () => {
+    // Reset state to allow retry
+    setGenerationJobId(null);
+  };
+
   const isGenerateDisabled = !selectedShow;
 
   return (
@@ -56,83 +69,81 @@ export function GeneratePage() {
         </p>
       </div>
 
-      <div className="space-y-8">
-        {/* Step 1: Show Search */}
-        <section className="rounded-xl border border-border bg-bg-card p-6">
-          <div className="mb-4">
-            <h2 className="text-xl font-semibold text-text-primary">
-              Step 1: Select a Show
-            </h2>
-            <p className="mt-1 text-sm text-text-secondary">
-              Search The Movie Database for the show you want to create a lesson from
-            </p>
-          </div>
-          <ShowSearch onSelectShow={handleSelectShow} selectedShow={selectedShow} />
-        </section>
-
-        {/* Step 2: Episode Selection */}
-        {selectedShow && (
+      {/* Show progress component if generation has started */}
+      {generationJobId ? (
+        <GenerationProgress
+          jobId={generationJobId}
+          onComplete={handleGenerationComplete}
+          onError={handleGenerationError}
+        />
+      ) : (
+        <div className="space-y-8">
+          {/* Step 1: Show Search */}
           <section className="rounded-xl border border-border bg-bg-card p-6">
             <div className="mb-4">
               <h2 className="text-xl font-semibold text-text-primary">
-                Step 2: Choose Episode and Genre
+                Step 1: Select a Show
               </h2>
               <p className="mt-1 text-sm text-text-secondary">
-                Specify which episode and the show's genre
+                Search The Movie Database for the show you want to create a lesson from
               </p>
             </div>
-            <EpisodeSelector
-              onSelect={handleEpisodeSelect}
-              selectedSeason={selectedSeason}
-              selectedEpisode={selectedEpisode}
-              selectedGenre={selectedGenre}
-            />
+            <ShowSearch onSelectShow={handleSelectShow} selectedShow={selectedShow} />
           </section>
-        )}
 
-        {/* Step 3: Generate */}
-        {selectedShow && (
-          <section className="rounded-xl border border-border bg-bg-card p-6">
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold text-text-primary">
-                Step 3: Generate Lesson
-              </h2>
-              <p className="mt-1 text-sm text-text-secondary">
-                Start the AI-powered lesson generation process
-              </p>
-            </div>
-
-            {error && (
-              <div className="mb-4 rounded-lg border border-error/50 bg-error/10 p-4">
-                <p className="text-error">Failed to start generation: {error.message}</p>
-              </div>
-            )}
-
-            {generationJobId && (
-              <div className="mb-4 rounded-lg border border-success/50 bg-success/10 p-4">
-                <p className="text-success">
-                  Generation started! Job ID: <span className="font-mono">{generationJobId}</span>
-                </p>
-                <p className="mt-2 text-sm text-text-secondary">
-                  Track the progress in the next task (6.2 - Generation Progress Tracking)
+          {/* Step 2: Episode Selection */}
+          {selectedShow && (
+            <section className="rounded-xl border border-border bg-bg-card p-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-text-primary">
+                  Step 2: Choose Episode and Genre
+                </h2>
+                <p className="mt-1 text-sm text-text-secondary">
+                  Specify which episode and the show's genre
                 </p>
               </div>
-            )}
+              <EpisodeSelector
+                onSelect={handleEpisodeSelect}
+                selectedSeason={selectedSeason}
+                selectedEpisode={selectedEpisode}
+                selectedGenre={selectedGenre}
+              />
+            </section>
+          )}
 
-            <GenerateButton
-              onClick={handleGenerate}
-              disabled={isGenerateDisabled}
-              isLoading={isPending}
-            />
+          {/* Step 3: Generate */}
+          {selectedShow && (
+            <section className="rounded-xl border border-border bg-bg-card p-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-text-primary">
+                  Step 3: Generate Lesson
+                </h2>
+                <p className="mt-1 text-sm text-text-secondary">
+                  Start the AI-powered lesson generation process
+                </p>
+              </div>
 
-            {isGenerateDisabled && (
-              <p className="mt-2 text-center text-sm text-text-secondary">
-                Please select a show and episode to continue
-              </p>
-            )}
-          </section>
-        )}
-      </div>
+              {error && (
+                <div className="mb-4 rounded-lg border border-error/50 bg-error/10 p-4">
+                  <p className="text-error">Failed to start generation: {error.message}</p>
+                </div>
+              )}
+
+              <GenerateButton
+                onClick={handleGenerate}
+                disabled={isGenerateDisabled}
+                isLoading={isPending}
+              />
+
+              {isGenerateDisabled && (
+                <p className="mt-2 text-center text-sm text-text-secondary">
+                  Please select a show and episode to continue
+                </p>
+              )}
+            </section>
+          )}
+        </div>
+      )}
     </div>
   );
 }
