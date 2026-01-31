@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { GenerationStatus } from '../types/generation';
+import { getGenerationStatus } from '../api/generation';
 
 export interface ActiveJob {
   jobId: string;
@@ -36,8 +37,11 @@ interface GenerationProviderProps {
   children: ReactNode;
 }
 
+const POLLING_INTERVAL = 2000; // 2 seconds
+
 export function GenerationProvider({ children }: GenerationProviderProps) {
   const [state, setState] = useState<GenerationState>({ activeJob: null });
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const startGeneration = useCallback((job: Omit<ActiveJob, 'progress' | 'currentStep' | 'status' | 'episodeId'> & { jobId: string }) => {
     setState({
@@ -63,6 +67,49 @@ export function GenerationProvider({ children }: GenerationProviderProps) {
   const clearGeneration = useCallback(() => {
     setState({ activeJob: null });
   }, []);
+
+  // Polling effect
+  useEffect(() => {
+    const activeJob = state.activeJob;
+
+    // Only poll if there's an active job that's not completed or failed
+    if (!activeJob || activeJob.status === 'COMPLETED' || activeJob.status === 'FAILED') {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      return;
+    }
+
+    const pollStatus = async () => {
+      try {
+        const jobStatus = await getGenerationStatus(activeJob.jobId);
+        updateJob({
+          progress: jobStatus.progress,
+          currentStep: jobStatus.currentStep,
+          status: jobStatus.status,
+          episodeId: jobStatus.episodeId,
+          error: jobStatus.error,
+        });
+      } catch (error) {
+        console.error('Failed to poll job status:', error);
+        // Don't stop polling on network errors, let it retry
+      }
+    };
+
+    // Poll immediately on start
+    pollStatus();
+
+    // Set up interval for subsequent polls
+    pollingRef.current = setInterval(pollStatus, POLLING_INTERVAL);
+
+    return () => {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    };
+  }, [state.activeJob?.jobId, state.activeJob?.status, updateJob]);
 
   const hasActiveJob = state.activeJob !== null;
   const isCompleted = state.activeJob?.status === 'COMPLETED';
