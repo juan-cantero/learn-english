@@ -10,7 +10,6 @@ export function GenerationIndicator() {
   }
 
   const episodeSlug = `${job.showSlug}-s${job.season}e${job.episode}`;
-  const lessonUrl = `/shows/${job.showSlug}/episodes/${episodeSlug}`;
 
   // Completed state
   if (isCompleted) {
@@ -23,7 +22,8 @@ export function GenerationIndicator() {
           <span className="text-sm text-success">Ready!</span>
         </div>
         <Link
-          to={lessonUrl}
+          to="/shows/$slug/episodes/$episodeSlug"
+          params={{ slug: job.showSlug, episodeSlug }}
           onClick={clearGeneration}
           className="text-sm font-medium text-accent-primary hover:text-accent-primary/80"
         >
@@ -50,7 +50,9 @@ export function GenerationIndicator() {
           <svg className="h-4 w-4 text-error" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
-          <span className="text-sm text-error">Generation failed</span>
+          <span className="text-sm text-error">
+            {job.error || 'Generation failed'}
+          </span>
         </div>
         <button
           onClick={clearGeneration}

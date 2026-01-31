@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { GenerationStatus } from '../types/generation';
 import { getGenerationStatus } from '../api/generation';
 
@@ -42,6 +43,7 @@ const POLLING_INTERVAL = 2000; // 2 seconds
 export function GenerationProvider({ children }: GenerationProviderProps) {
   const [state, setState] = useState<GenerationState>({ activeJob: null });
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const queryClient = useQueryClient();
 
   const startGeneration = useCallback((job: Omit<ActiveJob, 'progress' | 'currentStep' | 'status' | 'episodeId'> & { jobId: string }) => {
     setState({
@@ -91,6 +93,12 @@ export function GenerationProvider({ children }: GenerationProviderProps) {
           episodeId: jobStatus.episodeId,
           error: jobStatus.error,
         });
+
+        // Invalidate queries when generation completes so new data is fetched
+        if (jobStatus.status === 'COMPLETED') {
+          queryClient.invalidateQueries({ queryKey: ['shows'] });
+          queryClient.invalidateQueries({ queryKey: ['lessons'] });
+        }
       } catch (error) {
         console.error('Failed to poll job status:', error);
         // Don't stop polling on network errors, let it retry
