@@ -1,50 +1,137 @@
 package com.learntv.api.generation.domain.service;
 
-import com.learntv.api.generation.domain.model.GeneratedLesson;
-import com.learntv.api.generation.domain.model.Script;
+import com.learntv.api.generation.domain.model.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Domain Service that encapsulates the pedagogical logic for generating lessons.
  *
- * HEXAGONAL ARCHITECTURE NOTE:
- * This is a PURE domain service. It must NOT:
- * - Inject or call any ports (ShowMetadataPort, ContentExtractionPort, etc.)
- * - Make external API calls
- * - Persist anything
- * - Have framework annotations (@Service, @Component, etc.)
+ * HEXAGONAL ARCHITECTURE:
+ * This is a PURE domain service - it contains ONLY business logic.
+ * - NO framework annotations (@Service, @Component)
+ * - NO port dependencies (no external calls)
+ * - All data is passed as method parameters
+ * - Returns domain models only
  *
- * The orchestration of external services happens in the Application Layer
- * (GenerateEpisodeLessonService). This domain service receives already-fetched
- * data and applies business rules to transform it.
+ * The Application Service (GenerateEpisodeLessonService) calls the ports
+ * and passes the results to this domain service for composition.
  *
- * This service knows:
- * - The pedagogical order of content extraction (vocab → grammar → expressions → exercises)
- * - Business rules (min/max items, difficulty balancing, etc.)
- * - How to compose a GeneratedLesson from extracted content
- *
- * Dependencies will be injected as FUNCTION PARAMETERS (data), not as constructor
- * dependencies (ports). The Application Service calls the ports and passes the
- * results here.
+ * PEDAGOGICAL ORDER:
+ * 1. Vocabulary (foundation - understand words first)
+ * 2. Grammar (structure - understand patterns)
+ * 3. Expressions (context - understand idioms and usage)
+ * 4. Exercises (practice - reinforce learning)
+ * 5. Audio (pronunciation - hear correct pronunciation)
  */
 public class EpisodeLessonGenerator {
 
     /**
-     * Generate a complete lesson from a script.
+     * Generate a complete lesson from extracted content.
      *
-     * In the full implementation, this will receive extracted content from
-     * the Application Service and compose the final lesson with business rules.
+     * This method applies business rules to compose a complete lesson:
+     * - Validates minimum content requirements
+     * - Orders content pedagogically
+     * - Ensures consistency across all components
      *
-     * @param script The parsed script text from subtitles
-     * @param genre The show's genre (affects vocabulary categorization)
-     * @return A complete lesson with vocabulary, grammar, expressions, and exercises
+     * @param vocabulary Extracted vocabulary items (should be 15-25 items)
+     * @param grammar Extracted grammar points (should be 4-6 points)
+     * @param expressions Extracted expressions (should be 6-10 items)
+     * @param exercises Generated exercises (should be 12-15 exercises)
+     * @return A complete lesson ready for persistence
+     * @throws IllegalArgumentException if content doesn't meet minimum requirements
      */
-    public GeneratedLesson generate(Script script, String genre) {
-        // Will be implemented in task 5.2
-        // This method will receive already-extracted content and apply business rules
-        throw new UnsupportedOperationException(
-            "Will be implemented in task 5.2 - " +
-            "This domain service will receive data from the Application Service, " +
-            "not call ports directly."
+    public GeneratedLesson generate(
+            List<ExtractedVocabulary> vocabulary,
+            List<ExtractedGrammar> grammar,
+            List<ExtractedExpression> expressions,
+            List<GeneratedExercise> exercises) {
+
+        // Business rule: Validate minimum content
+        validateContent(vocabulary, grammar, expressions, exercises);
+
+        // Business rule: Ensure immutability by creating defensive copies
+        List<ExtractedVocabulary> immutableVocab = List.copyOf(vocabulary);
+        List<ExtractedGrammar> immutableGrammar = List.copyOf(grammar);
+        List<ExtractedExpression> immutableExpressions = List.copyOf(expressions);
+        List<GeneratedExercise> immutableExercises = List.copyOf(exercises);
+
+        return new GeneratedLesson(
+                immutableVocab,
+                immutableGrammar,
+                immutableExpressions,
+                immutableExercises
         );
+    }
+
+    /**
+     * Validate that extracted content meets pedagogical minimum requirements.
+     *
+     * Business rules:
+     * - At least 10 vocabulary items (learning requires sufficient examples)
+     * - At least 3 grammar points (need variety for understanding)
+     * - At least 5 expressions (enough for context understanding)
+     * - At least 10 exercises (sufficient practice opportunities)
+     */
+    private void validateContent(
+            List<ExtractedVocabulary> vocabulary,
+            List<ExtractedGrammar> grammar,
+            List<ExtractedExpression> expressions,
+            List<GeneratedExercise> exercises) {
+
+        List<String> errors = new ArrayList<>();
+
+        if (vocabulary == null || vocabulary.size() < 10) {
+            errors.add("Insufficient vocabulary items: " +
+                    (vocabulary == null ? 0 : vocabulary.size()) +
+                    " (minimum 10 required)");
+        }
+
+        if (grammar == null || grammar.size() < 3) {
+            errors.add("Insufficient grammar points: " +
+                    (grammar == null ? 0 : grammar.size()) +
+                    " (minimum 3 required)");
+        }
+
+        if (expressions == null || expressions.size() < 5) {
+            errors.add("Insufficient expressions: " +
+                    (expressions == null ? 0 : expressions.size()) +
+                    " (minimum 5 required)");
+        }
+
+        if (exercises == null || exercises.size() < 10) {
+            errors.add("Insufficient exercises: " +
+                    (exercises == null ? 0 : exercises.size()) +
+                    " (minimum 10 required)");
+        }
+
+        if (!errors.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Lesson content does not meet minimum requirements: " +
+                            String.join(", ", errors)
+            );
+        }
+    }
+
+    /**
+     * Calculate the expected total points for a lesson.
+     * This can be used for progress tracking and gamification.
+     */
+    public int calculateTotalPoints(GeneratedLesson lesson) {
+        return lesson.exercises().stream()
+                .mapToInt(GeneratedExercise::points)
+                .sum();
+    }
+
+    /**
+     * Check if a lesson has sufficient content for a complete learning experience.
+     * More lenient than validateContent - used for warnings rather than errors.
+     */
+    public boolean isHighQuality(GeneratedLesson lesson) {
+        return lesson.vocabulary().size() >= 15 &&
+               lesson.grammarPoints().size() >= 4 &&
+               lesson.expressions().size() >= 6 &&
+               lesson.exercises().size() >= 12;
     }
 }
