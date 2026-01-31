@@ -12,6 +12,9 @@ const categoryColors = {
   IDIOM: 'bg-yellow-900/30 text-yellow-400 border-yellow-800/50',
   PROFESSIONAL: 'bg-cyan-900/30 text-cyan-400 border-cyan-800/50',
   EVERYDAY: 'bg-green-900/30 text-green-400 border-green-800/50',
+  EMOTIONAL: 'bg-pink-900/30 text-pink-400 border-pink-800/50',
+  COLLOQUIAL: 'bg-orange-900/30 text-orange-400 border-orange-800/50',
+  ACTION: 'bg-indigo-900/30 text-indigo-400 border-indigo-800/50',
 };
 
 export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
