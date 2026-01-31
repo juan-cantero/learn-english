@@ -35,3 +35,10 @@
     @apply text-accent-primary hover:text-accent-light transition-colors;
   }
 }
+
+/* Safe area utilities for iPhone notch/home indicator */
+@layer utilities {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+}

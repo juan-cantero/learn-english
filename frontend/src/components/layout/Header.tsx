@@ -15,25 +15,26 @@ export function Header() {
 
           <div className="flex items-center gap-6">
             <GenerationIndicator />
-            <nav className="flex items-center gap-6">
-            <Link
-              to="/"
-              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
-            >
-              Browse
-            </Link>
-            <Link
-              to="/generate"
-              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
-            >
-              Generate
-            </Link>
-            <Link
-              to="/progress"
-              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
-            >
-              My Progress
-            </Link>
+            {/* Hide nav links on mobile - use BottomNavigation instead */}
+            <nav className="hidden items-center gap-6 md:flex">
+              <Link
+                to="/"
+                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
+              >
+                Browse
+              </Link>
+              <Link
+                to="/generate"
+                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
+              >
+                Generate
+              </Link>
+              <Link
+                to="/progress"
+                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
+              >
+                My Progress
+              </Link>
             </nav>
           </div>
         </div>
