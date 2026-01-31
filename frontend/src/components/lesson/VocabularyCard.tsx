@@ -19,29 +19,47 @@ const categoryColors = {
 
 export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
   const [isPlaying, setIsPlaying] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const handleSpeak = async () => {
     if (isPlaying) return;
 
     setIsPlaying(true);
+    setError(null);
+
     try {
-      // Use Piper TTS endpoint
-      const url = `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(vocabulary.term)}`;
+      let audioUrl: string;
+
+      if (vocabulary.audioUrl) {
+        // Use pre-generated audio from R2/local storage
+        audioUrl = vocabulary.audioUrl;
+      } else {
+        // Fallback to TTS API (for development/old data)
+        audioUrl = `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(vocabulary.term)}`;
+      }
 
       if (audioRef.current) {
         audioRef.current.pause();
       }
 
-      const audio = new Audio(url);
+      const audio = new Audio(audioUrl);
       audioRef.current = audio;
 
-      audio.onended = () => setIsPlaying(false);
-      audio.onerror = () => setIsPlaying(false);
+      audio.onended = () => {
+        setIsPlaying(false);
+        setError(null);
+      };
+
+      audio.onerror = () => {
+        setError('Failed to play audio');
+        setIsPlaying(false);
+      };
 
       await audio.play();
     } catch (error) {
-      console.error('TTS error:', error);
+      console.error('Audio playback error:', error);
+      setError('Failed to play audio');
       setIsPlaying(false);
     }
   };
@@ -90,6 +108,12 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
       </div>
 
       <p className="text-text-primary">{vocabulary.definition}</p>
+
+      {error && (
+        <div className="mt-3 rounded-lg bg-red-900/20 border border-red-800/50 p-2">
+          <p className="text-xs text-red-400">{error}</p>
+        </div>
+      )}
 
       {vocabulary.exampleSentence && (
         <div className="mt-4 rounded-lg bg-bg-dark p-3">
