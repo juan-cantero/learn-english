@@ -1,14 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSearchShows } from '../../hooks/useGeneration';
 import { SearchShowCard } from './SearchShowCard';
-import type { TMDBShow } from '../../types/generation';
 
-interface ShowSearchProps {
-  onSelectShow: (show: TMDBShow) => void;
-  selectedShow: TMDBShow | null;
-}
-
-export function ShowSearch({ onSelectShow, selectedShow }: ShowSearchProps) {
+export function ShowSearch() {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
 
@@ -79,12 +73,7 @@ export function ShowSearch({ onSelectShow, selectedShow }: ShowSearchProps) {
       {shows && shows.length > 0 && (
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {shows.map((show) => (
-            <SearchShowCard
-              key={show.tmdbId}
-              show={show}
-              isSelected={selectedShow?.tmdbId === show.tmdbId}
-              onSelect={onSelectShow}
-            />
+            <SearchShowCard key={show.tmdbId} show={show} />
           ))}
         </div>
       )}
