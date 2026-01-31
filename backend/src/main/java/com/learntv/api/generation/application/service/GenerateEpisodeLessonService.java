@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,7 +19,7 @@ import java.util.UUID;
  * RESPONSIBILITIES:
  * - Create and track generation jobs
  * - Coordinate async processing
- * - Update progress at each step
+ * - Update progress at each step (via JobProgressService)
  * - Handle errors and update job status
  * - Delegate business logic to domain service
  * - Persist the final result
@@ -36,6 +35,7 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
     private static final Logger log = LoggerFactory.getLogger(GenerateEpisodeLessonService.class);
 
     private final GenerationJobRepository jobRepository;
+    private final JobProgressService jobProgressService;
     private final ScriptFetchService scriptFetchService;
     private final ShowMetadataPort showMetadataPort;
     private final ContentExtractionPort contentExtractionPort;
@@ -46,6 +46,7 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
 
     public GenerateEpisodeLessonService(
             GenerationJobRepository jobRepository,
+            JobProgressService jobProgressService,
             ScriptFetchService scriptFetchService,
             ShowMetadataPort showMetadataPort,
             ContentExtractionPort contentExtractionPort,
@@ -54,6 +55,7 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
             LessonPersistencePort lessonPersistencePort,
             EpisodeLessonGenerator episodeLessonGenerator) {
         this.jobRepository = jobRepository;
+        this.jobProgressService = jobProgressService;
         this.scriptFetchService = scriptFetchService;
         this.showMetadataPort = showMetadataPort;
         this.contentExtractionPort = contentExtractionPort;
@@ -98,15 +100,17 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
     /**
      * Process the generation asynchronously.
      * This method runs in a separate thread and updates progress at each step.
+     *
+     * Note: No @Transactional here - each progress update and the final save
+     * use their own transactions so progress is visible in real-time.
      */
     @Async
-    @Transactional
     public void processGenerationAsync(UUID jobId, String imdbId, GenerationCommand command) {
         try {
             log.info("Starting async processing for job: {}", jobId);
 
             // Mark as processing
-            updateProgress(jobId, GenerationProgressStep.FETCHING_SCRIPT);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.FETCHING_SCRIPT);
 
             // Step 1: Fetch script
             String scriptText = scriptFetchService.fetchScript(
@@ -118,11 +122,11 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
                             "E" + command.episodeNumber()
             ));
 
-            updateProgress(jobId, GenerationProgressStep.PARSING_SCRIPT);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.PARSING_SCRIPT);
             log.info("Script fetched for job: {} ({} characters)", jobId, scriptText.length());
 
             // Step 2: Extract vocabulary
-            updateProgress(jobId, GenerationProgressStep.EXTRACTING_VOCABULARY);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.EXTRACTING_VOCABULARY);
             List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(
                     scriptText,
                     command.genre()
@@ -130,24 +134,24 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
             log.info("Extracted {} vocabulary items for job: {}", vocabulary.size(), jobId);
 
             // Step 3: Extract grammar
-            updateProgress(jobId, GenerationProgressStep.EXTRACTING_GRAMMAR);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.EXTRACTING_GRAMMAR);
             List<ExtractedGrammar> grammar = contentExtractionPort.extractGrammar(scriptText);
             log.info("Extracted {} grammar points for job: {}", grammar.size(), jobId);
 
             // Step 4: Extract expressions
-            updateProgress(jobId, GenerationProgressStep.EXTRACTING_EXPRESSIONS);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.EXTRACTING_EXPRESSIONS);
             List<ExtractedExpression> expressions = contentExtractionPort.extractExpressions(scriptText);
             log.info("Extracted {} expressions for job: {}", expressions.size(), jobId);
 
             // Step 5: Generate exercises
-            updateProgress(jobId, GenerationProgressStep.GENERATING_EXERCISES);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.GENERATING_EXERCISES);
             List<GeneratedExercise> exercises = exerciseGenerationPort.generateExercises(
                     vocabulary, grammar, expressions
             );
             log.info("Generated {} exercises for job: {}", exercises.size(), jobId);
 
             // Step 6: Generate audio for vocabulary
-            updateProgress(jobId, GenerationProgressStep.GENERATING_AUDIO);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.GENERATING_AUDIO);
             List<ExtractedVocabulary> vocabularyWithAudio =
                     audioGenerationService.generateAudioForVocabulary(vocabulary);
             log.info("Generated audio for job: {}", jobId);
@@ -168,8 +172,8 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
             int totalPoints = episodeLessonGenerator.calculateTotalPoints(lesson);
             log.info("Lesson composed for job: {} with {} total points", jobId, totalPoints);
 
-            // Step 8: Persist lesson
-            updateProgress(jobId, GenerationProgressStep.SAVING);
+            // Step 8: Persist lesson (has its own @Transactional)
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.SAVING);
             UUID episodeId = lessonPersistencePort.save(
                     lesson,
                     command.tmdbId(),
@@ -183,27 +187,14 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
             log.info("Lesson persisted for job: {} as episode: {}", jobId, episodeId);
 
             // Mark as completed
-            updateProgress(jobId, GenerationProgressStep.COMPLETED);
-            jobRepository.markCompleted(jobId, episodeId);
+            jobProgressService.updateProgress(jobId, GenerationProgressStep.COMPLETED);
+            jobProgressService.markCompleted(jobId, episodeId);
 
             log.info("Job completed successfully: {}", jobId);
 
         } catch (Exception e) {
             log.error("Job failed: {}", jobId, e);
-            jobRepository.markFailed(jobId, e.getMessage());
+            jobProgressService.markFailed(jobId, e.getMessage());
         }
-    }
-
-    /**
-     * Update job progress using the progress step enum.
-     */
-    private void updateProgress(UUID jobId, GenerationProgressStep step) {
-        GenerationJob job = jobRepository.findById(jobId)
-                .orElseThrow(() -> new IllegalStateException("Job not found: " + jobId));
-
-        GenerationJob updated = job.updateProgress(step.getProgress(), step.getDescription());
-        jobRepository.save(updated);
-
-        log.debug("Job {} progress: {}% - {}", jobId, step.getProgress(), step.getDescription());
     }
 }
