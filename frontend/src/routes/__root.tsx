@@ -4,6 +4,7 @@ import { HomePage } from './index';
 import { ShowPage } from './shows/$slug';
 import { LessonPage } from './shows/$slug.episodes.$episodeSlug';
 import { ProgressPage } from './progress';
+import { GeneratePage } from './generate';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -40,9 +41,16 @@ const progressRoute = createRoute({
   component: ProgressPage,
 });
 
+const generateRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/generate',
+  component: GeneratePage,
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   showRoute,
   lessonRoute,
   progressRoute,
+  generateRoute,
 ]);

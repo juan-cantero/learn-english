@@ -20,6 +20,12 @@ export function Header() {
               Browse
             </Link>
             <Link
+              to="/generate"
+              className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
+            >
+              Generate
+            </Link>
+            <Link
               to="/progress"
               className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
             >
