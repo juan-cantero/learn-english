@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface VocabularyJpaRepository extends JpaRepository<VocabularyJpaEntity, UUID> {
 
     List<VocabularyJpaEntity> findByEpisodeId(UUID episodeId);
+
+    void deleteByEpisodeId(UUID episodeId);
 }

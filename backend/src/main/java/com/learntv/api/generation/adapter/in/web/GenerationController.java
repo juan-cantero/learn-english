@@ -4,9 +4,11 @@ import com.learntv.api.generation.adapter.in.web.dto.ContentExtractionResponse;
 import com.learntv.api.generation.adapter.in.web.dto.JobStatusResponse;
 import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
+import com.learntv.api.generation.application.port.in.GenerateEpisodeLessonUseCase;
+import com.learntv.api.generation.application.port.in.GenerationCommand;
+import com.learntv.api.generation.application.port.in.GetGenerationStatusUseCase;
 import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
-import com.learntv.api.generation.application.port.out.GenerationJobRepository;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.application.service.LessonGenerationService;
 import com.learntv.api.generation.application.service.LessonGenerationService.GeneratedLessonResult;
@@ -53,7 +55,8 @@ public class GenerationController {
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
     private final LessonGenerationService lessonGenerationService;
-    private final GenerationJobRepository generationJobRepository;
+    private final GenerateEpisodeLessonUseCase generateEpisodeLessonUseCase;
+    private final GetGenerationStatusUseCase getGenerationStatusUseCase;
 
     @GetMapping("/shows/search")
     @Operation(
@@ -276,9 +279,10 @@ public class GenerationController {
 
     @PostMapping("/lessons/create")
     @Operation(
-            summary = "Generate and save a complete lesson",
+            summary = "Generate and save a complete lesson (synchronous)",
             description = "Generate vocabulary, grammar, expressions, and exercises for an episode and save to database. " +
-                    "The lesson will then be viewable in the frontend."
+                    "This is a synchronous operation that may take several minutes. " +
+                    "For async processing, use POST /lessons instead."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lesson generated and saved successfully"),
@@ -309,6 +313,38 @@ public class GenerationController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/lessons")
+    @Operation(
+            summary = "Start async lesson generation",
+            description = "Start generating a lesson asynchronously. Returns immediately with a job ID. " +
+                    "Use GET /jobs/{jobId} to poll for status and get the result."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "202",
+                    description = "Generation job started",
+                    content = @Content(schema = @Schema(implementation = JobStatusResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    public ResponseEntity<JobStatusResponse> startLessonGeneration(
+            @Parameter(description = "TMDB ID of the show", example = "1396")
+            @RequestParam String tmdbId,
+            @Parameter(description = "Season number", example = "1")
+            @RequestParam int season,
+            @Parameter(description = "Episode number", example = "1")
+            @RequestParam int episode,
+            @Parameter(description = "Show genre", example = "drama")
+            @RequestParam(defaultValue = "drama") String genre) {
+
+        GenerationCommand command = new GenerationCommand(tmdbId, season, episode, genre);
+        GenerationJob job = generateEpisodeLessonUseCase.startGeneration(command);
+
+        return ResponseEntity
+                .status(202) // 202 Accepted
+                .body(JobStatusResponse.fromDomain(job));
+    }
+
     @GetMapping("/jobs/{jobId}")
     @Operation(
             summary = "Get job status",
@@ -327,10 +363,12 @@ public class GenerationController {
             @Parameter(description = "Job ID", example = "550e8400-e29b-41d4-a716-446655440000")
             @PathVariable UUID jobId) {
 
-        return generationJobRepository.findById(jobId)
-                .map(JobStatusResponse::fromDomain)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        try {
+            GenerationJob job = getGenerationStatusUseCase.getStatus(jobId);
+            return ResponseEntity.ok(JobStatusResponse.fromDomain(job));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     /**

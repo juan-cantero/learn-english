@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface ExerciseJpaRepository extends JpaRepository<ExerciseJpaEntity, UUID> {
 
     List<ExerciseJpaEntity> findByEpisodeId(UUID episodeId);
+
+    void deleteByEpisodeId(UUID episodeId);
 }

@@ -3,6 +3,7 @@ package com.learntv.api.shared.config;
 import com.learntv.api.catalog.application.port.ShowRepository;
 import com.learntv.api.catalog.application.usecase.BrowseCatalogUseCase;
 import com.learntv.api.catalog.application.usecase.ViewShowDetailsUseCase;
+import com.learntv.api.generation.domain.service.EpisodeLessonGenerator;
 import com.learntv.api.learning.application.port.EpisodeRepository;
 import com.learntv.api.learning.application.port.LessonQueryPort;
 import com.learntv.api.learning.application.usecase.CheckExerciseAnswerUseCase;
@@ -53,5 +54,12 @@ public class BeanConfiguration {
     @Bean
     public UpdateProgressUseCase updateProgressUseCase(UserProgressRepository progressRepository) {
         return new UpdateProgressUseCase(progressRepository);
+    }
+
+    // ==================== Generation Domain Services ====================
+
+    @Bean
+    public EpisodeLessonGenerator episodeLessonGenerator() {
+        return new EpisodeLessonGenerator();
     }
 }
