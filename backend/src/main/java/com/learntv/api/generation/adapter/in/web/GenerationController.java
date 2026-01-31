@@ -1,9 +1,13 @@
 package com.learntv.api.generation.adapter.in.web;
 
 import com.learntv.api.generation.adapter.in.web.dto.ContentExtractionResponse;
+import com.learntv.api.generation.adapter.in.web.dto.EpisodeDto;
 import com.learntv.api.generation.adapter.in.web.dto.JobStatusResponse;
+import com.learntv.api.generation.adapter.in.web.dto.SeasonDto;
+import com.learntv.api.generation.adapter.in.web.dto.SeasonEpisodesResponse;
 import com.learntv.api.generation.adapter.in.web.dto.ShowDto;
 import com.learntv.api.generation.adapter.in.web.dto.ShowSearchResponse;
+import com.learntv.api.generation.adapter.in.web.dto.ShowSeasonsResponse;
 import com.learntv.api.generation.application.port.in.GenerateEpisodeLessonUseCase;
 import com.learntv.api.generation.application.port.in.GenerationCommand;
 import com.learntv.api.generation.application.port.in.GetGenerationStatusUseCase;
@@ -114,6 +118,54 @@ public class GenerationController {
         }
 
         return ResponseEntity.ok(imdbId);
+    }
+
+    @GetMapping("/shows/{tmdbId}/seasons")
+    @Operation(
+            summary = "Get show with seasons",
+            description = "Get show details including all available seasons. Use this to display season selection after choosing a show."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Show and seasons retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = ShowSeasonsResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Show not found")
+    })
+    public ResponseEntity<ShowSeasonsResponse> getShowSeasons(
+            @Parameter(description = "TMDB show ID", example = "250307")
+            @PathVariable String tmdbId) {
+
+        return showMetadataPort.getShowWithSeasons(tmdbId)
+                .map(ShowSeasonsResponse::fromDomain)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/shows/{tmdbId}/seasons/{season}/episodes")
+    @Operation(
+            summary = "Get season episodes",
+            description = "Get all episodes for a specific season. Use this to display episode selection after choosing a season."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Episodes retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = SeasonEpisodesResponse.class))
+            ),
+            @ApiResponse(responseCode = "404", description = "Show or season not found")
+    })
+    public ResponseEntity<SeasonEpisodesResponse> getSeasonEpisodes(
+            @Parameter(description = "TMDB show ID", example = "250307")
+            @PathVariable String tmdbId,
+            @Parameter(description = "Season number", example = "1")
+            @PathVariable int season) {
+
+        return showMetadataPort.getSeasonEpisodes(tmdbId, season)
+                .map(SeasonEpisodesResponse::fromDomain)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/subtitles/{imdbId}")

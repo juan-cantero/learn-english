@@ -1,5 +1,6 @@
 package com.learntv.api.generation.adapter.out.tmdb;
 
+import com.learntv.api.generation.adapter.out.tmdb.dto.TmdbSeasonDetails;
 import com.learntv.api.generation.adapter.out.tmdb.dto.TmdbShowDetails;
 import com.learntv.api.generation.adapter.out.tmdb.dto.TmdbShowResult;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
@@ -106,5 +107,102 @@ public class TmdbShowMetadataAdapter implements ShowMetadataPort {
             log.warn("Could not parse year from date: {}", dateString);
             return null;
         }
+    }
+
+    @Override
+    public Optional<ShowWithSeasons> getShowWithSeasons(String tmdbId) {
+        log.debug("Getting show with seasons for TMDB ID: {}", tmdbId);
+
+        try {
+            int tmdbIdInt = Integer.parseInt(tmdbId);
+            return tmdbClient.getShowDetails(tmdbIdInt)
+                    .map(this::mapToShowWithSeasons);
+        } catch (NumberFormatException e) {
+            log.error("Invalid TMDB ID format: {}", tmdbId);
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<SeasonWithEpisodes> getSeasonEpisodes(String tmdbId, int seasonNumber) {
+        log.debug("Getting episodes for TMDB ID: {}, season: {}", tmdbId, seasonNumber);
+
+        try {
+            int tmdbIdInt = Integer.parseInt(tmdbId);
+
+            // Get show details for the title
+            Optional<TmdbShowDetails> showDetails = tmdbClient.getShowDetails(tmdbIdInt);
+            if (showDetails.isEmpty()) {
+                log.warn("Show not found for TMDB ID: {}", tmdbId);
+                return Optional.empty();
+            }
+
+            // Get season details with episodes
+            return tmdbClient.getSeasonDetails(tmdbIdInt, seasonNumber)
+                    .map(seasonDetails -> mapToSeasonWithEpisodes(
+                            tmdbId,
+                            showDetails.get().name(),
+                            seasonDetails
+                    ));
+        } catch (NumberFormatException e) {
+            log.error("Invalid TMDB ID format: {}", tmdbId);
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Maps TMDB show details to domain ShowWithSeasons.
+     */
+    private ShowWithSeasons mapToShowWithSeasons(TmdbShowDetails details) {
+        String posterUrl = details.poster_path() != null
+                ? TMDB_IMAGE_BASE_URL + details.poster_path()
+                : null;
+
+        List<Season> seasons = details.seasons() != null
+                ? details.seasons().stream()
+                        .filter(s -> s.season_number() > 0) // Exclude "specials" (season 0)
+                        .map(s -> new Season(
+                                s.season_number(),
+                                s.name(),
+                                s.episode_count()
+                        ))
+                        .toList()
+                : Collections.emptyList();
+
+        return new ShowWithSeasons(
+                String.valueOf(details.id()),
+                details.name(),
+                details.overview(),
+                posterUrl,
+                null, // Year not in TmdbShowDetails, would need first_air_date
+                seasons
+        );
+    }
+
+    /**
+     * Maps TMDB season details to domain SeasonWithEpisodes.
+     */
+    private SeasonWithEpisodes mapToSeasonWithEpisodes(
+            String tmdbId,
+            String showTitle,
+            TmdbSeasonDetails details
+    ) {
+        List<Episode> episodes = details.episodes() != null
+                ? details.episodes().stream()
+                        .map(e -> new Episode(
+                                e.episode_number(),
+                                e.name(),
+                                e.overview(),
+                                e.runtime() > 0 ? e.runtime() : null
+                        ))
+                        .toList()
+                : Collections.emptyList();
+
+        return new SeasonWithEpisodes(
+                tmdbId,
+                showTitle,
+                details.season_number(),
+                episodes
+        );
     }
 }
