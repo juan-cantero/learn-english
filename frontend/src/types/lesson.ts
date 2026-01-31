@@ -34,6 +34,7 @@ export interface Vocabulary {
   category: VocabularyCategory;
   exampleSentence: string | null;
   contextTimestamp: string | null;
+  audioUrl: string | null;
 }
 
 export interface GrammarPoint {
