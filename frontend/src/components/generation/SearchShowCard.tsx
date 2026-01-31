@@ -7,9 +7,8 @@ interface SearchShowCardProps {
 }
 
 export function SearchShowCard({ show, isSelected, onSelect }: SearchShowCardProps) {
-  const posterUrl = show.posterPath
-    ? `https://image.tmdb.org/t/p/w342${show.posterPath}`
-    : null;
+  // Backend already returns full posterUrl from TMDB
+  const posterUrl = show.posterUrl;
 
   return (
     <button
