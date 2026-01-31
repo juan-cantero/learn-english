@@ -5,6 +5,9 @@ import { ShowPage } from './shows/$slug';
 import { LessonPage } from './shows/$slug.episodes.$episodeSlug';
 import { ProgressPage } from './progress';
 import { GeneratePage } from './generate';
+import { ShowDetailPage } from './generate/shows.$tmdbId';
+import { EpisodeListPage } from './generate/shows.$tmdbId.seasons.$season';
+import { EpisodeConfirmationPage } from './generate/shows.$tmdbId.seasons.$season.episodes.$episode';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -47,10 +50,31 @@ const generateRoute = createRoute({
   component: GeneratePage,
 });
 
+const generateShowDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/generate/shows/$tmdbId',
+  component: ShowDetailPage,
+});
+
+const generateEpisodeListRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/generate/shows/$tmdbId/seasons/$season',
+  component: EpisodeListPage,
+});
+
+const generateEpisodeConfirmRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/generate/shows/$tmdbId/seasons/$season/episodes/$episode',
+  component: EpisodeConfirmationPage,
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   showRoute,
   lessonRoute,
   progressRoute,
   generateRoute,
+  generateShowDetailRoute,
+  generateEpisodeListRoute,
+  generateEpisodeConfirmRoute,
 ]);

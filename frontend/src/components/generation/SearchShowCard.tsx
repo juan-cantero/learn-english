@@ -1,21 +1,19 @@
+import { Link } from '@tanstack/react-router';
 import type { TMDBShow } from '../../types/generation';
 
 interface SearchShowCardProps {
   show: TMDBShow;
-  isSelected: boolean;
-  onSelect: (show: TMDBShow) => void;
 }
 
-export function SearchShowCard({ show, isSelected, onSelect }: SearchShowCardProps) {
+export function SearchShowCard({ show }: SearchShowCardProps) {
   // Backend already returns full posterUrl from TMDB
   const posterUrl = show.posterUrl;
 
   return (
-    <button
-      onClick={() => onSelect(show)}
-      className={`group block w-full overflow-hidden rounded-xl bg-bg-card text-left transition-all hover:bg-bg-card-hover hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-primary/10 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark ${
-        isSelected ? 'ring-2 ring-accent-primary' : 'hover:ring-1 hover:ring-accent-primary/50'
-      }`}
+    <Link
+      to="/generate/shows/$tmdbId"
+      params={{ tmdbId: show.tmdbId }}
+      className="group block w-full overflow-hidden rounded-xl bg-bg-card text-left transition-all hover:bg-bg-card-hover hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-primary/10 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark hover:ring-1 hover:ring-accent-primary/50"
     >
       <div className="aspect-[2/3] overflow-hidden bg-bg-dark">
         {posterUrl ? (
@@ -46,6 +44,6 @@ export function SearchShowCard({ show, isSelected, onSelect }: SearchShowCardPro
           {show.overview}
         </p>
       </div>
-    </button>
+    </Link>
   );
 }
