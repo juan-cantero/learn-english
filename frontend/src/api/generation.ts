@@ -1,8 +1,9 @@
 import { apiGet, apiPost } from './client';
-import type { TMDBShow, GenerationJob, GenerationRequest } from '../types/generation';
+import type { TMDBShow, GenerationJob, GenerationRequest, ShowSearchResponse } from '../types/generation';
 
 export async function searchShows(query: string): Promise<TMDBShow[]> {
-  return apiGet<TMDBShow[]>(`/generation/shows/search?q=${encodeURIComponent(query)}`);
+  const response = await apiGet<ShowSearchResponse>(`/generation/shows/search?q=${encodeURIComponent(query)}`);
+  return response.shows;
 }
 
 export async function startGeneration(request: GenerationRequest): Promise<GenerationJob> {

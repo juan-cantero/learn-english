@@ -2,8 +2,13 @@ export interface TMDBShow {
   tmdbId: string;
   title: string;
   overview: string;
-  posterPath: string | null;
+  posterUrl: string | null;  // Backend returns posterUrl, not posterPath
   year: number;
+}
+
+export interface ShowSearchResponse {
+  shows: TMDBShow[];
+  totalResults: number;
 }
 
 export interface Season {
