@@ -9,7 +9,7 @@ export function SeasonCard({ season, onSelect }: SeasonCardProps) {
   return (
     <button
       onClick={() => onSelect(season.seasonNumber)}
-      className="group flex w-full items-center justify-between rounded-xl border border-border bg-bg-card p-4 text-left transition-all hover:border-accent-primary/50 hover:bg-bg-card-hover hover:shadow-lg hover:shadow-accent-primary/5 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark"
+      className="group flex w-full items-center justify-between rounded-xl border border-border bg-bg-card p-4 text-left transition-all hover:border-accent-primary/50 hover:bg-bg-card-hover hover:shadow-lg hover:shadow-accent-primary/5 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark active:scale-[0.98]"
     >
       <div className="flex items-center gap-4">
         {/* Season number badge */}
