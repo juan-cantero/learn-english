@@ -27,8 +27,29 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
   const checkAnswerMutation = useCheckAnswer(showSlug, episodeSlug);
 
-  // Parse audio URL from exercise.hint field
-  const audioUrl = exercise.hint || '';
+  // Use stored audioUrl, or fallback to on-demand TTS
+  const getAudioUrl = (): string => {
+    // Prefer stored audio URL from backend
+    if (exercise.audioUrl) {
+      return exercise.audioUrl;
+    }
+
+    // Fallback: extract word from question and use TTS
+    const extractWord = (question: string): string => {
+      const bracketMatch = question.match(/\[([^\]]+)\]/);
+      if (bracketMatch) return bracketMatch[1];
+      const colonMatch = question.match(/:\s*(.+)$/);
+      if (colonMatch) return colonMatch[1].trim();
+      return '';
+    };
+
+    const word = extractWord(exercise.question);
+    return word
+      ? `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(word)}`
+      : '';
+  };
+
+  const audioUrl = getAudioUrl();
 
   useEffect(() => {
     const audio = audioRef.current;

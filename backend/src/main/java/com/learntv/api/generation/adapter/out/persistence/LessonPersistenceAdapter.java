@@ -160,7 +160,8 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                         ex.question(),
                         ex.correctAnswer(),
                         optionsJson,
-                        ex.points()
+                        ex.points(),
+                        null // audioUrl generated separately
                 );
                 exerciseRepository.save(exercise);
             }

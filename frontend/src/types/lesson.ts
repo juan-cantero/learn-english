@@ -63,6 +63,7 @@ export interface Exercise {
   matchingPairs: string | null;
   points: number;
   hint: string | null;
+  audioUrl: string | null;
 }
 
 export interface ProgressSummary {
