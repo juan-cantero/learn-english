@@ -1,8 +1,10 @@
+import { Link } from '@tanstack/react-router';
 import { useProgressSnapshot } from '../hooks/useProgress';
 import { ProgressBar } from '../components/layout/ProgressBar';
+import { EmptyState } from '../components/shared/EmptyState';
 
 export function ProgressPage() {
-  const { data: snapshot, isLoading, error } = useProgressSnapshot();
+  const { data: snapshot, isLoading, error, refetch } = useProgressSnapshot();
 
   if (isLoading) {
     return (
@@ -14,6 +16,14 @@ export function ProgressPage() {
               <div key={i} className="h-32 rounded-xl bg-bg-card" />
             ))}
           </div>
+          <div className="mt-8 rounded-xl bg-bg-card p-6">
+            <div className="mb-6 h-6 w-40 rounded bg-bg-dark" />
+            <div className="space-y-4">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="h-24 rounded-lg bg-bg-dark" />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -22,9 +32,16 @@ export function ProgressPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-error/50 bg-error/10 p-4">
-          <p className="text-error">Failed to load progress: {error.message}</p>
-        </div>
+        <h1 className="mb-8 text-3xl font-bold text-text-primary">My Progress</h1>
+        <EmptyState
+          icon="connection"
+          title="Failed to load progress"
+          description={error.message || "We couldn't connect to the server. Please check your connection and try again."}
+          action={{
+            label: 'Try Again',
+            onClick: () => refetch(),
+          }}
+        />
       </div>
     );
   }
@@ -70,9 +87,21 @@ export function ProgressPage() {
         <h2 className="mb-6 text-xl font-semibold text-text-primary">Recent Activity</h2>
 
         {!snapshot.recentProgress?.length ? (
-          <p className="text-center text-text-secondary">
-            No progress yet. Start a lesson to track your learning!
-          </p>
+          <EmptyState
+            icon="empty"
+            title="No activity yet"
+            description="Start a lesson to track your learning progress here."
+          >
+            <Link
+              to="/generate"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Generate a Lesson
+            </Link>
+          </EmptyState>
         ) : (
           <div className="space-y-4">
             {snapshot.recentProgress?.map((progress) => (

@@ -1,8 +1,10 @@
+import { Link } from '@tanstack/react-router';
 import { useShows } from '../hooks/useShows';
 import { ShowCard } from '../components/show/ShowCard';
+import { EmptyState } from '../components/shared/EmptyState';
 
 export function HomePage() {
-  const { data: shows, isLoading, error } = useShows();
+  const { data: shows, isLoading, error, refetch } = useShows();
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -31,15 +33,33 @@ export function HomePage() {
       )}
 
       {error && (
-        <div className="rounded-lg border border-error/50 bg-error/10 p-4">
-          <p className="text-error">Failed to load shows: {error.message}</p>
-        </div>
+        <EmptyState
+          icon="connection"
+          title="Failed to load shows"
+          description={error.message || "We couldn't connect to the server. Please check your connection and try again."}
+          action={{
+            label: 'Try Again',
+            onClick: () => refetch(),
+          }}
+        />
       )}
 
       {shows && shows.length === 0 && (
-        <div className="rounded-lg border border-border bg-bg-card p-8 text-center">
-          <p className="text-text-secondary">No shows available yet.</p>
-        </div>
+        <EmptyState
+          icon="tv"
+          title="No shows yet"
+          description="Generate your first lesson to start learning English from TV shows."
+        >
+          <Link
+            to="/generate"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Generate a Lesson
+          </Link>
+        </EmptyState>
       )}
 
       {shows && shows.length > 0 && (
