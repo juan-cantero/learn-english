@@ -171,7 +171,7 @@ public class AudioGenerationService {
 
     /**
      * Generate a storage key for expression audio files.
-     * Format: audio/expr/{slugified-phrase}.mp3
+     * Format: expr/{slugified-phrase}.mp3
      */
     private String generateExpressionStorageKey(String phrase) {
         String slug = slugify(phrase);
@@ -179,7 +179,7 @@ public class AudioGenerationService {
         if (slug.length() > 100) {
             slug = slug.substring(0, 100);
         }
-        return "audio/expr/" + slug + ".mp3";
+        return "expr/" + slug + ".mp3";
     }
 
     /**
@@ -232,11 +232,11 @@ public class AudioGenerationService {
 
     /**
      * Generate a storage key for vocabulary audio files.
-     * Format: audio/vocab/{slugified-term}.mp3
+     * Format: vocab/{slugified-term}.mp3
      */
     private String generateStorageKey(String term) {
         String slug = slugify(term);
-        return "audio/vocab/" + slug + ".mp3";
+        return "vocab/" + slug + ".mp3";
     }
 
     /**
