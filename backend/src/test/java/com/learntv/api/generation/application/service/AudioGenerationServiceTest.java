@@ -111,8 +111,8 @@ class AudioGenerationServiceTest {
         // First item succeeds
         when(audioGeneration.generateWav("triage")).thenReturn(mockWav);
         when(audioGeneration.convertToMp3(mockWav)).thenReturn(mockMp3);
-        when(audioStorage.upload(eq("audio/vocab/triage.mp3"), any(), eq("audio/mpeg")))
-                .thenReturn("https://audio.test.com/audio/vocab/triage.mp3");
+        when(audioStorage.upload(eq("vocab/triage.mp3"), any(), eq("audio/mpeg")))
+                .thenReturn("https://audio.test.com/vocab/triage.mp3");
 
         // Second item fails during WAV generation
         when(audioGeneration.generateWav("critical"))
@@ -201,9 +201,9 @@ class AudioGenerationServiceTest {
         List<ExtractedVocabulary> result = service.generateAudioForVocabulary(vocabulary);
 
         // Then
-        verify(audioStorage).upload(eq("audio/vocab/life-threatening.mp3"), any(), eq("audio/mpeg"));
-        verify(audioStorage).upload(eq("audio/vocab/icu-intensive-care-unit.mp3"), any(), eq("audio/mpeg"));
-        verify(audioStorage).upload(eq("audio/vocab/burn-out.mp3"), any(), eq("audio/mpeg"));
+        verify(audioStorage).upload(eq("vocab/life-threatening.mp3"), any(), eq("audio/mpeg"));
+        verify(audioStorage).upload(eq("vocab/icu-intensive-care-unit.mp3"), any(), eq("audio/mpeg"));
+        verify(audioStorage).upload(eq("vocab/burn-out.mp3"), any(), eq("audio/mpeg"));
     }
 
     @Test
@@ -226,7 +226,7 @@ class AudioGenerationServiceTest {
         when(audioGeneration.generateWav("triage")).thenReturn(mockWav);
         when(audioGeneration.convertToMp3(mockWav)).thenReturn(mockMp3);
         when(audioStorage.upload(any(), any(), eq("audio/mpeg")))
-                .thenReturn("https://audio.test.com/audio/vocab/triage.mp3");
+                .thenReturn("https://audio.test.com/vocab/triage.mp3");
 
         // When
         List<ExtractedVocabulary> result = service.generateAudioForVocabulary(vocabulary);
@@ -264,11 +264,11 @@ class AudioGenerationServiceTest {
         when(audioGeneration.convertToMp3(mockWav)).thenReturn(mockMp3);
 
         when(audioStorage.upload(contains("success1"), any(), eq("audio/mpeg")))
-                .thenReturn("https://audio.test.com/audio/vocab/success1.mp3");
+                .thenReturn("https://audio.test.com/vocab/success1.mp3");
         when(audioStorage.upload(contains("success2"), any(), eq("audio/mpeg")))
-                .thenReturn("https://audio.test.com/audio/vocab/success2.mp3");
+                .thenReturn("https://audio.test.com/vocab/success2.mp3");
         when(audioStorage.upload(contains("success3"), any(), eq("audio/mpeg")))
-                .thenReturn("https://audio.test.com/audio/vocab/success3.mp3");
+                .thenReturn("https://audio.test.com/vocab/success3.mp3");
 
         // Failure cases
         when(audioGeneration.generateWav("fail1"))

@@ -267,4 +267,27 @@ public class AudioGenerationService {
             Thread.currentThread().interrupt();
         }
     }
+
+    // ==================== Public helpers for single audio generation ====================
+
+    /**
+     * Generate WAV audio for a single text.
+     */
+    public byte[] generateWavForText(String text) {
+        return audioGeneration.generateWav(text);
+    }
+
+    /**
+     * Convert WAV audio to MP3.
+     */
+    public byte[] convertWavToMp3(byte[] wavData) {
+        return audioGeneration.convertToMp3(wavData);
+    }
+
+    /**
+     * Upload audio to storage and return the public URL.
+     */
+    public String uploadAudio(String key, byte[] mp3Data) {
+        return audioStorage.upload(key, mp3Data, "audio/mpeg");
+    }
 }

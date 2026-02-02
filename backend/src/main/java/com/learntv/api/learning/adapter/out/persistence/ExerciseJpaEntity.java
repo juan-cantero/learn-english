@@ -33,11 +33,15 @@ public class ExerciseJpaEntity {
 
     private int points;
 
+    @Column(name = "audio_url", length = 500)
+    private String audioUrl;
+
     protected ExerciseJpaEntity() {
     }
 
     public static ExerciseJpaEntity create(UUID episodeId, ExerciseType type, String question,
-                                            String correctAnswer, String options, int points) {
+                                            String correctAnswer, String options, int points,
+                                            String audioUrl) {
         ExerciseJpaEntity entity = new ExerciseJpaEntity();
         entity.id = UUID.randomUUID();
         entity.episodeId = episodeId;
@@ -46,6 +50,7 @@ public class ExerciseJpaEntity {
         entity.correctAnswer = correctAnswer;
         entity.options = options;
         entity.points = points;
+        entity.audioUrl = audioUrl;
         return entity;
     }
 
@@ -59,6 +64,7 @@ public class ExerciseJpaEntity {
                 .options(options)
                 .matchingPairs(matchingPairs)
                 .points(points)
+                .audioUrl(audioUrl)
                 .build();
     }
 

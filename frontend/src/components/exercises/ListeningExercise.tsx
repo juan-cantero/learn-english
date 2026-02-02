@@ -27,24 +27,29 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
   const checkAnswerMutation = useCheckAnswer(showSlug, episodeSlug);
 
-  // Extract word from question - handles both formats:
-  // "Listen and type what you hear: [word]" or "Listen and type what you hear: word"
-  const extractWordFromQuestion = (question: string): string => {
-    // Try brackets first
-    const bracketMatch = question.match(/\[([^\]]+)\]/);
-    if (bracketMatch) return bracketMatch[1];
+  // Use stored audioUrl, or fallback to on-demand TTS
+  const getAudioUrl = (): string => {
+    // Prefer stored audio URL from backend
+    if (exercise.audioUrl) {
+      return exercise.audioUrl;
+    }
 
-    // Try after colon
-    const colonMatch = question.match(/:\s*(.+)$/);
-    if (colonMatch) return colonMatch[1].trim();
+    // Fallback: extract word from question and use TTS
+    const extractWord = (question: string): string => {
+      const bracketMatch = question.match(/\[([^\]]+)\]/);
+      if (bracketMatch) return bracketMatch[1];
+      const colonMatch = question.match(/:\s*(.+)$/);
+      if (colonMatch) return colonMatch[1].trim();
+      return '';
+    };
 
-    return '';
+    const word = extractWord(exercise.question);
+    return word
+      ? `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(word)}`
+      : '';
   };
 
-  const wordToListen = extractWordFromQuestion(exercise.question);
-  const audioUrl = wordToListen
-    ? `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(wordToListen)}`
-    : '';
+  const audioUrl = getAudioUrl();
 
   useEffect(() => {
     const audio = audioRef.current;

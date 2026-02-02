@@ -17,6 +17,7 @@ public class Exercise {
     private final String options; // JSON array for multiple choice
     private final String matchingPairs; // JSON for matching exercises
     private final int points;
+    private final String audioUrl; // Audio URL for listening exercises
 
     private Exercise(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id is required");
@@ -27,6 +28,7 @@ public class Exercise {
         this.options = builder.options;
         this.matchingPairs = builder.matchingPairs;
         this.points = builder.points > 0 ? builder.points : 10;
+        this.audioUrl = builder.audioUrl;
     }
 
     public static Builder builder() {
@@ -65,6 +67,10 @@ public class Exercise {
 
     public int getPoints() {
         return points;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
     }
 
     // ==================== Business Logic ====================
@@ -189,6 +195,7 @@ public class Exercise {
         private String options;
         private String matchingPairs;
         private int points = 10;
+        private String audioUrl;
 
         public Builder id(UUID id) {
             this.id = id;
@@ -227,6 +234,11 @@ public class Exercise {
 
         public Builder points(int points) {
             this.points = points;
+            return this;
+        }
+
+        public Builder audioUrl(String audioUrl) {
+            this.audioUrl = audioUrl;
             return this;
         }
 

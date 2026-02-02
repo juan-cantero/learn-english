@@ -159,7 +159,7 @@ public class LessonGenerationService {
         }
         log.info("Saved {} expressions", expressionsWithAudio.size());
 
-        // 8. Generate and save exercises
+        // 8. Generate and save exercises (with audio for LISTENING type)
         List<GeneratedExercise> generatedExercises = exerciseGenerationPort.generateExercises(
                 vocabWithAudio, extractedGrammar, expressionsWithAudio);
         for (GeneratedExercise ex : generatedExercises) {
@@ -171,13 +171,21 @@ public class LessonGenerationService {
                     optionsJson = String.join(",", ex.options());
                 }
             }
+
+            // Generate audio for LISTENING exercises
+            String audioUrl = null;
+            if ("LISTENING".equals(ex.type()) && ex.correctAnswer() != null) {
+                audioUrl = generateAudioForListeningExercise(ex.correctAnswer());
+            }
+
             ExerciseJpaEntity exercise = ExerciseJpaEntity.create(
                     episode.getId(),
                     ExerciseType.valueOf(ex.type()),
                     ex.question(),
                     ex.correctAnswer(),
                     optionsJson,
-                    ex.points()
+                    ex.points(),
+                    audioUrl
             );
             exerciseRepository.save(exercise);
         }
@@ -215,6 +223,30 @@ public class LessonGenerationService {
                             .build();
                     return showRepository.save(ShowJpaEntity.fromDomain(show));
                 });
+    }
+
+    /**
+     * Generate audio for a listening exercise word.
+     * Returns the audio URL or null if generation fails.
+     */
+    private String generateAudioForListeningExercise(String word) {
+        try {
+            byte[] wav = audioGenerationService.generateWavForText(word);
+            byte[] mp3 = audioGenerationService.convertWavToMp3(wav);
+            String key = "listening/" + slugify(word) + ".mp3";
+            return audioGenerationService.uploadAudio(key, mp3);
+        } catch (Exception e) {
+            log.warn("Failed to generate audio for listening exercise: {}. Error: {}", word, e.getMessage());
+            return null;
+        }
+    }
+
+    private String slugify(String text) {
+        return text.toLowerCase()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
     }
 
     private String generateSlug(String title) {
