@@ -27,10 +27,18 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
   const checkAnswerMutation = useCheckAnswer(showSlug, episodeSlug);
 
-  // Extract word from question brackets [word] and generate TTS URL
+  // Extract word from question - handles both formats:
+  // "Listen and type what you hear: [word]" or "Listen and type what you hear: word"
   const extractWordFromQuestion = (question: string): string => {
-    const match = question.match(/\[([^\]]+)\]/);
-    return match ? match[1] : '';
+    // Try brackets first
+    const bracketMatch = question.match(/\[([^\]]+)\]/);
+    if (bracketMatch) return bracketMatch[1];
+
+    // Try after colon
+    const colonMatch = question.match(/:\s*(.+)$/);
+    if (colonMatch) return colonMatch[1].trim();
+
+    return '';
   };
 
   const wordToListen = extractWordFromQuestion(exercise.question);
