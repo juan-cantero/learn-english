@@ -4,6 +4,7 @@ import { useSeasonEpisodes, useStartGeneration } from '../../hooks/useGeneration
 import { useGenerationContext } from '../../context/GenerationContext';
 import { GenreSelector } from '../../components/generation/GenreSelector';
 import { GenerateButton } from '../../components/generation/GenerateButton';
+import { EmptyState } from '../../components/shared/EmptyState';
 import type { Genre } from '../../types/show';
 
 function generateSlug(title: string): string {
@@ -22,7 +23,7 @@ export function EpisodeConfirmationPage() {
   const seasonNumber = parseInt(season, 10);
   const episodeNumber = parseInt(episode, 10);
 
-  const { data, isLoading, error: loadError } = useSeasonEpisodes(tmdbId, seasonNumber);
+  const { data, isLoading, error: loadError, refetch } = useSeasonEpisodes(tmdbId, seasonNumber);
   const { mutate: startGenerationMutation, isPending, error: genError } = useStartGeneration();
   const { startGeneration, hasActiveJob } = useGenerationContext();
 
@@ -62,8 +63,39 @@ export function EpisodeConfirmationPage() {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="animate-pulse">
+          {/* Breadcrumb skeleton */}
           <div className="mb-6 h-4 w-32 rounded bg-bg-card" />
-          <div className="h-8 w-64 rounded bg-bg-card" />
+
+          {/* Episode card skeleton */}
+          <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+            <div className="mb-4 flex items-start gap-4">
+              <div className="h-12 w-12 flex-shrink-0 rounded-full bg-bg-dark" />
+              <div className="flex-1 space-y-2">
+                <div className="h-7 w-3/4 rounded bg-bg-dark" />
+                <div className="h-4 w-1/2 rounded bg-bg-dark" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="h-4 w-full rounded bg-bg-dark" />
+              <div className="h-4 w-5/6 rounded bg-bg-dark" />
+            </div>
+          </div>
+
+          {/* Genre selector skeleton */}
+          <div className="mb-8">
+            <div className="mb-3 h-5 w-28 rounded bg-bg-card" />
+            <div className="mb-4 h-4 w-64 rounded bg-bg-card" />
+            <div className="flex flex-wrap gap-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-10 w-24 rounded-lg bg-bg-card" />
+              ))}
+            </div>
+          </div>
+
+          {/* Button skeleton */}
+          <div className="flex justify-center">
+            <div className="h-12 w-48 rounded-lg bg-bg-card" />
+          </div>
         </div>
       </div>
     );
@@ -72,9 +104,25 @@ export function EpisodeConfirmationPage() {
   if (loadError) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-error/50 bg-error/10 p-4">
-          <p className="text-error">Failed to load episode: {loadError.message}</p>
-        </div>
+        <Link
+          to="/generate/shows/$tmdbId/seasons/$season"
+          params={{ tmdbId, season }}
+          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Season {seasonNumber}
+        </Link>
+        <EmptyState
+          icon="connection"
+          title="Failed to load episode"
+          description={loadError.message || "We couldn't connect to the server. Please check your connection and try again."}
+          action={{
+            label: 'Try Again',
+            onClick: () => refetch(),
+          }}
+        />
       </div>
     );
   }
@@ -82,9 +130,21 @@ export function EpisodeConfirmationPage() {
   if (!data || !selectedEpisode) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="rounded-lg border border-error/50 bg-error/10 p-4">
-          <p className="text-error">Episode not found</p>
-        </div>
+        <Link
+          to="/generate/shows/$tmdbId/seasons/$season"
+          params={{ tmdbId, season }}
+          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Season {seasonNumber}
+        </Link>
+        <EmptyState
+          icon="empty"
+          title="Episode not found"
+          description={`Episode ${episodeNumber} of Season ${seasonNumber} doesn't exist or couldn't be loaded.`}
+        />
       </div>
     );
   }
