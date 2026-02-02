@@ -21,7 +21,7 @@ import java.nio.file.Path;
  */
 @RestController
 @RequestMapping("/api/v1/audio")
-@Profile("dev")
+@Profile("!production")
 public class LocalAudioController {
 
     private static final Logger log = LoggerFactory.getLogger(LocalAudioController.class);

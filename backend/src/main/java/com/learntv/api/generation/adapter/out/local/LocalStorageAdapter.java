@@ -15,61 +15,55 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Local file system adapter for audio storage.
- * Used in development to avoid requiring Cloudflare R2.
- *
- * Files are stored in a local directory and served via a simple URL pattern.
+ * Local file system implementation of AudioStoragePort.
+ * Stores audio files locally and serves them via the backend API.
+ * Used for development when R2 is not configured.
  */
 @Component
-@Profile("dev")
+@Profile("!production")
 public class LocalStorageAdapter implements AudioStoragePort {
 
     private static final Logger log = LoggerFactory.getLogger(LocalStorageAdapter.class);
 
-    private final Path storagePath;
-    private final String baseUrl;
+    @Value("${app.audio.local-storage-path:./audio-storage}")
+    private String storagePath;
 
-    public LocalStorageAdapter(
-            @Value("${audio.local.storage-path:${java.io.tmpdir}/learntv-audio}") String storagePath,
-            @Value("${audio.local.base-url:http://localhost:8080/api/v1/audio}") String baseUrl) {
-        this.storagePath = Paths.get(storagePath);
-        this.baseUrl = baseUrl;
-    }
+    @Value("${app.audio.base-url:http://localhost:8080/api/v1/audio}")
+    private String baseUrl;
+
+    private Path storageDir;
 
     @PostConstruct
     public void init() {
+        storageDir = Paths.get(storagePath).toAbsolutePath();
         try {
-            Files.createDirectories(storagePath);
-            log.info("LocalStorageAdapter initialized. Storage path: {}", storagePath.toAbsolutePath());
+            Files.createDirectories(storageDir);
+            log.info("Local audio storage initialized at: {}", storageDir);
         } catch (IOException e) {
-            log.error("Failed to create local storage directory: {}", storagePath, e);
-            throw new AudioStorageException("Failed to initialize local storage", e);
+            log.error("Failed to create local audio storage directory: {}", storageDir, e);
+            throw new AudioStorageException("Failed to initialize local audio storage", e);
         }
     }
 
     @Override
     public String upload(String key, byte[] data, String contentType) {
-        log.info("Uploading audio file locally: key={}, size={} bytes, contentType={}",
-                key, data.length, contentType);
+        log.info("Storing audio file locally: key={}, size={} bytes", key, data.length);
 
         try {
-            Path filePath = storagePath.resolve(key);
-
-            // Create parent directories if needed
+            // Create subdirectories if needed (e.g., audio/vocab/term.mp3)
+            Path filePath = storageDir.resolve(key);
             Files.createDirectories(filePath.getParent());
 
-            // Write file
+            // Write the file
             Files.write(filePath, data);
 
             String publicUrl = getPublicUrl(key);
-            log.info("Successfully saved audio file locally: {}", publicUrl);
-            log.debug("Physical path: {}", filePath.toAbsolutePath());
-
+            log.info("Successfully stored audio file locally: {}", publicUrl);
             return publicUrl;
 
         } catch (IOException e) {
-            log.error("Failed to save audio file locally: key={}", key, e);
-            throw new AudioStorageException("Failed to save audio file locally: " + key, e);
+            log.error("Failed to store audio file locally: key={}", key, e);
+            throw new AudioStorageException("Failed to store audio file locally: " + key, e);
         }
     }
 
@@ -78,15 +72,9 @@ public class LocalStorageAdapter implements AudioStoragePort {
         log.info("Deleting audio file locally: key={}", key);
 
         try {
-            Path filePath = storagePath.resolve(key);
-
-            if (Files.exists(filePath)) {
-                Files.delete(filePath);
-                log.info("Successfully deleted audio file locally: key={}", key);
-            } else {
-                log.warn("Audio file not found for deletion: key={}", key);
-            }
-
+            Path filePath = storageDir.resolve(key);
+            Files.deleteIfExists(filePath);
+            log.info("Successfully deleted audio file locally: key={}", key);
         } catch (IOException e) {
             log.error("Failed to delete audio file locally: key={}", key, e);
             throw new AudioStorageException("Failed to delete audio file locally: " + key, e);
@@ -95,6 +83,7 @@ public class LocalStorageAdapter implements AudioStoragePort {
 
     @Override
     public String getPublicUrl(String key) {
+        // URL format: http://localhost:8080/api/v1/audio/{key}
         String url = baseUrl;
         if (!url.endsWith("/")) {
             url += "/";
@@ -103,17 +92,16 @@ public class LocalStorageAdapter implements AudioStoragePort {
     }
 
     /**
-     * Get the physical file path for a key.
-     * Useful for serving files via a controller.
+     * Get the file path for a given key. Used by the controller to serve files.
      */
     public Path getFilePath(String key) {
-        return storagePath.resolve(key);
+        return storageDir.resolve(key);
     }
 
     /**
-     * Get the storage root path.
+     * Get the storage directory path. Used by the controller for health checks.
      */
     public Path getStoragePath() {
-        return storagePath;
+        return storageDir;
     }
 }
