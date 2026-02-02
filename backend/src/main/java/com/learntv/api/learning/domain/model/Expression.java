@@ -11,6 +11,7 @@ public class Expression {
     private final String meaning;
     private final String contextQuote;
     private final String usageNote;
+    private final String audioUrl;
 
     private Expression(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id is required");
@@ -19,6 +20,7 @@ public class Expression {
         this.meaning = Objects.requireNonNull(builder.meaning, "meaning is required");
         this.contextQuote = builder.contextQuote;
         this.usageNote = builder.usageNote;
+        this.audioUrl = builder.audioUrl;
     }
 
     public static Builder builder() {
@@ -49,6 +51,10 @@ public class Expression {
         return usageNote;
     }
 
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
     public static class Builder {
         private UUID id;
         private UUID episodeId;
@@ -56,6 +62,7 @@ public class Expression {
         private String meaning;
         private String contextQuote;
         private String usageNote;
+        private String audioUrl;
 
         public Builder id(UUID id) {
             this.id = id;
@@ -84,6 +91,11 @@ public class Expression {
 
         public Builder usageNote(String usageNote) {
             this.usageNote = usageNote;
+            return this;
+        }
+
+        public Builder audioUrl(String audioUrl) {
+            this.audioUrl = audioUrl;
             return this;
         }
 

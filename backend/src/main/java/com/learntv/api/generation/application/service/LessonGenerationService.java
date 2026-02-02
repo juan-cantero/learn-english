@@ -35,6 +35,7 @@ public class LessonGenerationService {
     private final ScriptFetchService scriptFetchService;
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
+    private final AudioGenerationService audioGenerationService;
     private final ShowJpaRepository showRepository;
     private final EpisodeJpaRepository episodeRepository;
     private final VocabularyJpaRepository vocabularyRepository;
@@ -47,6 +48,7 @@ public class LessonGenerationService {
             ScriptFetchService scriptFetchService,
             ContentExtractionPort contentExtractionPort,
             ExerciseGenerationPort exerciseGenerationPort,
+            AudioGenerationService audioGenerationService,
             ShowJpaRepository showRepository,
             EpisodeJpaRepository episodeRepository,
             VocabularyJpaRepository vocabularyRepository,
@@ -57,6 +59,7 @@ public class LessonGenerationService {
         this.scriptFetchService = scriptFetchService;
         this.contentExtractionPort = contentExtractionPort;
         this.exerciseGenerationPort = exerciseGenerationPort;
+        this.audioGenerationService = audioGenerationService;
         this.showRepository = showRepository;
         this.episodeRepository = episodeRepository;
         this.vocabularyRepository = vocabularyRepository;
@@ -108,9 +111,10 @@ public class LessonGenerationService {
         episodeRepository.save(episode);
         log.info("Created episode: {}", episode.getSlug());
 
-        // 5. Extract and save vocabulary
+        // 5. Extract vocabulary and generate audio
         List<ExtractedVocabulary> extractedVocab = contentExtractionPort.extractVocabulary(script, request.genre());
-        for (ExtractedVocabulary v : extractedVocab) {
+        List<ExtractedVocabulary> vocabWithAudio = audioGenerationService.generateAudioForVocabulary(extractedVocab);
+        for (ExtractedVocabulary v : vocabWithAudio) {
             VocabularyJpaEntity vocab = VocabularyJpaEntity.create(
                     episode.getId(),
                     v.term(),
@@ -122,7 +126,7 @@ public class LessonGenerationService {
             );
             vocabularyRepository.save(vocab);
         }
-        log.info("Saved {} vocabulary items", extractedVocab.size());
+        log.info("Saved {} vocabulary items", vocabWithAudio.size());
 
         // 6. Extract and save grammar points
         List<ExtractedGrammar> extractedGrammar = contentExtractionPort.extractGrammar(script);
@@ -139,23 +143,25 @@ public class LessonGenerationService {
         }
         log.info("Saved {} grammar points", extractedGrammar.size());
 
-        // 7. Extract and save expressions
+        // 7. Extract expressions and generate audio
         List<ExtractedExpression> extractedExpressions = contentExtractionPort.extractExpressions(script);
-        for (ExtractedExpression e : extractedExpressions) {
+        List<ExtractedExpression> expressionsWithAudio = audioGenerationService.generateAudioForExpressions(extractedExpressions);
+        for (ExtractedExpression e : expressionsWithAudio) {
             ExpressionJpaEntity expression = ExpressionJpaEntity.create(
                     episode.getId(),
                     e.phrase(),
                     e.meaning(),
                     e.context(),
-                    e.usageNote()
+                    e.usageNote(),
+                    e.audioUrl()
             );
             expressionRepository.save(expression);
         }
-        log.info("Saved {} expressions", extractedExpressions.size());
+        log.info("Saved {} expressions", expressionsWithAudio.size());
 
         // 8. Generate and save exercises
         List<GeneratedExercise> generatedExercises = exerciseGenerationPort.generateExercises(
-                extractedVocab, extractedGrammar, extractedExpressions);
+                vocabWithAudio, extractedGrammar, expressionsWithAudio);
         for (GeneratedExercise ex : generatedExercises) {
             String optionsJson = null;
             if (ex.options() != null) {
@@ -182,9 +188,9 @@ public class LessonGenerationService {
                 show.getSlug(),
                 episode.getSlug(),
                 "Lesson generated successfully",
-                extractedVocab.size(),
+                vocabWithAudio.size(),
                 extractedGrammar.size(),
-                extractedExpressions.size(),
+                expressionsWithAudio.size(),
                 generatedExercises.size()
         );
     }

@@ -2,6 +2,7 @@ package com.learntv.api.generation.application.service;
 
 import com.learntv.api.generation.application.port.out.AudioGenerationPort;
 import com.learntv.api.generation.application.port.out.AudioStoragePort;
+import com.learntv.api.generation.domain.model.ExtractedExpression;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -79,6 +80,106 @@ public class AudioGenerationService {
         } finally {
             shutdownExecutor(executor);
         }
+    }
+
+    /**
+     * Generate audio for a list of expression items.
+     * Processes items in parallel with a maximum of 10 concurrent operations.
+     * If audio generation fails for an item, logs a warning and sets audioUrl to null.
+     *
+     * @param expressions List of expressions to generate audio for
+     * @return List of expressions with audio URLs populated (or null if failed)
+     */
+    public List<ExtractedExpression> generateAudioForExpressions(
+            List<ExtractedExpression> expressions) {
+
+        if (expressions == null || expressions.isEmpty()) {
+            log.info("No expressions to generate audio for");
+            return List.of();
+        }
+
+        log.info("Starting audio generation for {} expressions", expressions.size());
+
+        ExecutorService executor = Executors.newFixedThreadPool(MAX_CONCURRENT_GENERATIONS);
+
+        try {
+            List<ExtractedExpression> results = expressions.stream()
+                    .map(expr -> executor.submit(() -> generateAudioForSingleExpression(expr)))
+                    .collect(Collectors.toList())
+                    .stream()
+                    .map(future -> {
+                        try {
+                            return future.get();
+                        } catch (Exception e) {
+                            log.error("Failed to retrieve audio generation result for expression", e);
+                            return null;
+                        }
+                    })
+                    .filter(result -> result != null)
+                    .collect(Collectors.toList());
+
+            log.info("Expression audio generation completed: {}/{} successful",
+                    results.stream().filter(e -> e.audioUrl() != null).count(),
+                    expressions.size());
+
+            return results;
+
+        } finally {
+            shutdownExecutor(executor);
+        }
+    }
+
+    /**
+     * Generate audio for a single expression.
+     * If generation fails, logs a warning and returns the expression with null audioUrl.
+     */
+    private ExtractedExpression generateAudioForSingleExpression(ExtractedExpression expr) {
+        try {
+            log.debug("Generating audio for expression: {}", expr.phrase());
+
+            // Step 1: Generate WAV audio
+            byte[] wav = audioGeneration.generateWav(expr.phrase());
+
+            // Step 2: Convert to MP3
+            byte[] mp3 = audioGeneration.convertToMp3(wav);
+
+            // Step 3: Generate storage key
+            String key = generateExpressionStorageKey(expr.phrase());
+
+            // Step 4: Upload to R2 storage
+            String url = audioStorage.upload(key, mp3, "audio/mpeg");
+
+            log.info("Successfully generated audio for expression: {} -> {}", expr.phrase(), url);
+
+            // Return new expression record with audio URL
+            return expr.withAudioUrl(url);
+
+        } catch (Exception e) {
+            log.warn("Audio generation failed for expression: {}. Error: {}",
+                    expr.phrase(), e.getMessage());
+
+            // Return expression with null audioUrl on failure
+            return new ExtractedExpression(
+                    expr.phrase(),
+                    expr.meaning(),
+                    expr.context(),
+                    expr.usageNote(),
+                    null
+            );
+        }
+    }
+
+    /**
+     * Generate a storage key for expression audio files.
+     * Format: audio/expr/{slugified-phrase}.mp3
+     */
+    private String generateExpressionStorageKey(String phrase) {
+        String slug = slugify(phrase);
+        // Truncate if too long (max 100 chars for slug)
+        if (slug.length() > 100) {
+            slug = slug.substring(0, 100);
+        }
+        return "audio/expr/" + slug + ".mp3";
     }
 
     /**

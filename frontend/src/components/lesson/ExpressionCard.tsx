@@ -1,4 +1,5 @@
 import type { Expression } from '../../types/lesson';
+import { AudioPlayer } from '../shared/AudioPlayer';
 
 interface ExpressionCardProps {
   expression: Expression;
@@ -7,9 +8,18 @@ interface ExpressionCardProps {
 export function ExpressionCard({ expression }: ExpressionCardProps) {
   return (
     <div className="rounded-xl border border-border bg-bg-card p-5 transition-colors hover:border-accent-primary/30">
-      <h4 className="mb-2 text-lg font-semibold text-accent-primary">
-        "{expression.phrase}"
-      </h4>
+      <div className="mb-2 flex items-center gap-3">
+        <h4 className="text-lg font-semibold text-accent-primary">
+          "{expression.phrase}"
+        </h4>
+        {expression.audioUrl && (
+          <AudioPlayer
+            src={expression.audioUrl}
+            fallbackText={expression.phrase}
+            size="sm"
+          />
+        )}
+      </div>
 
       <p className="text-text-primary">{expression.meaning}</p>
 

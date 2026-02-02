@@ -137,7 +137,8 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                         e.phrase(),
                         e.meaning(),
                         e.context(),
-                        e.usageNote()
+                        e.usageNote(),
+                        e.audioUrl()
                 );
                 expressionRepository.save(expression);
             }
