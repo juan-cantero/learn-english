@@ -1,6 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useSearchShows } from '../../hooks/useGeneration';
 import { SearchShowCard } from './SearchShowCard';
+import { EmptyState } from '../shared/EmptyState';
+
+const POPULAR_SHOWS = [
+  { name: 'Friends', query: 'friends' },
+  { name: 'Breaking Bad', query: 'breaking bad' },
+  { name: 'The Office', query: 'the office' },
+  { name: 'Game of Thrones', query: 'game of thrones' },
+  { name: 'The Simpsons', query: 'simpsons' },
+  { name: 'Stranger Things', query: 'stranger things' },
+];
 
 export function ShowSearch() {
   const [query, setQuery] = useState('');
@@ -16,6 +26,14 @@ export function ShowSearch() {
   }, [query]);
 
   const { data: shows, isLoading, error } = useSearchShows(debouncedQuery);
+
+  const handlePopularClick = (showQuery: string) => {
+    setQuery(showQuery);
+  };
+
+  const hasSearched = debouncedQuery.length >= 2;
+  const showInitialState = !hasSearched && !isLoading;
+  const showNoResults = hasSearched && shows && shows.length === 0;
 
   return (
     <div className="space-y-6">
@@ -59,15 +77,61 @@ export function ShowSearch() {
       )}
 
       {error && (
-        <div className="rounded-lg border border-error/50 bg-error/10 p-4">
-          <p className="text-error">Failed to search shows: {error.message}</p>
-        </div>
+        <EmptyState
+          icon="connection"
+          title="Connection Error"
+          description={error.message}
+          action={{
+            label: 'Try Again',
+            onClick: () => setQuery(query + ' '), // Trigger re-fetch
+          }}
+        />
       )}
 
-      {shows && shows.length === 0 && debouncedQuery.length >= 2 && (
-        <div className="rounded-lg border border-border bg-bg-card p-8 text-center">
-          <p className="text-text-secondary">No shows found for "{debouncedQuery}"</p>
-        </div>
+      {showNoResults && (
+        <EmptyState
+          icon="search"
+          title="No shows found"
+          description={`We couldn't find any shows matching "${debouncedQuery}". Try a different search term.`}
+        >
+          <div className="mt-6">
+            <p className="mb-3 text-sm text-text-secondary">Popular shows:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {POPULAR_SHOWS.slice(0, 4).map((show) => (
+                <button
+                  key={show.query}
+                  onClick={() => handlePopularClick(show.query)}
+                  className="rounded-full border border-border bg-bg-card px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+                >
+                  {show.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </EmptyState>
+      )}
+
+      {showInitialState && (
+        <EmptyState
+          icon="tv"
+          title="Start Learning"
+          description="Search for your favorite TV show to create an English lesson from real dialogue."
+        >
+          <div className="mt-6 w-full max-w-md">
+            <p className="mb-3 text-sm text-text-secondary">Popular shows:</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {POPULAR_SHOWS.map((show) => (
+                <button
+                  key={show.query}
+                  onClick={() => handlePopularClick(show.query)}
+                  className="rounded-full border border-border bg-bg-card px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+                >
+                  {show.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        </EmptyState>
       )}
 
       {shows && shows.length > 0 && (
