@@ -1,16 +1,84 @@
 import { Link } from '@tanstack/react-router';
 import { useShows } from '../hooks/useShows';
+import { useProgressSnapshot } from '../hooks/useProgress';
 import { ShowCard } from '../components/show/ShowCard';
 import { EmptyState } from '../components/shared/EmptyState';
+import { ProgressBar } from '../components/layout/ProgressBar';
 
 export function HomePage() {
   const { data: shows, isLoading, error, refetch } = useShows();
+  const { data: progress } = useProgressSnapshot();
+
+  // Get in-progress lessons (not completed, with episode metadata)
+  const inProgressLessons = progress?.recentProgress
+    ?.filter((p) => !p.completed && p.episode)
+    .slice(0, 3) ?? [];
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      {/* Continue Learning Section */}
+      {inProgressLessons.length > 0 && (
+        <div className="mb-10">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-text-primary">Continue Learning</h2>
+            <Link
+              to="/progress"
+              className="text-sm text-text-secondary transition-colors hover:text-accent-primary"
+            >
+              View all →
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {inProgressLessons.map((lesson) => (
+              <Link
+                key={lesson.id}
+                to="/shows/$slug/episodes/$episodeSlug"
+                params={{
+                  slug: lesson.episode!.showSlug,
+                  episodeSlug: lesson.episode!.episodeSlug,
+                }}
+                className="group rounded-xl border border-border bg-bg-card p-4 transition-all hover:border-accent-primary/50 hover:bg-bg-card-hover"
+              >
+                <div className="mb-3 flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="truncate font-medium text-text-primary group-hover:text-accent-primary">
+                      {lesson.episode!.title}
+                    </p>
+                    <p className="text-sm text-text-secondary">
+                      S{String(lesson.episode!.seasonNumber).padStart(2, '0')}E
+                      {String(lesson.episode!.episodeNumber).padStart(2, '0')}
+                    </p>
+                  </div>
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10 text-accent-primary">
+                    <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <ProgressBar
+                  percentage={Math.min(
+                    100,
+                    (lesson.totalPoints / Math.max(1, lesson.totalPoints + 50)) * 100
+                  )}
+                  size="sm"
+                />
+                <p className="mt-2 text-xs text-text-secondary">
+                  {lesson.totalPoints} points earned
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-primary">
-          Learn English with TV Shows
+          {inProgressLessons.length > 0 ? 'Browse Shows' : 'Learn English with TV Shows'}
         </h1>
         <p className="mt-2 text-text-secondary">
           Choose a show to start learning vocabulary, grammar, and expressions from real dialogue.
