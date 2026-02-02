@@ -1,5 +1,7 @@
 package com.learntv.api.progress.adapter.in.web;
 
+import com.learntv.api.learning.application.port.EpisodeRepository;
+import com.learntv.api.learning.domain.model.Episode;
 import com.learntv.api.progress.application.usecase.GetUserProgressUseCase;
 import com.learntv.api.progress.application.usecase.UpdateProgressUseCase;
 import com.learntv.api.progress.domain.model.ProgressSnapshot;
@@ -9,7 +11,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/progress")
@@ -21,11 +27,14 @@ public class ProgressController {
 
     private final GetUserProgressUseCase getUserProgressUseCase;
     private final UpdateProgressUseCase updateProgressUseCase;
+    private final EpisodeRepository episodeRepository;
 
     public ProgressController(GetUserProgressUseCase getUserProgressUseCase,
-                              UpdateProgressUseCase updateProgressUseCase) {
+                              UpdateProgressUseCase updateProgressUseCase,
+                              EpisodeRepository episodeRepository) {
         this.getUserProgressUseCase = getUserProgressUseCase;
         this.updateProgressUseCase = updateProgressUseCase;
+        this.episodeRepository = episodeRepository;
     }
 
     @GetMapping
@@ -33,7 +42,19 @@ public class ProgressController {
     public ResponseEntity<ProgressSnapshotResponse> getUserProgress(
             @RequestHeader(value = USER_ID_HEADER, defaultValue = DEFAULT_USER) String userId) {
         ProgressSnapshot snapshot = getUserProgressUseCase.execute(userId);
-        return ResponseEntity.ok(ProgressSnapshotResponse.fromDomain(snapshot));
+
+        // Fetch episode metadata for all progress entries
+        List<UUID> episodeIds = snapshot.episodeProgress().stream()
+                .map(UserProgress::getEpisodeId)
+                .toList();
+
+        Map<UUID, Episode> episodesById = episodeRepository.findAllByIds(episodeIds).stream()
+                .collect(Collectors.toMap(
+                        episode -> episode.getId().value(),
+                        Function.identity()
+                ));
+
+        return ResponseEntity.ok(ProgressSnapshotResponse.fromDomain(snapshot, episodesById));
     }
 
     @GetMapping("/{episodeId}")
@@ -42,7 +63,10 @@ public class ProgressController {
             @RequestHeader(value = USER_ID_HEADER, defaultValue = DEFAULT_USER) String userId,
             @PathVariable UUID episodeId) {
         return getUserProgressUseCase.execute(userId, episodeId)
-                .map(UserProgressResponse::fromDomain)
+                .map(progress -> {
+                    Episode episode = episodeRepository.findById(episodeId).orElse(null);
+                    return UserProgressResponse.fromDomain(progress, episode);
+                })
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -61,6 +85,7 @@ public class ProgressController {
         );
 
         UserProgress saved = updateProgressUseCase.execute(userId, episodeId, update);
-        return ResponseEntity.ok(UserProgressResponse.fromDomain(saved));
+        Episode episode = episodeRepository.findById(episodeId).orElse(null);
+        return ResponseEntity.ok(UserProgressResponse.fromDomain(saved, episode));
     }
 }

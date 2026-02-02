@@ -1,6 +1,15 @@
+export interface EpisodeMetadata {
+  title: string;
+  showSlug: string;
+  episodeSlug: string;
+  seasonNumber: number;
+  episodeNumber: number;
+}
+
 export interface UserProgress {
   id: string;
   episodeId: string;
+  episode: EpisodeMetadata | null;
   vocabularyScore: number;
   grammarScore: number;
   expressionsScore: number;

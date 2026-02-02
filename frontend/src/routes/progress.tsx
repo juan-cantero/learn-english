@@ -104,69 +104,109 @@ export function ProgressPage() {
           </EmptyState>
         ) : (
           <div className="space-y-4">
-            {snapshot.recentProgress?.map((progress) => (
-              <div
-                key={progress.id}
-                className="flex items-center gap-4 rounded-lg border border-border bg-bg-dark p-4"
-              >
-                <div
-                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${
-                    progress.completed ? 'bg-success/20 text-success' : 'bg-accent-primary/20 text-accent-primary'
-                  }`}
-                >
-                  {progress.completed ? (
-                    <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
-                    </svg>
-                  )}
-                </div>
+            {snapshot.recentProgress?.map((progress) => {
+              const episodeLabel = progress.episode
+                ? `S${String(progress.episode.seasonNumber).padStart(2, '0')}E${String(progress.episode.episodeNumber).padStart(2, '0')}`
+                : null;
+              const episodeTitle = progress.episode?.title || `Episode ${progress.episodeId.slice(0, 8)}...`;
 
-                <div className="min-w-0 flex-1">
-                  <div className="mb-2 flex items-center justify-between">
-                    <p className="truncate font-medium text-text-primary">
-                      Episode {progress.episodeId.slice(0, 8)}...
+              const content = (
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${
+                      progress.completed ? 'bg-success/20 text-success' : 'bg-accent-primary/20 text-accent-primary'
+                    }`}
+                  >
+                    {progress.completed ? (
+                      <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ) : (
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-medium text-text-primary">
+                          {episodeTitle}
+                        </p>
+                        {episodeLabel && (
+                          <p className="text-xs text-text-secondary">{episodeLabel}</p>
+                        )}
+                      </div>
+                      <span className="shrink-0 font-mono text-sm text-accent-primary">
+                        {progress.totalPoints} pts
+                      </span>
+                    </div>
+                    <ProgressBar
+                      percentage={
+                        progress.completed
+                          ? 100
+                          : Math.min(
+                              100,
+                              (progress.totalPoints / Math.max(1, progress.totalPoints + 50)) * 100
+                            )
+                      }
+                      size="sm"
+                    />
+                    <div className="mt-2 flex flex-wrap gap-3 text-xs text-text-secondary">
+                      <span>Vocab: {progress.vocabularyScore}</span>
+                      <span>Grammar: {progress.grammarScore}</span>
+                      <span>Expressions: {progress.expressionsScore}</span>
+                      <span>Exercises: {progress.exercisesScore}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 flex-col items-end gap-1">
+                    <p className="text-xs text-text-secondary">
+                      {new Date(progress.lastAccessed).toLocaleDateString()}
                     </p>
-                    <span className="font-mono text-sm text-accent-primary">
-                      {progress.totalPoints} pts
-                    </span>
-                  </div>
-                  <ProgressBar
-                    percentage={
-                      progress.completed
-                        ? 100
-                        : Math.min(
-                            100,
-                            (progress.totalPoints / Math.max(1, progress.totalPoints + 50)) * 100
-                          )
-                    }
-                    size="sm"
-                  />
-                  <div className="mt-2 flex flex-wrap gap-3 text-xs text-text-secondary">
-                    <span>Vocab: {progress.vocabularyScore}</span>
-                    <span>Grammar: {progress.grammarScore}</span>
-                    <span>Expressions: {progress.expressionsScore}</span>
-                    <span>Exercises: {progress.exercisesScore}</span>
+                    {progress.episode && !progress.completed && (
+                      <span className="text-xs text-accent-primary">Continue →</span>
+                    )}
                   </div>
                 </div>
+              );
 
-                <p className="shrink-0 text-xs text-text-secondary">
-                  {new Date(progress.lastAccessed).toLocaleDateString()}
-                </p>
-              </div>
-            ))}
+              // If we have episode metadata, make it a link
+              if (progress.episode) {
+                return (
+                  <Link
+                    key={progress.id}
+                    to="/shows/$slug/episodes/$episodeSlug"
+                    params={{
+                      slug: progress.episode.showSlug,
+                      episodeSlug: progress.episode.episodeSlug,
+                    }}
+                    className="block rounded-lg border border-border bg-bg-dark p-4 transition-colors hover:border-accent-primary/50 hover:bg-bg-card"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={progress.id}
+                  className="rounded-lg border border-border bg-bg-dark p-4"
+                >
+                  {content}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
