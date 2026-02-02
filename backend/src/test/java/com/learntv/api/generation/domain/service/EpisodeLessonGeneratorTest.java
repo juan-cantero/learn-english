@@ -237,7 +237,8 @@ class EpisodeLessonGeneratorTest {
                     "phrase" + i,
                     "meaning" + i,
                     "context" + i,
-                    "usage note " + i
+                    "usage note " + i,
+                    null
             ));
         }
         return list;

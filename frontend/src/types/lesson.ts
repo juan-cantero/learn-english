@@ -52,6 +52,7 @@ export interface Expression {
   meaning: string;
   contextQuote: string | null;
   usageNote: string | null;
+  audioUrl: string | null;
 }
 
 export interface Exercise {
