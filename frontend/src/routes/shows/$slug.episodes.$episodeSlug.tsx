@@ -8,9 +8,10 @@ import { GrammarCard } from '../../components/lesson/GrammarCard';
 import { ExpressionCard } from '../../components/lesson/ExpressionCard';
 import { CategoryFilter } from '../../components/lesson/CategoryFilter';
 import { ExerciseSection } from '../../components/exercises/ExerciseSection';
+import { PracticePronunciation } from '../../components/lesson/PracticePronunciation';
 import type { VocabularyCategory } from '../../types/lesson';
 
-type TabId = 'vocabulary' | 'grammar' | 'expressions' | 'exercises';
+type TabId = 'vocabulary' | 'grammar' | 'expressions' | 'exercises' | 'practice';
 
 interface Tab {
   id: TabId;
@@ -25,6 +26,14 @@ export function LessonPage() {
   const [activeTab, setActiveTab] = useState<TabId>('vocabulary');
   const [selectedCategory, setSelectedCategory] = useState<VocabularyCategory | 'ALL'>('ALL');
 
+  const audioItemsCount = useMemo(() => {
+    if (!lesson) return 0;
+    return (
+      lesson.vocabulary.filter((v) => v.audioUrl).length +
+      lesson.expressions.filter((e) => e.audioUrl).length
+    );
+  }, [lesson]);
+
   const tabs: Tab[] = useMemo(() => {
     if (!lesson) return [];
     return [
@@ -32,8 +41,9 @@ export function LessonPage() {
       { id: 'grammar', label: 'Grammar', count: lesson.grammarPoints.length },
       { id: 'expressions', label: 'Expressions', count: lesson.expressions.length },
       { id: 'exercises', label: 'Exercises', count: lesson.exercises.length },
+      { id: 'practice', label: 'Practice', count: audioItemsCount },
     ];
-  }, [lesson]);
+  }, [lesson, audioItemsCount]);
 
   const vocabularyCategories = useMemo(() => {
     if (!lesson) return [];
@@ -208,6 +218,13 @@ export function LessonPage() {
             exercises={lesson.exercises}
             showSlug={slug}
             episodeSlug={episodeSlug}
+          />
+        )}
+
+        {activeTab === 'practice' && (
+          <PracticePronunciation
+            vocabulary={lesson.vocabulary}
+            expressions={lesson.expressions}
           />
         )}
       </div>
