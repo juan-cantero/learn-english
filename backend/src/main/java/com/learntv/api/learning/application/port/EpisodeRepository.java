@@ -22,5 +22,9 @@ public interface EpisodeRepository {
 
     Optional<Exercise> findExerciseById(UUID exerciseId);
 
+    Optional<Episode> findById(UUID episodeId);
+
+    List<Episode> findAllByIds(List<UUID> episodeIds);
+
     Episode save(Episode episode);
 }

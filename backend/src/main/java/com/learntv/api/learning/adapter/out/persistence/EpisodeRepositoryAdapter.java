@@ -77,6 +77,19 @@ public class EpisodeRepositoryAdapter implements EpisodeRepository {
     }
 
     @Override
+    public Optional<Episode> findById(UUID episodeId) {
+        return episodeJpaRepository.findById(episodeId)
+                .map(EpisodeJpaEntity::toDomain);
+    }
+
+    @Override
+    public List<Episode> findAllByIds(List<UUID> episodeIds) {
+        return episodeJpaRepository.findAllById(episodeIds).stream()
+                .map(EpisodeJpaEntity::toDomain)
+                .toList();
+    }
+
+    @Override
     public Episode save(Episode episode) {
         EpisodeJpaEntity entity = EpisodeJpaEntity.fromDomain(episode);
         EpisodeJpaEntity saved = episodeJpaRepository.save(entity);
