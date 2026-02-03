@@ -159,7 +159,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
         <span className="font-mono text-sm text-accent-primary">{exercise.points} pts</span>
       </div>
 
-      <p className="my-4 text-lg text-text-primary">{exercise.question}</p>
+      <p className="my-4 text-lg text-text-primary">Listen and type what you hear</p>
 
       {/* Audio Player */}
       <div className="mb-4">

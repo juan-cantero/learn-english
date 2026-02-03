@@ -14,6 +14,8 @@ import com.learntv.api.generation.application.port.in.GetGenerationStatusUseCase
 import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.application.port.out.ExerciseGenerationPort;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
+import com.learntv.api.generation.application.service.AudioRegenerationService;
+import com.learntv.api.generation.application.service.AudioRegenerationService.RegenerationResult;
 import com.learntv.api.generation.application.service.LessonGenerationService;
 import com.learntv.api.generation.application.service.LessonGenerationService.GeneratedLessonResult;
 import com.learntv.api.generation.application.service.LessonGenerationService.LessonGenerationRequest;
@@ -59,6 +61,7 @@ public class GenerationController {
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
     private final LessonGenerationService lessonGenerationService;
+    private final AudioRegenerationService audioRegenerationService;
     private final GenerateEpisodeLessonUseCase generateEpisodeLessonUseCase;
     private final GetGenerationStatusUseCase getGenerationStatusUseCase;
 
@@ -418,6 +421,56 @@ public class GenerationController {
         try {
             GenerationJob job = getGenerationStatusUseCase.getStatus(jobId);
             return ResponseEntity.ok(JobStatusResponse.fromDomain(job));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/audio/regenerate/{showSlug}/{episodeSlug}")
+    @Operation(
+            summary = "Regenerate audio for an episode",
+            description = "Regenerate audio for all vocabulary, expressions, and listening exercises in an episode. " +
+                    "Use this when audio generation failed during initial lesson creation or when audio needs updating."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Audio regeneration completed"),
+            @ApiResponse(responseCode = "404", description = "Episode not found")
+    })
+    public ResponseEntity<RegenerationResult> regenerateAudio(
+            @Parameter(description = "Show slug", example = "the-pitt")
+            @PathVariable String showSlug,
+            @Parameter(description = "Episode slug", example = "s01e01-700-am")
+            @PathVariable String episodeSlug,
+            @Parameter(description = "Force regenerate all audio, even if URLs already exist")
+            @RequestParam(defaultValue = "false") boolean force) {
+
+        try {
+            RegenerationResult result = audioRegenerationService.regenerateAudioForEpisode(
+                    showSlug, episodeSlug, force);
+            return ResponseEntity.ok(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/audio/regenerate/episode/{episodeId}")
+    @Operation(
+            summary = "Regenerate audio for an episode by ID",
+            description = "Regenerate audio for all vocabulary, expressions, and listening exercises in an episode by UUID."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Audio regeneration completed"),
+            @ApiResponse(responseCode = "404", description = "Episode not found")
+    })
+    public ResponseEntity<RegenerationResult> regenerateAudioById(
+            @Parameter(description = "Episode UUID")
+            @PathVariable UUID episodeId,
+            @Parameter(description = "Force regenerate all audio, even if URLs already exist")
+            @RequestParam(defaultValue = "false") boolean force) {
+
+        try {
+            RegenerationResult result = audioRegenerationService.regenerateAudioForEpisode(episodeId, force);
+            return ResponseEntity.ok(result);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }

@@ -101,7 +101,8 @@ public record LessonWithProgressResponse(
             String phrase,
             String meaning,
             String contextQuote,
-            String usageNote
+            String usageNote,
+            String audioUrl
     ) {
         public static ExpressionResponse fromDomain(Expression expr) {
             return new ExpressionResponse(
@@ -109,7 +110,8 @@ public record LessonWithProgressResponse(
                     expr.getPhrase(),
                     expr.getMeaning(),
                     expr.getContextQuote(),
-                    expr.getUsageNote()
+                    expr.getUsageNote(),
+                    expr.getAudioUrl()
             );
         }
     }
@@ -121,7 +123,8 @@ public record LessonWithProgressResponse(
             String options,
             String matchingPairs,
             int points,
-            String hint
+            String hint,
+            String audioUrl
     ) {
         public static ExerciseResponse fromDomain(Exercise ex) {
             return new ExerciseResponse(
@@ -131,7 +134,8 @@ public record LessonWithProgressResponse(
                     ex.getOptions(),
                     ex.getMatchingPairs(),
                     ex.getPoints(),
-                    ex.getHint()
+                    ex.getHint(),
+                    ex.getAudioUrl()
             );
         }
     }
