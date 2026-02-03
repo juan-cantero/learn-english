@@ -75,4 +75,20 @@ public class ExerciseJpaEntity {
     public UUID getEpisodeId() {
         return episodeId;
     }
+
+    public ExerciseType getType() {
+        return type;
+    }
+
+    public String getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
 }

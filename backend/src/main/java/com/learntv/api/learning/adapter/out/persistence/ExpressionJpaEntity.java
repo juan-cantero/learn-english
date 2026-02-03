@@ -69,4 +69,12 @@ public class ExpressionJpaEntity {
     public String getAudioUrl() {
         return audioUrl;
     }
+
+    public String getPhrase() {
+        return phrase;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
 }

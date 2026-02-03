@@ -75,4 +75,16 @@ public class VocabularyJpaEntity {
     public UUID getEpisodeId() {
         return episodeId;
     }
+
+    public String getTerm() {
+        return term;
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
 }

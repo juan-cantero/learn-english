@@ -68,7 +68,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
 
     private List<Vocabulary> loadVocabulary(UUID episodeId) {
         String sql = """
-            SELECT id, episode_id, term, definition, phonetic, category, example_sentence, context_timestamp
+            SELECT id, episode_id, term, definition, phonetic, category, example_sentence, context_timestamp, audio_url
             FROM vocabulary
             WHERE episode_id = ?
             ORDER BY term
@@ -84,6 +84,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .category(VocabularyCategory.valueOf(rs.getString("category")))
                         .exampleSentence(rs.getString("example_sentence"))
                         .contextTimestamp(rs.getString("context_timestamp"))
+                        .audioUrl(rs.getString("audio_url"))
                         .build(),
                 episodeId);
     }
@@ -111,7 +112,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
 
     private List<Expression> loadExpressions(UUID episodeId) {
         String sql = """
-            SELECT id, episode_id, phrase, meaning, context_quote, usage_note
+            SELECT id, episode_id, phrase, meaning, context_quote, usage_note, audio_url
             FROM expressions
             WHERE episode_id = ?
             ORDER BY phrase
@@ -125,13 +126,14 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .meaning(rs.getString("meaning"))
                         .contextQuote(rs.getString("context_quote"))
                         .usageNote(rs.getString("usage_note"))
+                        .audioUrl(rs.getString("audio_url"))
                         .build(),
                 episodeId);
     }
 
     private List<Exercise> loadExercises(UUID episodeId) {
         String sql = """
-            SELECT id, episode_id, type, question, correct_answer, options, matching_pairs, points
+            SELECT id, episode_id, type, question, correct_answer, options, matching_pairs, points, audio_url
             FROM exercises
             WHERE episode_id = ?
             ORDER BY type, question
@@ -147,6 +149,7 @@ public class LessonQueryAdapter implements LessonQueryPort {
                         .options(rs.getString("options"))
                         .matchingPairs(rs.getString("matching_pairs"))
                         .points(rs.getInt("points"))
+                        .audioUrl(rs.getString("audio_url"))
                         .build(),
                 episodeId);
     }
