@@ -34,6 +34,12 @@ external-apis:
     timeout-seconds: 10
     ffmpeg-quality: 6
 
+# Supabase Auth
+supabase:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET:}
+    issuer: ${SUPABASE_URL:https://localhost}/auth/v1
+
 # Cloudflare R2 Storage
 cloudflare:
   r2:
@@ -75,6 +81,14 @@ audio:
   local:
     storage-path: ${AUDIO_LOCAL_PATH:${java.io.tmpdir}/learntv-audio}
     base-url: http://localhost:8080/api/v1/audio
+
+# Mock auth for development
+auth:
+  mock:
+    enabled: true
+    default-user-id: "00000000-0000-0000-0000-000000000001"
+    default-email: "dev@learntv.local"
+    default-role: LEARNER
 
 ---
 # Test profile - H2 in-memory (for tests and quick runs)
@@ -129,3 +143,8 @@ spring:
   h2:
     console:
       enabled: false
+
+# Disable mock auth in production
+auth:
+  mock:
+    enabled: false

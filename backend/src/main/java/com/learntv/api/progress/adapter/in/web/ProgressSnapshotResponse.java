@@ -31,7 +31,7 @@ public record ProgressSnapshotResponse(
                 .count();
 
         return new ProgressSnapshotResponse(
-                snapshot.userId(),
+                snapshot.userId().toString(),
                 snapshot.totalPoints(),
                 snapshot.episodeProgress().size(),
                 completedCount,

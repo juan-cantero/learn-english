@@ -11,6 +11,9 @@ import com.learntv.api.learning.application.usecase.ViewEpisodeLessonUseCase;
 import com.learntv.api.progress.application.port.UserProgressRepository;
 import com.learntv.api.progress.application.usecase.GetUserProgressUseCase;
 import com.learntv.api.progress.application.usecase.UpdateProgressUseCase;
+import com.learntv.api.user.application.port.UserRepository;
+import com.learntv.api.user.application.port.UserStatsRepository;
+import com.learntv.api.user.application.usecase.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -61,5 +64,33 @@ public class BeanConfiguration {
     @Bean
     public EpisodeLessonGenerator episodeLessonGenerator() {
         return new EpisodeLessonGenerator();
+    }
+
+    // ==================== User Use Cases ====================
+
+    @Bean
+    public GetOrCreateUserUseCase getOrCreateUserUseCase(UserRepository userRepository,
+                                                          UserStatsRepository userStatsRepository) {
+        return new GetOrCreateUserUseCase(userRepository, userStatsRepository);
+    }
+
+    @Bean
+    public GetCurrentUserUseCase getCurrentUserUseCase(UserRepository userRepository) {
+        return new GetCurrentUserUseCase(userRepository);
+    }
+
+    @Bean
+    public UpdateUserProfileUseCase updateUserProfileUseCase(UserRepository userRepository) {
+        return new UpdateUserProfileUseCase(userRepository);
+    }
+
+    @Bean
+    public UpgradeToTeacherUseCase upgradeToTeacherUseCase(UserRepository userRepository) {
+        return new UpgradeToTeacherUseCase(userRepository);
+    }
+
+    @Bean
+    public GetUserStatsUseCase getUserStatsUseCase(UserStatsRepository userStatsRepository) {
+        return new GetUserStatsUseCase(userStatsRepository);
     }
 }

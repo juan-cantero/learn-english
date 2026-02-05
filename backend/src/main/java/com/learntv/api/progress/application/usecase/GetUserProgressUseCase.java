@@ -24,7 +24,7 @@ public class GetUserProgressUseCase {
     /**
      * Get overall progress for a user across all episodes.
      */
-    public ProgressSnapshot execute(String userId) {
+    public ProgressSnapshot execute(UUID userId) {
         List<UserProgress> progressList = progressRepository.findByUserId(userId);
         return ProgressSnapshot.fromProgress(userId, progressList);
     }
@@ -32,7 +32,7 @@ public class GetUserProgressUseCase {
     /**
      * Get progress for a specific episode.
      */
-    public Optional<UserProgress> execute(String userId, UUID episodeId) {
+    public Optional<UserProgress> execute(UUID userId, UUID episodeId) {
         return progressRepository.findByUserIdAndEpisodeId(userId, episodeId);
     }
 }

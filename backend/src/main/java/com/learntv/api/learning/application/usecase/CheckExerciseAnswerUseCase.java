@@ -30,7 +30,7 @@ public class CheckExerciseAnswerUseCase {
         this.progressRepository = progressRepository;
     }
 
-    public AnswerResult execute(String userId, String showSlug, String episodeSlug,
+    public AnswerResult execute(UUID userId, String showSlug, String episodeSlug,
                                  UUID exerciseId, String userAnswer) {
         // Load lesson to get the exercise
         Lesson lesson = lessonQueryPort.loadFullLesson(showSlug, episodeSlug)
@@ -70,7 +70,7 @@ public class CheckExerciseAnswerUseCase {
         );
     }
 
-    private UserProgress getOrCreateProgress(String userId, UUID episodeId) {
+    private UserProgress getOrCreateProgress(UUID userId, UUID episodeId) {
         return progressRepository.findByUserIdAndEpisodeId(userId, episodeId)
                 .orElseGet(() -> UserProgress.builder()
                         .userId(userId)

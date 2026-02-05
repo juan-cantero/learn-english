@@ -21,7 +21,7 @@ public class UpdateProgressUseCase {
         this.progressRepository = progressRepository;
     }
 
-    public UserProgress execute(String userId, UUID episodeId, ProgressUpdate update) {
+    public UserProgress execute(UUID userId, UUID episodeId, ProgressUpdate update) {
         // Get or create progress
         UserProgress progress = progressRepository.findByUserIdAndEpisodeId(userId, episodeId)
                 .orElseGet(() -> UserProgress.builder()

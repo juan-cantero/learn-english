@@ -6,6 +6,8 @@ import com.learntv.api.progress.application.usecase.GetUserProgressUseCase;
 import com.learntv.api.progress.application.usecase.UpdateProgressUseCase;
 import com.learntv.api.progress.domain.model.ProgressSnapshot;
 import com.learntv.api.progress.domain.model.UserProgress;
+import com.learntv.api.shared.config.security.AuthenticatedUser;
+import com.learntv.api.shared.config.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +24,6 @@ import java.util.stream.Collectors;
 @Tag(name = "Progress", description = "User progress tracking operations")
 public class ProgressController {
 
-    private static final String USER_ID_HEADER = "X-User-Id";
-    private static final String DEFAULT_USER = "anonymous";
-
     private final GetUserProgressUseCase getUserProgressUseCase;
     private final UpdateProgressUseCase updateProgressUseCase;
     private final EpisodeRepository episodeRepository;
@@ -39,9 +38,8 @@ public class ProgressController {
 
     @GetMapping
     @Operation(summary = "Get user progress", description = "Returns all progress for the current user")
-    public ResponseEntity<ProgressSnapshotResponse> getUserProgress(
-            @RequestHeader(value = USER_ID_HEADER, defaultValue = DEFAULT_USER) String userId) {
-        ProgressSnapshot snapshot = getUserProgressUseCase.execute(userId);
+    public ResponseEntity<ProgressSnapshotResponse> getUserProgress(@CurrentUser AuthenticatedUser authUser) {
+        ProgressSnapshot snapshot = getUserProgressUseCase.execute(authUser.id());
 
         // Fetch episode metadata for all progress entries
         List<UUID> episodeIds = snapshot.episodeProgress().stream()
@@ -60,9 +58,9 @@ public class ProgressController {
     @GetMapping("/{episodeId}")
     @Operation(summary = "Get episode progress", description = "Returns progress for a specific episode")
     public ResponseEntity<UserProgressResponse> getEpisodeProgress(
-            @RequestHeader(value = USER_ID_HEADER, defaultValue = DEFAULT_USER) String userId,
+            @CurrentUser AuthenticatedUser authUser,
             @PathVariable UUID episodeId) {
-        return getUserProgressUseCase.execute(userId, episodeId)
+        return getUserProgressUseCase.execute(authUser.id(), episodeId)
                 .map(progress -> {
                     Episode episode = episodeRepository.findById(episodeId).orElse(null);
                     return UserProgressResponse.fromDomain(progress, episode);
@@ -74,7 +72,7 @@ public class ProgressController {
     @PostMapping("/{episodeId}")
     @Operation(summary = "Update progress", description = "Updates progress for a specific episode")
     public ResponseEntity<UserProgressResponse> updateProgress(
-            @RequestHeader(value = USER_ID_HEADER, defaultValue = DEFAULT_USER) String userId,
+            @CurrentUser AuthenticatedUser authUser,
             @PathVariable UUID episodeId,
             @RequestBody SaveProgressRequest request) {
 
@@ -84,7 +82,7 @@ public class ProgressController {
                 request.completed() != null && request.completed()
         );
 
-        UserProgress saved = updateProgressUseCase.execute(userId, episodeId, update);
+        UserProgress saved = updateProgressUseCase.execute(authUser.id(), episodeId, update);
         Episode episode = episodeRepository.findById(episodeId).orElse(null);
         return ResponseEntity.ok(UserProgressResponse.fromDomain(saved, episode));
     }

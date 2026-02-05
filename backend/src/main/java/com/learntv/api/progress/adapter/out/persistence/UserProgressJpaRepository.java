@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserProgressJpaRepository extends JpaRepository<UserProgressJpaEntity, UUID> {
 
-    Optional<UserProgressJpaEntity> findByUserIdAndEpisodeId(String userId, UUID episodeId);
+    Optional<UserProgressJpaEntity> findByUserIdAndEpisodeId(UUID userId, UUID episodeId);
 
-    List<UserProgressJpaEntity> findByUserId(String userId);
+    List<UserProgressJpaEntity> findByUserId(UUID userId);
 }
