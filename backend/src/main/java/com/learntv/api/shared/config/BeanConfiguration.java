@@ -14,6 +14,9 @@ import com.learntv.api.progress.application.usecase.UpdateProgressUseCase;
 import com.learntv.api.user.application.port.UserRepository;
 import com.learntv.api.user.application.port.UserStatsRepository;
 import com.learntv.api.user.application.usecase.*;
+import com.learntv.api.classroom.application.port.ClassroomRepository;
+import com.learntv.api.classroom.application.port.ClassroomStudentRepository;
+import com.learntv.api.classroom.application.usecase.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -92,5 +95,65 @@ public class BeanConfiguration {
     @Bean
     public GetUserStatsUseCase getUserStatsUseCase(UserStatsRepository userStatsRepository) {
         return new GetUserStatsUseCase(userStatsRepository);
+    }
+
+    // ==================== Classroom Use Cases ====================
+
+    @Bean
+    public CreateClassroomUseCase createClassroomUseCase(ClassroomRepository classroomRepository,
+                                                          UserRepository userRepository) {
+        return new CreateClassroomUseCase(classroomRepository, userRepository);
+    }
+
+    @Bean
+    public GetTeacherClassroomsUseCase getTeacherClassroomsUseCase(ClassroomRepository classroomRepository,
+                                                                    ClassroomStudentRepository studentRepository) {
+        return new GetTeacherClassroomsUseCase(classroomRepository, studentRepository);
+    }
+
+    @Bean
+    public GetStudentClassroomsUseCase getStudentClassroomsUseCase(ClassroomRepository classroomRepository,
+                                                                    ClassroomStudentRepository studentRepository) {
+        return new GetStudentClassroomsUseCase(classroomRepository, studentRepository);
+    }
+
+    @Bean
+    public JoinClassroomUseCase joinClassroomUseCase(ClassroomRepository classroomRepository,
+                                                      ClassroomStudentRepository studentRepository) {
+        return new JoinClassroomUseCase(classroomRepository, studentRepository);
+    }
+
+    @Bean
+    public LeaveClassroomUseCase leaveClassroomUseCase(ClassroomRepository classroomRepository,
+                                                        ClassroomStudentRepository studentRepository) {
+        return new LeaveClassroomUseCase(classroomRepository, studentRepository);
+    }
+
+    @Bean
+    public GetClassroomStudentsUseCase getClassroomStudentsUseCase(ClassroomRepository classroomRepository,
+                                                                    ClassroomStudentRepository studentRepository,
+                                                                    UserRepository userRepository) {
+        return new GetClassroomStudentsUseCase(classroomRepository, studentRepository, userRepository);
+    }
+
+    @Bean
+    public RemoveStudentUseCase removeStudentUseCase(ClassroomRepository classroomRepository,
+                                                      ClassroomStudentRepository studentRepository) {
+        return new RemoveStudentUseCase(classroomRepository, studentRepository);
+    }
+
+    @Bean
+    public UpdateClassroomUseCase updateClassroomUseCase(ClassroomRepository classroomRepository) {
+        return new UpdateClassroomUseCase(classroomRepository);
+    }
+
+    @Bean
+    public RegenerateJoinCodeUseCase regenerateJoinCodeUseCase(ClassroomRepository classroomRepository) {
+        return new RegenerateJoinCodeUseCase(classroomRepository);
+    }
+
+    @Bean
+    public DeleteClassroomUseCase deleteClassroomUseCase(ClassroomRepository classroomRepository) {
+        return new DeleteClassroomUseCase(classroomRepository);
     }
 }
