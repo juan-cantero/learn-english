@@ -14,8 +14,10 @@ import com.learntv.api.progress.application.usecase.UpdateProgressUseCase;
 import com.learntv.api.user.application.port.UserRepository;
 import com.learntv.api.user.application.port.UserStatsRepository;
 import com.learntv.api.user.application.usecase.*;
+import com.learntv.api.classroom.application.port.AssignmentRepository;
 import com.learntv.api.classroom.application.port.ClassroomRepository;
 import com.learntv.api.classroom.application.port.ClassroomStudentRepository;
+import com.learntv.api.classroom.application.port.SubmissionRepository;
 import com.learntv.api.classroom.application.usecase.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -155,5 +157,60 @@ public class BeanConfiguration {
     @Bean
     public DeleteClassroomUseCase deleteClassroomUseCase(ClassroomRepository classroomRepository) {
         return new DeleteClassroomUseCase(classroomRepository);
+    }
+
+    // ==================== Assignment Use Cases ====================
+
+    @Bean
+    public CreateAssignmentUseCase createAssignmentUseCase(AssignmentRepository assignmentRepository,
+                                                            ClassroomRepository classroomRepository) {
+        return new CreateAssignmentUseCase(assignmentRepository, classroomRepository);
+    }
+
+    @Bean
+    public GetClassroomAssignmentsUseCase getClassroomAssignmentsUseCase(AssignmentRepository assignmentRepository,
+                                                                          ClassroomRepository classroomRepository,
+                                                                          SubmissionRepository submissionRepository) {
+        return new GetClassroomAssignmentsUseCase(assignmentRepository, classroomRepository, submissionRepository);
+    }
+
+    @Bean
+    public GetStudentAssignmentsUseCase getStudentAssignmentsUseCase(AssignmentRepository assignmentRepository,
+                                                                      ClassroomStudentRepository classroomStudentRepository,
+                                                                      SubmissionRepository submissionRepository) {
+        return new GetStudentAssignmentsUseCase(assignmentRepository, classroomStudentRepository, submissionRepository);
+    }
+
+    @Bean
+    public StartAssignmentUseCase startAssignmentUseCase(AssignmentRepository assignmentRepository,
+                                                          SubmissionRepository submissionRepository) {
+        return new StartAssignmentUseCase(assignmentRepository, submissionRepository);
+    }
+
+    @Bean
+    public CompleteAssignmentUseCase completeAssignmentUseCase(AssignmentRepository assignmentRepository,
+                                                                SubmissionRepository submissionRepository,
+                                                                UserProgressRepository progressRepository) {
+        return new CompleteAssignmentUseCase(assignmentRepository, submissionRepository, progressRepository);
+    }
+
+    @Bean
+    public GetAssignmentSubmissionsUseCase getAssignmentSubmissionsUseCase(AssignmentRepository assignmentRepository,
+                                                                            ClassroomRepository classroomRepository,
+                                                                            SubmissionRepository submissionRepository,
+                                                                            UserRepository userRepository) {
+        return new GetAssignmentSubmissionsUseCase(assignmentRepository, classroomRepository, submissionRepository, userRepository);
+    }
+
+    @Bean
+    public UpdateAssignmentUseCase updateAssignmentUseCase(AssignmentRepository assignmentRepository,
+                                                            ClassroomRepository classroomRepository) {
+        return new UpdateAssignmentUseCase(assignmentRepository, classroomRepository);
+    }
+
+    @Bean
+    public DeleteAssignmentUseCase deleteAssignmentUseCase(AssignmentRepository assignmentRepository,
+                                                            ClassroomRepository classroomRepository) {
+        return new DeleteAssignmentUseCase(assignmentRepository, classroomRepository);
     }
 }
