@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { GenerationIndicator } from './GenerationIndicator';
+import { UserMenu } from './UserMenu';
 
 export function Header() {
   return (
@@ -36,6 +37,7 @@ export function Header() {
                 My Progress
               </Link>
             </nav>
+            <UserMenu />
           </div>
         </div>
       </div>

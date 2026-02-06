@@ -17,7 +17,16 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
+import java.security.KeyFactory;
+import java.security.interfaces.ECPublicKey;
+import java.security.spec.ECParameterSpec;
+import java.security.spec.ECPoint;
+import java.security.spec.ECPublicKeySpec;
+import java.security.AlgorithmParameters;
+import java.security.spec.ECGenParameterSpec;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,7 +38,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final MockAuthProperties mockAuthProperties;
     private final SupabaseJwtProperties supabaseJwtProperties;
-    private final SecretKey secretKey;
+    private final SecretKey hmacKey;
+    private final ECPublicKey ecPublicKey;
 
     public JwtAuthenticationFilter(
             MockAuthProperties mockAuthProperties,
@@ -37,9 +47,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     ) {
         this.mockAuthProperties = mockAuthProperties;
         this.supabaseJwtProperties = supabaseJwtProperties;
-        this.secretKey = supabaseJwtProperties.isConfigured()
+        this.hmacKey = supabaseJwtProperties.isConfigured()
                 ? Keys.hmacShaKeyFor(supabaseJwtProperties.secret().getBytes(StandardCharsets.UTF_8))
                 : null;
+        this.ecPublicKey = buildEcPublicKey(supabaseJwtProperties);
+    }
+
+    private ECPublicKey buildEcPublicKey(SupabaseJwtProperties props) {
+        // Local Supabase EC public key (P-256 curve)
+        // These are the default local Supabase keys - x and y coordinates
+        if (props.ecPublicKeyX() == null || props.ecPublicKeyY() == null) {
+            return null;
+        }
+        try {
+            byte[] xBytes = Base64.getUrlDecoder().decode(props.ecPublicKeyX());
+            byte[] yBytes = Base64.getUrlDecoder().decode(props.ecPublicKeyY());
+
+            BigInteger x = new BigInteger(1, xBytes);
+            BigInteger y = new BigInteger(1, yBytes);
+
+            AlgorithmParameters parameters = AlgorithmParameters.getInstance("EC");
+            parameters.init(new ECGenParameterSpec("secp256r1"));
+            ECParameterSpec ecParameterSpec = parameters.getParameterSpec(ECParameterSpec.class);
+
+            ECPoint ecPoint = new ECPoint(x, y);
+            ECPublicKeySpec keySpec = new ECPublicKeySpec(ecPoint, ecParameterSpec);
+
+            KeyFactory keyFactory = KeyFactory.getInstance("EC");
+            return (ECPublicKey) keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            log.warn("Failed to build EC public key: {}", e.getMessage());
+            return null;
+        }
     }
 
     @Override
@@ -71,6 +110,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (JwtException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Error processing JWT token: {}", e.getMessage());
         }
 
         filterChain.doFilter(request, response);
@@ -93,16 +134,40 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private AuthenticatedUser authenticateWithSupabase(String token) {
-        if (secretKey == null) {
-            log.error("Supabase JWT secret not configured");
-            return null;
+        Claims claims = null;
+
+        // Try ES256 first (local Supabase default)
+        if (ecPublicKey != null) {
+            try {
+                claims = Jwts.parser()
+                        .verifyWith(ecPublicKey)
+                        .build()
+                        .parseSignedClaims(token)
+                        .getPayload();
+                log.debug("JWT validated with ES256");
+            } catch (JwtException e) {
+                log.debug("ES256 validation failed, trying HS256: {}", e.getMessage());
+            }
         }
 
-        Claims claims = Jwts.parser()
-                .verifyWith(secretKey)
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+        // Fallback to HS256
+        if (claims == null && hmacKey != null) {
+            try {
+                claims = Jwts.parser()
+                        .verifyWith(hmacKey)
+                        .build()
+                        .parseSignedClaims(token)
+                        .getPayload();
+                log.debug("JWT validated with HS256");
+            } catch (JwtException e) {
+                log.warn("HS256 validation failed: {}", e.getMessage());
+            }
+        }
+
+        if (claims == null) {
+            log.error("Could not validate JWT with any configured key");
+            return null;
+        }
 
         String userId = claims.getSubject();
         String email = claims.get("email", String.class);
