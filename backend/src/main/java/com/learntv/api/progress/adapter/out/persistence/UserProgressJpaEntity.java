@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "user_progress", uniqueConstraints = {
+@Table(name = "user_episode_progress", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"user_id", "episode_id"})
 })
 public class UserProgressJpaEntity {
@@ -16,7 +16,7 @@ public class UserProgressJpaEntity {
     private UUID id;
 
     @Column(name = "user_id", nullable = false)
-    private String userId;
+    private UUID userId;
 
     @Column(name = "episode_id", nullable = false)
     private UUID episodeId;
@@ -72,7 +72,7 @@ public class UserProgressJpaEntity {
         return id;
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 

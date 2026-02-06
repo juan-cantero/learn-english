@@ -7,7 +7,7 @@ import java.util.UUID;
 public class UserProgress {
 
     private final UUID id;
-    private final String userId;
+    private final UUID userId;
     private final UUID episodeId;
     private int vocabularyScore;
     private int grammarScore;
@@ -54,7 +54,7 @@ public class UserProgress {
         return id;
     }
 
-    public String getUserId() {
+    public UUID getUserId() {
         return userId;
     }
 
@@ -92,7 +92,7 @@ public class UserProgress {
 
     public static class Builder {
         private UUID id;
-        private String userId;
+        private UUID userId;
         private UUID episodeId;
         private int vocabularyScore;
         private int grammarScore;
@@ -107,7 +107,7 @@ public class UserProgress {
             return this;
         }
 
-        public Builder userId(String userId) {
+        public Builder userId(UUID userId) {
             this.userId = userId;
             return this;
         }

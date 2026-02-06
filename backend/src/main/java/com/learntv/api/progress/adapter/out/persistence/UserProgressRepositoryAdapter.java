@@ -18,13 +18,13 @@ public class UserProgressRepositoryAdapter implements UserProgressRepository {
     }
 
     @Override
-    public Optional<UserProgress> findByUserIdAndEpisodeId(String userId, UUID episodeId) {
+    public Optional<UserProgress> findByUserIdAndEpisodeId(UUID userId, UUID episodeId) {
         return jpaRepository.findByUserIdAndEpisodeId(userId, episodeId)
                 .map(UserProgressJpaEntity::toDomain);
     }
 
     @Override
-    public List<UserProgress> findByUserId(String userId) {
+    public List<UserProgress> findByUserId(UUID userId) {
         return jpaRepository.findByUserId(userId).stream()
                 .map(UserProgressJpaEntity::toDomain)
                 .toList();

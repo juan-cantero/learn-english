@@ -9,6 +9,8 @@ import { GeneratePage } from './generate';
 import { ShowDetailPage } from './generate/shows.$tmdbId';
 import { EpisodeListPage } from './generate/shows.$tmdbId.seasons.$season';
 import { EpisodeConfirmationPage } from './generate/shows.$tmdbId.seasons.$season.episodes.$episode';
+import { LoginPage } from './LoginPage';
+import { RegisterPage } from './RegisterPage';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -70,6 +72,18 @@ const generateEpisodeConfirmRoute = createRoute({
   component: EpisodeConfirmationPage,
 });
 
+const loginRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/login',
+  component: LoginPage,
+});
+
+const registerRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/register',
+  component: RegisterPage,
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   showRoute,
@@ -79,4 +93,6 @@ export const routeTree = rootRoute.addChildren([
   generateShowDetailRoute,
   generateEpisodeListRoute,
   generateEpisodeConfirmRoute,
+  loginRoute,
+  registerRoute,
 ]);

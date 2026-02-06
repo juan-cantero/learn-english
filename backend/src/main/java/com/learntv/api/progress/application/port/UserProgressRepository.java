@@ -8,9 +8,9 @@ import java.util.UUID;
 
 public interface UserProgressRepository {
 
-    Optional<UserProgress> findByUserIdAndEpisodeId(String userId, UUID episodeId);
+    Optional<UserProgress> findByUserIdAndEpisodeId(UUID userId, UUID episodeId);
 
-    List<UserProgress> findByUserId(String userId);
+    List<UserProgress> findByUserId(UUID userId);
 
     UserProgress save(UserProgress progress);
 }

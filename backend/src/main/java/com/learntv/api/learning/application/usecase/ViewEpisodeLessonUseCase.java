@@ -7,6 +7,7 @@ import com.learntv.api.progress.application.port.UserProgressRepository;
 import com.learntv.api.progress.domain.model.UserProgress;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Use case: View an episode lesson with user's progress.
@@ -27,7 +28,7 @@ public class ViewEpisodeLessonUseCase {
         this.progressRepository = progressRepository;
     }
 
-    public LessonWithProgress execute(String userId, String showSlug, String episodeSlug) {
+    public LessonWithProgress execute(UUID userId, String showSlug, String episodeSlug) {
         // Load lesson via optimized query
         Lesson lesson = lessonQueryPort.loadFullLesson(showSlug, episodeSlug)
                 .orElseThrow(() -> new EpisodeNotFoundException(showSlug, episodeSlug));

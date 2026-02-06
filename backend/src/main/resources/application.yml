@@ -34,6 +34,12 @@ external-apis:
     timeout-seconds: 10
     ffmpeg-quality: 6
 
+# Supabase Auth
+supabase:
+  jwt:
+    secret: ${SUPABASE_JWT_SECRET:}
+    issuer: ${SUPABASE_URL:https://localhost}/auth/v1
+
 # Cloudflare R2 Storage
 cloudflare:
   r2:
@@ -75,6 +81,14 @@ audio:
   local:
     storage-path: ${AUDIO_LOCAL_PATH:${java.io.tmpdir}/learntv-audio}
     base-url: http://localhost:8080/api/v1/audio
+
+# Mock auth for development
+auth:
+  mock:
+    enabled: true
+    default-user-id: "00000000-0000-0000-0000-000000000001"
+    default-email: "dev@learntv.local"
+    default-role: LEARNER
 
 ---
 # Test profile - H2 in-memory (for tests and quick runs)
@@ -129,3 +143,55 @@ spring:
   h2:
     console:
       enabled: false
+
+# Disable mock auth in production
+auth:
+  mock:
+    enabled: false
+
+---
+# Local Supabase profile - Uses local Docker Supabase for auth
+spring:
+  config:
+    activate:
+      on-profile: local-supabase
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/learntv
+    username: learntv
+    password: learntv_dev
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+# Local Supabase configuration
+supabase:
+  jwt:
+    secret: super-secret-jwt-token-with-at-least-32-characters-long
+    issuer: http://127.0.0.1:54321/auth/v1
+    # EC public key for ES256 (local Supabase default)
+    ec-public-key-x: M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4
+    ec-public-key-y: P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ
+
+# Disable mock auth - use real Supabase
+auth:
+  mock:
+    enabled: false
+
+# Local audio storage
+audio:
+  local:
+    storage-path: ${AUDIO_LOCAL_PATH:${java.io.tmpdir}/learntv-audio}
+    base-url: http://localhost:8080/api/v1/audio
