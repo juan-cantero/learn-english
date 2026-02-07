@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate, Link } from '@tanstack/react-router'
+import { useState, useEffect } from 'react'
+import { useNavigate, useSearch, Link } from '@tanstack/react-router'
 import { useAuth } from '../context/AuthContext'
 import '../styles/auth.css'
 
@@ -8,8 +8,17 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const { signIn } = useAuth()
+  const { signIn, user } = useAuth()
   const navigate = useNavigate()
+  const search = useSearch({ strict: false }) as { redirect?: string }
+  const redirectTo = search?.redirect || '/'
+
+  // If already logged in, redirect away from login page
+  useEffect(() => {
+    if (user) {
+      navigate({ to: redirectTo })
+    }
+  }, [user, navigate, redirectTo])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,7 +31,7 @@ export function LoginPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      navigate({ to: '/' })
+      navigate({ to: redirectTo })
     }
   }
 
