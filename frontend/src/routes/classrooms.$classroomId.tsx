@@ -9,8 +9,17 @@ import {
   useRemoveStudent,
   useLeaveClassroom,
 } from '../hooks/useClassrooms';
+import {
+  useClassroomAssignments,
+  useCreateAssignment,
+  useDeleteAssignment,
+  useAssignmentSubmissions,
+} from '../hooks/useAssignments';
+import { useShows, useShow } from '../hooks/useShows';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { EmptyState } from '../components/shared/EmptyState';
+import type { AssignmentWithStatsResponse } from '../types/classroom';
+import type { Show } from '../types/show';
 
 const BackIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,6 +54,30 @@ const CopyIcon = () => (
 const UserIcon = () => (
   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+
+const PlusIcon = () => (
+  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+  </svg>
+);
+
+const ClipboardIcon = () => (
+  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+  </svg>
+);
+
+const ChevronDownIcon = () => (
+  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+const ChevronUpIcon = () => (
+  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
   </svg>
 );
 
@@ -131,6 +164,310 @@ function EditModal({ classroomId, initialName, initialDescription, onClose }: Ed
   );
 }
 
+// --- Assignment Components ---
+
+interface CreateAssignmentModalProps {
+  classroomId: string;
+  shows: Show[];
+  onClose: () => void;
+}
+
+function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignmentModalProps) {
+  const [selectedShowSlug, setSelectedShowSlug] = useState('');
+  const [selectedEpisodeId, setSelectedEpisodeId] = useState('');
+  const [title, setTitle] = useState('');
+  const [instructions, setInstructions] = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const createMutation = useCreateAssignment(classroomId);
+
+  const selectedShow = shows.find((s) => s.slug === selectedShowSlug);
+  const { data: showWithEpisodes } = useShowForAssignment(selectedShowSlug);
+  const episodes = showWithEpisodes?.episodes || [];
+
+  const handleShowChange = (slug: string) => {
+    setSelectedShowSlug(slug);
+    setSelectedEpisodeId('');
+  };
+
+  const handleEpisodeChange = (episodeId: string) => {
+    setSelectedEpisodeId(episodeId);
+    const episode = episodes.find((e) => e.id === episodeId);
+    if (episode && !title) {
+      setTitle(`${selectedShow?.title} - S${String(episode.seasonNumber).padStart(2, '0')}E${String(episode.episodeNumber).padStart(2, '0')}`);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedEpisodeId && title.trim() && instructions.trim()) {
+      createMutation.mutate(
+        {
+          episodeId: selectedEpisodeId,
+          title: title.trim(),
+          instructions: instructions.trim(),
+          dueDate: dueDate ? new Date(dueDate).toISOString() : null,
+        },
+        {
+          onSuccess: () => onClose(),
+        }
+      );
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-lg rounded-xl border border-border bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-text-primary">Create Assignment</h2>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="show" className="mb-2 block text-sm font-medium text-text-primary">
+              Show
+            </label>
+            <select
+              id="show"
+              value={selectedShowSlug}
+              onChange={(e) => handleShowChange(e.target.value)}
+              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+              required
+            >
+              <option value="">Select a show...</option>
+              {shows.map((show) => (
+                <option key={show.id} value={show.slug}>
+                  {show.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {selectedShowSlug && (
+            <div>
+              <label htmlFor="episode" className="mb-2 block text-sm font-medium text-text-primary">
+                Episode
+              </label>
+              <select
+                id="episode"
+                value={selectedEpisodeId}
+                onChange={(e) => handleEpisodeChange(e.target.value)}
+                className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+                required
+              >
+                <option value="">Select an episode...</option>
+                {episodes.map((ep) => (
+                  <option key={ep.id} value={ep.id}>
+                    S{String(ep.seasonNumber).padStart(2, '0')}E{String(ep.episodeNumber).padStart(2, '0')} - {ep.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="assignTitle" className="mb-2 block text-sm font-medium text-text-primary">
+              Title
+            </label>
+            <input
+              id="assignTitle"
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Assignment title"
+              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="instructions" className="mb-2 block text-sm font-medium text-text-primary">
+              Instructions
+            </label>
+            <textarea
+              id="instructions"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              placeholder="What should students do?"
+              rows={3}
+              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              required
+            />
+          </div>
+
+          <div>
+            <label htmlFor="dueDate" className="mb-2 block text-sm font-medium text-text-primary">
+              Due Date (optional)
+            </label>
+            <input
+              id="dueDate"
+              type="datetime-local"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={createMutation.isPending}
+              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={createMutation.isPending || !selectedEpisodeId || !title.trim() || !instructions.trim()}
+              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            >
+              {createMutation.isPending ? 'Creating...' : 'Create'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function useShowForAssignment(slug: string) {
+  return useShow(slug || undefined);
+}
+
+interface SubmissionsPanelProps {
+  assignmentId: string;
+}
+
+function SubmissionsPanel({ assignmentId }: SubmissionsPanelProps) {
+  const { data: submissions, isLoading } = useAssignmentSubmissions(assignmentId);
+
+  if (isLoading) {
+    return <div className="animate-pulse h-16 rounded-lg bg-bg-dark" />;
+  }
+
+  if (!submissions || submissions.length === 0) {
+    return (
+      <p className="py-3 text-center text-sm text-text-secondary">No submissions yet.</p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {submissions.map((sub) => (
+        <div
+          key={sub.id}
+          className="flex items-center justify-between gap-4 rounded-lg bg-bg-dark px-4 py-3"
+        >
+          <div>
+            <p className="text-sm font-medium text-text-primary">
+              {sub.studentName || sub.studentEmail}
+            </p>
+            {sub.completedAt && (
+              <p className="text-xs text-text-secondary">
+                Completed {new Date(sub.completedAt).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+          <div className="flex items-center gap-3">
+            {sub.score !== null && (
+              <span className="font-mono text-sm font-bold text-accent-primary">{sub.score}%</span>
+            )}
+            <StatusBadge status={sub.status} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const styles = {
+    NOT_STARTED: 'bg-text-secondary/20 text-text-secondary',
+    IN_PROGRESS: 'bg-warning/20 text-warning',
+    COMPLETED: 'bg-success/20 text-success',
+  }[status] || 'bg-text-secondary/20 text-text-secondary';
+
+  const label = {
+    NOT_STARTED: 'Not Started',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+  }[status] || status;
+
+  return (
+    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${styles}`}>
+      {label}
+    </span>
+  );
+}
+
+interface AssignmentCardProps {
+  assignment: AssignmentWithStatsResponse;
+  onDelete: (id: string) => void;
+  isDeleting: boolean;
+}
+
+function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProps) {
+  const [expanded, setExpanded] = useState(false);
+
+  const completionRate = assignment.totalSubmissions > 0
+    ? Math.round((assignment.completedSubmissions / assignment.totalSubmissions) * 100)
+    : 0;
+
+  return (
+    <div className="rounded-lg border border-border bg-bg-dark">
+      <div className="flex items-center justify-between gap-4 p-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h4 className="truncate font-medium text-text-primary">{assignment.title}</h4>
+            {assignment.overdue && (
+              <span className="shrink-0 rounded-full bg-error/20 px-2 py-0.5 text-xs font-medium text-error">
+                Overdue
+              </span>
+            )}
+          </div>
+          <p className="mt-1 line-clamp-1 text-sm text-text-secondary">{assignment.instructions}</p>
+          <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+            <span>{assignment.completedSubmissions}/{assignment.totalSubmissions} completed</span>
+            {assignment.dueDate && (
+              <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span>
+            )}
+          </div>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {assignment.totalSubmissions > 0 && (
+            <div className="text-right">
+              <span className="font-mono text-lg font-bold text-accent-primary">{completionRate}%</span>
+            </div>
+          )}
+          <button
+            onClick={() => setExpanded(!expanded)}
+            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-card hover:text-text-primary"
+          >
+            {expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          </button>
+          <button
+            onClick={() => {
+              if (confirm(`Delete assignment "${assignment.title}"?`)) {
+                onDelete(assignment.id);
+              }
+            }}
+            disabled={isDeleting}
+            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+          >
+            <TrashIcon />
+          </button>
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="border-t border-border p-4">
+          <h5 className="mb-2 text-sm font-medium text-text-secondary">Submissions</h5>
+          <SubmissionsPanel assignmentId={assignment.id} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 interface ConfirmDeleteModalProps {
   classroomName: string;
   onConfirm: () => void;
@@ -180,10 +517,14 @@ export function ClassroomDetailPage() {
   const deleteMutation = useDeleteClassroom();
   const removeMutation = useRemoveStudent(classroomId);
   const leaveMutation = useLeaveClassroom();
+  const { data: assignments, isLoading: assignmentsLoading } = useClassroomAssignments(classroomId);
+  const deleteAssignmentMutation = useDeleteAssignment(classroomId);
+  const { data: shows } = useShows();
 
   const [copied, setCopied] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAssignmentModal, setShowAssignmentModal] = useState(false);
 
   const isTeacher = currentUser?.id === classroom?.teacherId;
 
@@ -333,6 +674,52 @@ export function ClassroomDetailPage() {
         )}
       </div>
 
+      {/* Assignments Section */}
+      {isTeacher && (
+        <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <ClipboardIcon />
+              <h2 className="text-xl font-semibold text-text-primary">
+                Assignments ({assignments?.length || 0})
+              </h2>
+            </div>
+            <button
+              onClick={() => setShowAssignmentModal(true)}
+              className="flex items-center gap-2 rounded-lg bg-accent-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+            >
+              <PlusIcon />
+              New Assignment
+            </button>
+          </div>
+
+          {assignmentsLoading ? (
+            <div className="space-y-3">
+              {[...Array(2)].map((_, i) => (
+                <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-dark" />
+              ))}
+            </div>
+          ) : !assignments || assignments.length === 0 ? (
+            <EmptyState
+              icon="empty"
+              title="No assignments yet"
+              description="Create an assignment to give your students a lesson to work on."
+            />
+          ) : (
+            <div className="space-y-3">
+              {assignments.map((assignment) => (
+                <AssignmentCard
+                  key={assignment.id}
+                  assignment={assignment}
+                  onDelete={(id) => deleteAssignmentMutation.mutate(id)}
+                  isDeleting={deleteAssignmentMutation.isPending}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Students List */}
       <div className="rounded-xl border border-border bg-bg-card p-6">
         <h2 className="mb-4 text-xl font-semibold text-text-primary">
@@ -410,6 +797,14 @@ export function ClassroomDetailPage() {
           onConfirm={handleDeleteClassroom}
           onCancel={() => setShowDeleteModal(false)}
           isDeleting={deleteMutation.isPending}
+        />
+      )}
+
+      {showAssignmentModal && shows && (
+        <CreateAssignmentModal
+          classroomId={classroomId}
+          shows={shows}
+          onClose={() => setShowAssignmentModal(false)}
         />
       )}
     </div>
