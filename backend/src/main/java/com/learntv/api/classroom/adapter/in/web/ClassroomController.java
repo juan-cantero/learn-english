@@ -76,18 +76,27 @@ public class ClassroomController {
     }
 
     @GetMapping("/{classroomId}")
-    @Operation(summary = "Get classroom details", description = "Returns details of a specific classroom.")
+    @Operation(summary = "Get classroom details", description = "Returns details of a specific classroom. Accessible by the teacher or enrolled students.")
     public ResponseEntity<ClassroomResponse> getClassroom(
             @CurrentUser AuthenticatedUser authUser,
             @PathVariable UUID classroomId
     ) {
-        // For now, just return the classroom if user is owner
-        // Could extend to allow members to see it too
-        var classrooms = getTeacherClassroomsUseCase.execute(authUser.id());
-        return classrooms.stream()
+        // Check if user is the teacher
+        var teacherClassrooms = getTeacherClassroomsUseCase.execute(authUser.id());
+        var teacherMatch = teacherClassrooms.stream()
                 .filter(c -> c.classroom().getId().value().equals(classroomId))
+                .findFirst();
+        if (teacherMatch.isPresent()) {
+            var c = teacherMatch.get();
+            return ResponseEntity.ok(ClassroomResponse.fromDomainWithCount(c.classroom(), c.studentCount()));
+        }
+
+        // Check if user is an enrolled student
+        var studentClassrooms = getStudentClassroomsUseCase.execute(authUser.id());
+        return studentClassrooms.stream()
+                .filter(c -> c.getId().value().equals(classroomId))
                 .findFirst()
-                .map(c -> ResponseEntity.ok(ClassroomResponse.fromDomainWithCount(c.classroom(), c.studentCount())))
+                .map(c -> ResponseEntity.ok(ClassroomResponse.fromDomain(c)))
                 .orElse(ResponseEntity.notFound().build());
     }
 

@@ -45,12 +45,10 @@ dependencies {
     // Environment variables from .env file
     implementation("me.paulschwarz:spring-dotenv:4.0.0")
 
-    // AWS SDK for S3 (Cloudflare R2 is S3-compatible)
-    implementation("software.amazon.awssdk:s3:2.28.29")
-
     // Testing
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("com.squareup.okhttp3:mockwebserver:4.12.0")
 }
 
 tasks.withType<Test> {

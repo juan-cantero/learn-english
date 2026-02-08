@@ -34,20 +34,15 @@ external-apis:
     timeout-seconds: 10
     ffmpeg-quality: 6
 
-# Supabase Auth
+# Supabase Auth + Storage
 supabase:
+  url: ${SUPABASE_URL:https://localhost}
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
   jwt:
     secret: ${SUPABASE_JWT_SECRET:}
     issuer: ${SUPABASE_URL:https://localhost}/auth/v1
-
-# Cloudflare R2 Storage
-cloudflare:
-  r2:
-    account-id: ${CLOUDFLARE_ACCOUNT_ID:}
-    access-key-id: ${R2_ACCESS_KEY_ID:}
-    secret-access-key: ${R2_SECRET_ACCESS_KEY:}
-    bucket-name: ${R2_BUCKET_NAME:learntv-audio}
-    public-url: ${R2_PUBLIC_URL:https://audio.learntv.example.com}
+  storage:
+    bucket-name: ${SUPABASE_STORAGE_BUCKET:learntv-audio}
 
 ---
 # Development profile - PostgreSQL via Docker
@@ -178,20 +173,18 @@ spring:
 
 # Local Supabase configuration
 supabase:
+  url: http://127.0.0.1:54321
+  service-role-key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
   jwt:
     secret: super-secret-jwt-token-with-at-least-32-characters-long
     issuer: http://127.0.0.1:54321/auth/v1
     # EC public key for ES256 (local Supabase default)
     ec-public-key-x: M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4
     ec-public-key-y: P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ
+  storage:
+    bucket-name: learntv-audio
 
 # Disable mock auth - use real Supabase
 auth:
   mock:
     enabled: false
-
-# Local audio storage
-audio:
-  local:
-    storage-path: ${AUDIO_LOCAL_PATH:${java.io.tmpdir}/learntv-audio}
-    base-url: http://localhost:8080/api/v1/audio

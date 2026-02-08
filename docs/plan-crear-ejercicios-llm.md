@@ -72,7 +72,7 @@ Usuario hace clic en "Generate Episode"
 │                                                                              │
 │  5.1 Generar WAV con Piper      → piper-tts --model en_US-lessac-medium    │
 │  5.2 Convertir a MP3            → ffmpeg (reducir tamaño ~5x)               │
-│  5.3 Subir a Cloudflare R2      → PUT /audio/vocabulary/{term}.mp3          │
+│  5.3 Subir a Supabase Storage      → PUT /audio/vocabulary/{term}.mp3          │
 │  5.4 Guardar URL en vocabulary  → vocabulary.audioUrl = "https://..."       │
 │                                                                              │
 │  Procesamiento: Batch paralelo (10 concurrent) para velocidad               │
@@ -109,7 +109,7 @@ Usuario hace clic en "Generate Episode"
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Spring Boot    │     │  Piper TTS      │     │  Cloudflare R2  │
+│  Spring Boot    │     │  Piper TTS      │     │  Supabase Storage  │
 │  (AudioService) │────>│  (Local binary) │────>│  (Storage)      │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                                               │
@@ -126,7 +126,7 @@ com.learntv.api/
     │   +-- port/
     │   │   +-- out/
     │   │       +-- AudioGenerationPort.java      # Interface para TTS
-    │   │       +-- AudioStoragePort.java         # Interface para R2/S3
+    │   │       +-- AudioStoragePort.java         # Interface para Storage
     │   +-- service/
     │       +-- AudioGenerationService.java       # Orquesta TTS + upload
     │
@@ -134,8 +134,8 @@ com.learntv.api/
         +-- out/
             +-- piper/
             │   +-- PiperTtsAdapter.java          # Llama a piper-tts CLI
-            +-- cloudflare/
-                +-- R2StorageAdapter.java         # Upload a R2 (S3 SDK)
+            +-- supabase/
+                +-- SupabaseStorageAdapter.java   # Upload a Supabase Storage
 ```
 
 ### Interfaces
@@ -174,7 +174,7 @@ public List<VocabularyWithAudio> generateAudioForVocabulary(
                 // 2. Convertir a MP3
                 byte[] mp3 = audioGenerationPort.convertToMp3(wav);
 
-                // 3. Subir a R2
+                // 3. Subir a Supabase Storage
                 String key = "audio/vocabulary/" + slugify(vocab.getTerm()) + ".mp3";
                 String url = audioStoragePort.upload(key, mp3, "audio/mpeg");
 
@@ -190,17 +190,15 @@ public List<VocabularyWithAudio> generateAudioForVocabulary(
 }
 ```
 
-### Configuración R2
+### Configuración Supabase Storage
 
 ```yaml
 # application.yml
-cloudflare:
-  r2:
-    account-id: ${CLOUDFLARE_ACCOUNT_ID}
-    access-key-id: ${R2_ACCESS_KEY_ID}
-    secret-access-key: ${R2_SECRET_ACCESS_KEY}
+supabase:
+  url: ${SUPABASE_URL}
+  service-role-key: ${SUPABASE_SERVICE_ROLE_KEY}
+  storage:
     bucket-name: learntv-audio
-    public-url: https://audio.learntv.com  # Custom domain o R2.dev URL
 ```
 
 ### Modelo de Datos
@@ -237,8 +235,8 @@ CREATE INDEX idx_vocabulary_audio ON vocabulary(audio_url) WHERE audio_url IS NO
 | OpenSubtitles | Download (VIP) | ~$0.005 |
 | OpenAI GPT-4o-mini | ~4000 tokens | ~$0.01 |
 | Piper TTS | Local | $0 |
-| Cloudflare R2 | Storage (25 x 8KB = 200KB) | ~$0.000003 |
-| Cloudflare R2 | Egress | $0 |
+| Supabase Storage | Storage (25 x 8KB = 200KB) | ~$0.000003 |
+| Supabase Storage | Egress | $0 |
 | **Total por episodio** | | **~$0.015** |
 
 ---
@@ -262,7 +260,7 @@ CREATE INDEX idx_vocabulary_audio ON vocabulary(audio_url) WHERE audio_url IS NO
 
 ### Sprint 4: Audio Generation ★
 - [ ] Implementar PiperTtsAdapter
-- [ ] Implementar R2StorageAdapter
+- [ ] Implementar SupabaseStorageAdapter
 - [ ] Crear AudioGenerationService
 - [ ] Agregar audioUrl a modelo Vocabulary
 
@@ -282,7 +280,7 @@ CREATE INDEX idx_vocabulary_audio ON vocabulary(audio_url) WHERE audio_url IS NO
 ## Diagrama de Secuencia Completo
 
 ```
-Usuario        Frontend        Backend         TMDB    OpenSubs    OpenAI    Piper    R2
+Usuario        Frontend        Backend         TMDB    OpenSubs    OpenAI    Piper    Storage
    │               │               │             │          │          │        │       │
    │──"The Pitt"──>│               │             │          │          │        │       │
    │               │──search───────>│             │          │          │        │       │
@@ -325,5 +323,5 @@ Usuario        Frontend        Backend         TMDB    OpenSubs    OpenAI    Pip
 
 - [ADR-001: Episode Script API Design](./adr/episode-script-api-design.md)
 - [Piper TTS](https://github.com/rhasspy/piper)
-- [Cloudflare R2 Documentation](https://developers.cloudflare.com/r2/)
+- [Supabase Storage Documentation](https://supabase.com/docs/guides/storage)
 - [OpenAI API](https://platform.openai.com/docs/api-reference)

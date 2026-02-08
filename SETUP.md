@@ -79,12 +79,9 @@ OPENAI_API_KEY=sk-tu_api_key
 **Variables opcionales (para producción):**
 
 ```env
-# Cloudflare R2 - storage de audio
-CLOUDFLARE_ACCOUNT_ID=tu_account_id
-R2_ACCESS_KEY_ID=tu_access_key
-R2_SECRET_ACCESS_KEY=tu_secret_key
-R2_BUCKET_NAME=learntv-audio
-R2_PUBLIC_URL=https://tu-bucket.r2.dev
+# Supabase Storage - audio files
+SUPABASE_SERVICE_ROLE_KEY=tu_service_role_key
+SUPABASE_STORAGE_BUCKET=learntv-audio
 ```
 
 ### 2.2 Instalar Piper TTS (Audio)
