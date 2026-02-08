@@ -7,6 +7,7 @@ import {
   useDeleteClassroom,
   useRegenerateJoinCode,
   useRemoveStudent,
+  useLeaveClassroom,
 } from '../hooks/useClassrooms';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { EmptyState } from '../components/shared/EmptyState';
@@ -178,6 +179,7 @@ export function ClassroomDetailPage() {
   const regenerateMutation = useRegenerateJoinCode(classroomId);
   const deleteMutation = useDeleteClassroom();
   const removeMutation = useRemoveStudent(classroomId);
+  const leaveMutation = useLeaveClassroom();
 
   const [copied, setCopied] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -210,6 +212,16 @@ export function ClassroomDetailPage() {
   const handleRemoveStudent = (studentId: string, studentName: string) => {
     if (confirm(`Remove ${studentName} from this classroom?`)) {
       removeMutation.mutate(studentId);
+    }
+  };
+
+  const handleLeaveClassroom = () => {
+    if (confirm(`Leave "${classroom?.name}"? You can rejoin later with the code.`)) {
+      leaveMutation.mutate(classroomId, {
+        onSuccess: () => {
+          navigate({ to: '/classrooms' });
+        },
+      });
     }
   };
 
@@ -261,7 +273,7 @@ export function ClassroomDetailPage() {
             )}
           </div>
 
-          {isTeacher && (
+          {isTeacher ? (
             <div className="flex shrink-0 gap-2">
               <button
                 onClick={() => setShowEditModal(true)}
@@ -276,6 +288,14 @@ export function ClassroomDetailPage() {
                 <TrashIcon />
               </button>
             </div>
+          ) : (
+            <button
+              onClick={handleLeaveClassroom}
+              disabled={leaveMutation.isPending}
+              className="shrink-0 rounded-lg border border-error bg-error/10 px-4 py-2 text-sm font-medium text-error transition-colors hover:bg-error/20 disabled:opacity-50"
+            >
+              {leaveMutation.isPending ? 'Leaving...' : 'Leave Classroom'}
+            </button>
           )}
         </div>
 

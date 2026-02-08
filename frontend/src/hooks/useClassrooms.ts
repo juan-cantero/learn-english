@@ -93,6 +93,28 @@ export function useRemoveStudent(classroomId: string) {
   });
 }
 
+export function useJoinClassroom() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Classroom, Error, string>({
+    mutationFn: (joinCode) => apiPost<{ joinCode: string }, Classroom>('/classrooms/join', { joinCode }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['classrooms', 'my'] });
+    },
+  });
+}
+
+export function useLeaveClassroom() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, string>({
+    mutationFn: (classroomId) => apiDelete<void>(`/classrooms/${classroomId}/leave`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['classrooms', 'my'] });
+    },
+  });
+}
+
 export function useUpgradeToTeacher() {
   const queryClient = useQueryClient();
 

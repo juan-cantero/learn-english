@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { useMyClassrooms, useCreateClassroom, useUpgradeToTeacher } from '../hooks/useClassrooms';
+import { useMyClassrooms, useCreateClassroom, useUpgradeToTeacher, useJoinClassroom, useLeaveClassroom } from '../hooks/useClassrooms';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { EmptyState } from '../components/shared/EmptyState';
 import type { Classroom } from '../types/classroom';
@@ -31,12 +31,26 @@ const CodeIcon = () => (
   </svg>
 );
 
+const LinkIcon = () => (
+  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+  </svg>
+);
+
+const LogoutIcon = () => (
+  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  </svg>
+);
+
 interface ClassroomCardProps {
   classroom: Classroom;
   isTeaching: boolean;
+  onLeave?: (classroomId: string) => void;
+  isLeaving?: boolean;
 }
 
-function ClassroomCard({ classroom, isTeaching }: ClassroomCardProps) {
+function ClassroomCard({ classroom, isTeaching, onLeave, isLeaving }: ClassroomCardProps) {
   const [copied, setCopied] = useState(false);
 
   const copyJoinCode = (e: React.MouseEvent) => {
@@ -44,6 +58,13 @@ function ClassroomCard({ classroom, isTeaching }: ClassroomCardProps) {
     navigator.clipboard.writeText(classroom.joinCode);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLeave = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (onLeave && confirm(`Leave "${classroom.name}"? You can rejoin later with the code.`)) {
+      onLeave(classroom.id);
+    }
   };
 
   return (
@@ -63,9 +84,13 @@ function ClassroomCard({ classroom, isTeaching }: ClassroomCardProps) {
             </p>
           )}
         </div>
-        {isTeaching && (
+        {isTeaching ? (
           <span className="shrink-0 rounded-full bg-accent-primary/20 px-3 py-1 text-xs font-medium text-accent-primary">
             Teacher
+          </span>
+        ) : (
+          <span className="shrink-0 rounded-full bg-success/20 px-3 py-1 text-xs font-medium text-success">
+            Student
           </span>
         )}
       </div>
@@ -78,7 +103,7 @@ function ClassroomCard({ classroom, isTeaching }: ClassroomCardProps) {
           </span>
         </div>
 
-        {isTeaching && (
+        {isTeaching ? (
           <button
             onClick={copyJoinCode}
             className="flex items-center gap-2 rounded-lg bg-bg-dark px-3 py-1.5 font-mono text-sm text-text-primary transition-colors hover:bg-accent-primary/10 hover:text-accent-primary"
@@ -88,6 +113,15 @@ function ClassroomCard({ classroom, isTeaching }: ClassroomCardProps) {
             {copied && (
               <span className="text-xs text-success">Copied!</span>
             )}
+          </button>
+        ) : onLeave && (
+          <button
+            onClick={handleLeave}
+            disabled={isLeaving}
+            className="flex items-center gap-2 rounded-lg bg-bg-dark px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+          >
+            <LogoutIcon />
+            {isLeaving ? 'Leaving...' : 'Leave'}
           </button>
         )}
       </div>
@@ -171,12 +205,88 @@ function CreateClassroomModal({ onClose, onCreate, isCreating }: CreateClassroom
   );
 }
 
+interface JoinClassroomModalProps {
+  onClose: () => void;
+  onJoin: (joinCode: string) => void;
+  isJoining: boolean;
+  error: string | null;
+}
+
+function JoinClassroomModal({ onClose, onJoin, isJoining, error }: JoinClassroomModalProps) {
+  const [joinCode, setJoinCode] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (joinCode.trim()) {
+      onJoin(joinCode.trim().toUpperCase());
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-text-primary">Join Classroom</h2>
+        <p className="mb-4 text-sm text-text-secondary">
+          Enter the code your teacher shared with you.
+        </p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-lg bg-error/10 px-4 py-3 text-sm text-error">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="joinCode" className="mb-2 block text-sm font-medium text-text-primary">
+              Join Code
+            </label>
+            <input
+              id="joinCode"
+              type="text"
+              value={joinCode}
+              onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
+              placeholder="e.g., ABC123"
+              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-3 text-center font-mono text-2xl font-bold tracking-wider text-text-primary placeholder-text-secondary/50 uppercase focus:border-accent-primary focus:outline-none"
+              required
+              autoFocus
+              maxLength={10}
+            />
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isJoining}
+              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isJoining || !joinCode.trim()}
+              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            >
+              {isJoining ? 'Joining...' : 'Join'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export function ClassroomsPage() {
   const { data: currentUser } = useCurrentUser();
   const { data: classrooms, isLoading, error, refetch } = useMyClassrooms();
   const createMutation = useCreateClassroom();
   const upgradeMutation = useUpgradeToTeacher();
+  const joinMutation = useJoinClassroom();
+  const leaveMutation = useLeaveClassroom();
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showJoinModal, setShowJoinModal] = useState(false);
+  const [joinError, setJoinError] = useState<string | null>(null);
 
   const handleUpgradeToTeacher = () => {
     upgradeMutation.mutate();
@@ -191,6 +301,23 @@ export function ClassroomsPage() {
         },
       }
     );
+  };
+
+  const handleJoinClassroom = (joinCode: string) => {
+    setJoinError(null);
+    joinMutation.mutate(joinCode, {
+      onSuccess: () => {
+        setShowJoinModal(false);
+        setJoinError(null);
+      },
+      onError: (err) => {
+        setJoinError(err.message || 'Invalid join code. Please check and try again.');
+      },
+    });
+  };
+
+  const handleLeaveClassroom = (classroomId: string) => {
+    leaveMutation.mutate(classroomId);
   };
 
   if (isLoading) {
@@ -241,24 +368,34 @@ export function ClassroomsPage() {
           <h1 className="text-3xl font-bold text-text-primary">My Classrooms</h1>
         </div>
 
-        {!isTeacher ? (
+        <div className="flex items-center gap-3">
           <button
-            onClick={handleUpgradeToTeacher}
-            disabled={upgradeMutation.isPending}
-            className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            onClick={() => setShowJoinModal(true)}
+            className="flex items-center gap-2 rounded-lg border border-border bg-bg-card px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card-hover"
           >
-            <GraduationCapIcon />
-            {upgradeMutation.isPending ? 'Upgrading...' : 'Become a Teacher'}
+            <LinkIcon />
+            Join Classroom
           </button>
-        ) : (
-          <button
-            onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
-          >
-            <PlusIcon />
-            Create Classroom
-          </button>
-        )}
+
+          {!isTeacher ? (
+            <button
+              onClick={handleUpgradeToTeacher}
+              disabled={upgradeMutation.isPending}
+              className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            >
+              <GraduationCapIcon />
+              {upgradeMutation.isPending ? 'Upgrading...' : 'Become a Teacher'}
+            </button>
+          ) : (
+            <button
+              onClick={() => setShowCreateModal(true)}
+              className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+            >
+              <PlusIcon />
+              Create Classroom
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Teaching Section */}
@@ -303,18 +440,46 @@ export function ClassroomsPage() {
                 key={classroom.id}
                 classroom={classroom}
                 isTeaching={false}
+                onLeave={handleLeaveClassroom}
+                isLeaving={leaveMutation.isPending}
               />
             ))}
           </div>
         </div>
       )}
 
-      {/* Show modal */}
+      {/* Empty state for students with no classrooms */}
+      {!isTeacher && !hasEnrolledClassrooms && (
+        <EmptyState
+          icon="empty"
+          title="No classrooms yet"
+          description="Join a classroom using the code from your teacher."
+        >
+          <button
+            onClick={() => setShowJoinModal(true)}
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+          >
+            <LinkIcon />
+            Join Classroom
+          </button>
+        </EmptyState>
+      )}
+
+      {/* Modals */}
       {showCreateModal && (
         <CreateClassroomModal
           onClose={() => setShowCreateModal(false)}
           onCreate={handleCreateClassroom}
           isCreating={createMutation.isPending}
+        />
+      )}
+
+      {showJoinModal && (
+        <JoinClassroomModal
+          onClose={() => { setShowJoinModal(false); setJoinError(null); }}
+          onJoin={handleJoinClassroom}
+          isJoining={joinMutation.isPending}
+          error={joinError}
         />
       )}
     </div>
