@@ -17,10 +17,10 @@ import java.nio.file.Paths;
 /**
  * Local file system implementation of AudioStoragePort.
  * Stores audio files locally and serves them via the backend API.
- * Used for development when R2 is not configured.
+ * Used for development when Supabase Storage is not configured.
  */
 @Component
-@Profile("!production")
+@Profile({"dev", "test"})
 public class LocalStorageAdapter implements AudioStoragePort {
 
     private static final Logger log = LoggerFactory.getLogger(LocalStorageAdapter.class);

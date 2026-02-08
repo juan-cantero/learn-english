@@ -4,12 +4,8 @@
 
 ```
 [Netlify]  -->  [Render]  -->  [Supabase PostgreSQL]
- Frontend       Backend        Database + Auth
+ Frontend       Backend        Database + Auth + Storage
    SPA          Docker
-                   |
-                   v
-              [Cloudflare R2]
-               Audio Storage
 ```
 
 ## 1. Supabase (Database + Auth)
@@ -24,16 +20,12 @@
 
 The Flyway migrations will create all tables on first backend startup.
 
-## 2. Cloudflare R2 (Audio Storage)
+## 2. Supabase Storage (Audio)
 
-1. Go to https://dash.cloudflare.com > R2
-2. Create a bucket called `learntv-audio`
-3. Enable **public access** on the bucket (Settings > Public access)
-4. Note the public URL (e.g. `https://pub-xxxx.r2.dev`)
-5. Go to **R2 > Manage R2 API Tokens** > Create token
-   - Permissions: Object Read & Write
-   - Bucket: `learntv-audio`
-6. Note the Access Key ID and Secret Access Key
+1. In your Supabase project, go to **Storage** > **New bucket**
+2. Name: `learntv-audio`, toggle **Public** on
+3. Go to **Settings > API** and copy the `service_role` key
+4. Set `SUPABASE_SERVICE_ROLE_KEY` env var with this key
 
 ## 3. Render (Backend)
 
@@ -54,11 +46,8 @@ The Flyway migrations will create all tables on first backend startup.
 | `TMDB_API_KEY` | Your TMDB key |
 | `OPENAI_API_KEY` | Your OpenAI key |
 | `OPENSUBTITLES_API_KEY` | Your OpenSubtitles key |
-| `CLOUDFLARE_ACCOUNT_ID` | From Cloudflare |
-| `R2_ACCESS_KEY_ID` | From R2 API token |
-| `R2_SECRET_ACCESS_KEY` | From R2 API token |
-| `R2_BUCKET_NAME` | `learntv-audio` |
-| `R2_PUBLIC_URL` | Your R2 public URL |
+| `SUPABASE_SERVICE_ROLE_KEY` | From Supabase Settings > API |
+| `SUPABASE_STORAGE_BUCKET` | `learntv-audio` |
 
 4. Deploy. First build takes ~5 min. Subsequent deploys are faster.
 
@@ -87,7 +76,7 @@ The Flyway migrations will create all tables on first backend startup.
 - [ ] Register a new account - check Supabase Auth dashboard
 - [ ] Browse shows - backend is responding
 - [ ] Generate a lesson - OpenAI + TMDB + OpenSubtitles working
-- [ ] Check audio plays - R2 storage working
+- [ ] Check audio plays - Supabase Storage working
 - [ ] Create a classroom and join from another account
 
 ## Migration to VPS Later
@@ -98,5 +87,5 @@ When ready to move to a VPS:
 2. **Frontend**: `npm run build` and serve `dist/` with nginx
 3. **Database**: Keep Supabase, or self-host PostgreSQL and import the dump
 4. **Auth**: Keep Supabase Auth, or migrate to self-hosted Supabase
-5. **Storage**: R2 stays the same (just an API)
+5. **Storage**: Keep Supabase Storage, or self-host with S3-compatible storage
 6. Update DNS to point to your VPS

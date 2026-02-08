@@ -7,7 +7,7 @@
 - **Backend**: Spring Boot (Hexagonal Architecture)
 - **Auth**: Supabase Auth (JWT)
 - **Database**: PostgreSQL
-- **Storage**: Cloudflare R2 (audio files)
+- **Storage**: Supabase Storage (audio files)
 - **TTS**: Piper (local audio generation)
 - **External APIs**: TMDB, OpenSubtitles, OpenAI
 

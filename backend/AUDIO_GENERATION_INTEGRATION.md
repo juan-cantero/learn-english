@@ -5,7 +5,7 @@
 The `AudioGenerationService` orchestrates audio generation for vocabulary items. It:
 1. Generates WAV audio using Piper TTS
 2. Converts WAV to MP3 using ffmpeg
-3. Uploads MP3 files to Cloudflare R2 storage
+3. Uploads MP3 files to Supabase Storage
 4. Returns vocabulary items with populated `audioUrl` fields
 
 ## Implementation Status
@@ -190,15 +190,13 @@ piper:
   ffmpeg-quality: 2
 ```
 
-**R2 Storage** (`application.yml`):
+**Supabase Storage** (`application.yml`):
 ```yaml
-cloudflare:
-  r2:
-    account-id: your-account-id
-    access-key-id: your-access-key
-    secret-access-key: your-secret-key
+supabase:
+  url: https://xxxxx.supabase.co
+  service-role-key: your-service-role-key
+  storage:
     bucket-name: learntv-audio
-    public-url: https://audio.learntv.com
 ```
 
 ## Testing
@@ -232,7 +230,7 @@ Run tests:
 The service follows hexagonal architecture principles:
 - **Application Layer**: `AudioGenerationService` (orchestration)
 - **Port Interfaces**: `AudioGenerationPort`, `AudioStoragePort`
-- **Adapters**: `PiperTtsAdapter`, `R2StorageAdapter`
+- **Adapters**: `PiperTtsAdapter`, `SupabaseStorageAdapter`
 - **Domain Model**: `ExtractedVocabulary` (framework-agnostic)
 
 Dependencies flow inward: Service → Ports ← Adapters
