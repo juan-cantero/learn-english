@@ -31,6 +31,12 @@ export function Header() {
                 Generate
               </Link>
               <Link
+                to="/classrooms"
+                className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
+              >
+                Classes
+              </Link>
+              <Link
                 to="/progress"
                 className="text-sm font-medium text-text-secondary transition-colors hover:text-text-primary [&.active]:text-accent-primary"
               >

@@ -27,11 +27,14 @@ public class GetClassroomStudentsUseCase {
         this.userRepository = userRepository;
     }
 
-    public List<StudentInfo> execute(UUID teacherId, UUID classroomId) {
+    public List<StudentInfo> execute(UUID userId, UUID classroomId) {
         Classroom classroom = classroomRepository.findById(classroomId)
                 .orElseThrow(() -> new ClassroomNotFoundException(classroomId));
 
-        if (!classroom.isOwnedBy(teacherId)) {
+        boolean isOwner = classroom.isOwnedBy(userId);
+        boolean isEnrolled = studentRepository.existsByClassroomIdAndStudentId(classroomId, userId);
+
+        if (!isOwner && !isEnrolled) {
             throw new NotClassroomOwnerException();
         }
 
