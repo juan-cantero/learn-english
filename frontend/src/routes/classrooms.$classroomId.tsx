@@ -14,11 +14,14 @@ import {
   useCreateAssignment,
   useDeleteAssignment,
   useAssignmentSubmissions,
+  useMyAssignments,
+  useStartAssignment,
+  useCompleteAssignment,
 } from '../hooks/useAssignments';
 import { useShows, useShow } from '../hooks/useShows';
 import { useCurrentUser } from '../hooks/useCurrentUser';
 import { EmptyState } from '../components/shared/EmptyState';
-import type { AssignmentWithStatsResponse } from '../types/classroom';
+import type { AssignmentWithStatsResponse, StudentAssignmentResponse } from '../types/classroom';
 import type { Show } from '../types/show';
 
 const BackIcon = () => (
@@ -468,6 +471,71 @@ function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProp
   );
 }
 
+// --- Student Assignment Card ---
+
+interface StudentAssignmentCardProps {
+  assignment: StudentAssignmentResponse;
+  onStart: (id: string) => void;
+  onComplete: (id: string) => void;
+  isStarting: boolean;
+  isCompleting: boolean;
+}
+
+function StudentAssignmentCard({ assignment, onStart, onComplete, isStarting, isCompleting }: StudentAssignmentCardProps) {
+  return (
+    <div className="rounded-lg border border-border bg-bg-dark p-4">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h4 className="truncate font-medium text-text-primary">{assignment.title}</h4>
+            {assignment.overdue && assignment.status !== 'COMPLETED' && (
+              <span className="shrink-0 rounded-full bg-error/20 px-2 py-0.5 text-xs font-medium text-error">
+                Overdue
+              </span>
+            )}
+            <StatusBadge status={assignment.status} />
+          </div>
+          <p className="mt-1 text-sm text-text-secondary">{assignment.instructions}</p>
+          <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+            {assignment.dueDate && (
+              <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span>
+            )}
+            {assignment.score !== null && (
+              <span className="font-mono font-bold text-accent-primary">Score: {assignment.score}%</span>
+            )}
+          </div>
+        </div>
+
+        <div className="shrink-0">
+          {assignment.status === 'NOT_STARTED' && (
+            <button
+              onClick={() => onStart(assignment.id)}
+              disabled={isStarting}
+              className="rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+            >
+              {isStarting ? 'Starting...' : 'Start'}
+            </button>
+          )}
+          {assignment.status === 'IN_PROGRESS' && (
+            <button
+              onClick={() => onComplete(assignment.id)}
+              disabled={isCompleting}
+              className="rounded-lg bg-success px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-success/80 disabled:opacity-50"
+            >
+              {isCompleting ? 'Completing...' : 'Complete'}
+            </button>
+          )}
+          {assignment.status === 'COMPLETED' && (
+            <span className="inline-flex items-center gap-1 rounded-lg bg-success/10 px-4 py-2 text-sm font-medium text-success">
+              Done
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ConfirmDeleteModalProps {
   classroomName: string;
   onConfirm: () => void;
@@ -520,6 +588,9 @@ export function ClassroomDetailPage() {
   const { data: assignments, isLoading: assignmentsLoading } = useClassroomAssignments(classroomId);
   const deleteAssignmentMutation = useDeleteAssignment(classroomId);
   const { data: shows } = useShows();
+  const { data: myAssignments, isLoading: myAssignmentsLoading } = useMyAssignments();
+  const startAssignmentMutation = useStartAssignment();
+  const completeAssignmentMutation = useCompleteAssignment();
 
   const [copied, setCopied] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -719,6 +790,48 @@ export function ClassroomDetailPage() {
           )}
         </div>
       )}
+
+      {/* Student Assignments Section */}
+      {!isTeacher && (() => {
+        const classroomAssignments = myAssignments?.filter((a) => a.classroomId === classroomId) || [];
+        return (
+          <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+            <div className="mb-4 flex items-center gap-2">
+              <ClipboardIcon />
+              <h2 className="text-xl font-semibold text-text-primary">
+                My Assignments ({classroomAssignments.length})
+              </h2>
+            </div>
+
+            {myAssignmentsLoading ? (
+              <div className="space-y-3">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-dark" />
+                ))}
+              </div>
+            ) : classroomAssignments.length === 0 ? (
+              <EmptyState
+                icon="empty"
+                title="No assignments"
+                description="Your teacher hasn't assigned any lessons yet."
+              />
+            ) : (
+              <div className="space-y-3">
+                {classroomAssignments.map((assignment) => (
+                  <StudentAssignmentCard
+                    key={assignment.id}
+                    assignment={assignment}
+                    onStart={(id) => startAssignmentMutation.mutate(id)}
+                    onComplete={(id) => completeAssignmentMutation.mutate(id)}
+                    isStarting={startAssignmentMutation.isPending}
+                    isCompleting={completeAssignmentMutation.isPending}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Students List */}
       <div className="rounded-xl border border-border bg-bg-card p-6">
