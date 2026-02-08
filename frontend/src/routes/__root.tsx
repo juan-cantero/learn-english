@@ -12,6 +12,8 @@ import { EpisodeListPage } from './generate/shows.$tmdbId.seasons.$season';
 import { EpisodeConfirmationPage } from './generate/shows.$tmdbId.seasons.$season.episodes.$episode';
 import { LoginPage } from './LoginPage';
 import { RegisterPage } from './RegisterPage';
+import { ClassroomsPage } from './classrooms';
+import { ClassroomDetailPage } from './classrooms.$classroomId';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -113,6 +115,26 @@ const generateEpisodeConfirmRoute = createRoute({
   ),
 });
 
+const classroomsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/classrooms',
+  component: () => (
+    <ProtectedRoute>
+      <ClassroomsPage />
+    </ProtectedRoute>
+  ),
+});
+
+const classroomDetailRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/classrooms/$classroomId',
+  component: () => (
+    <ProtectedRoute>
+      <ClassroomDetailPage />
+    </ProtectedRoute>
+  ),
+});
+
 export const routeTree = rootRoute.addChildren([
   indexRoute,
   showRoute,
@@ -122,6 +144,8 @@ export const routeTree = rootRoute.addChildren([
   generateShowDetailRoute,
   generateEpisodeListRoute,
   generateEpisodeConfirmRoute,
+  classroomsRoute,
+  classroomDetailRoute,
   loginRoute,
   registerRoute,
 ]);
