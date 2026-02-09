@@ -41,6 +41,8 @@ supabase:
   jwt:
     secret: ${SUPABASE_JWT_SECRET:}
     issuer: ${SUPABASE_URL:https://localhost}/auth/v1
+    ec-public-key-x: ${SUPABASE_JWT_EC_KEY_X:}
+    ec-public-key-y: ${SUPABASE_JWT_EC_KEY_Y:}
   storage:
     bucket-name: ${SUPABASE_STORAGE_BUCKET:learntv-audio}
 
