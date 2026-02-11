@@ -53,6 +53,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         // Public API endpoints (read-only catalog browsing)
                         .requestMatchers(HttpMethod.GET, "/api/v1/shows/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/audio/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/tts/**").permitAll()
 
                         // Generation endpoints (for development, may restrict later)
                         .requestMatchers("/api/v1/generation/**").permitAll()
