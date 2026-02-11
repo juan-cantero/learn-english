@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useCheckAnswer } from '../../hooks/useLesson';
+import { API_BASE_URL } from '../../api/client';
 import type { Exercise } from '../../types/lesson';
 
 interface ListeningExerciseProps {
@@ -45,7 +46,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
     const word = extractWord(exercise.question);
     return word
-      ? `http://localhost:8080/api/v1/tts/speak?text=${encodeURIComponent(word)}`
+      ? `${API_BASE_URL}/tts/speak?text=${encodeURIComponent(word)}`
       : '';
   };
 
