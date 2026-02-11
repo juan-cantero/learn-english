@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { API_BASE_URL } from '../../api/client';
 
 interface AudioPlayerProps {
   src: string;
@@ -12,7 +13,7 @@ type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5;
 
 const SPEEDS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5];
-const TTS_API_BASE = 'http://localhost:8080/api/v1/tts/speak';
+const TTS_API_BASE = `${API_BASE_URL}/tts/speak`;
 
 export function AudioPlayer({
   src,
