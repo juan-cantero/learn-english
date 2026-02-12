@@ -9,8 +9,8 @@ interface SeasonGridProps {
 export function SeasonGrid({ seasons, onSelectSeason }: SeasonGridProps) {
   if (seasons.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-bg-card p-8 text-center">
-        <p className="text-text-secondary">No seasons available</p>
+      <div className="rounded-xl border border-edge-default bg-bg-card p-8 text-center">
+        <p className="text-content-secondary">No seasons available</p>
       </div>
     );
   }

@@ -66,7 +66,7 @@ export function EpisodeSelector({
     <div className="space-y-4">
       <div className="grid gap-4 sm:grid-cols-3">
         <div>
-          <label htmlFor="season" className="mb-2 block text-sm font-medium text-text-primary">
+          <label htmlFor="season" className="mb-2 block text-sm font-medium text-content-primary">
             Season
           </label>
           <input
@@ -76,12 +76,12 @@ export function EpisodeSelector({
             max="20"
             value={season}
             onChange={(e) => handleSeasonChange(e.target.value)}
-            className="w-full rounded-lg border border-border bg-bg-card px-4 py-2 font-mono text-text-primary transition-colors focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+            className="w-full rounded-lg border border-edge-default bg-bg-card px-4 py-2 font-mono text-content-primary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50"
           />
         </div>
 
         <div>
-          <label htmlFor="episode" className="mb-2 block text-sm font-medium text-text-primary">
+          <label htmlFor="episode" className="mb-2 block text-sm font-medium text-content-primary">
             Episode
           </label>
           <input
@@ -91,19 +91,19 @@ export function EpisodeSelector({
             max="50"
             value={episode}
             onChange={(e) => handleEpisodeChange(e.target.value)}
-            className="w-full rounded-lg border border-border bg-bg-card px-4 py-2 font-mono text-text-primary transition-colors focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+            className="w-full rounded-lg border border-edge-default bg-bg-card px-4 py-2 font-mono text-content-primary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50"
           />
         </div>
 
         <div>
-          <label htmlFor="genre" className="mb-2 block text-sm font-medium text-text-primary">
+          <label htmlFor="genre" className="mb-2 block text-sm font-medium text-content-primary">
             Genre
           </label>
           <select
             id="genre"
             value={genre}
             onChange={(e) => handleGenreChange(e.target.value)}
-            className="w-full rounded-lg border border-border bg-bg-card px-4 py-2 text-text-primary transition-colors focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+            className="w-full rounded-lg border border-edge-default bg-bg-card px-4 py-2 text-content-primary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50"
           >
             {GENRES.map((g) => (
               <option key={g} value={g}>
@@ -114,9 +114,9 @@ export function EpisodeSelector({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-bg-card p-4">
-        <p className="text-sm text-text-secondary">
-          Selected: <span className="font-mono text-text-primary">S{season.toString().padStart(2, '0')}E{episode.toString().padStart(2, '0')}</span> - {GENRE_LABELS[genre]}
+      <div className="rounded-lg border border-edge-default bg-bg-card p-4">
+        <p className="text-sm text-content-secondary">
+          Selected: <span className="font-mono text-content-primary">S{season.toString().padStart(2, '0')}E{episode.toString().padStart(2, '0')}</span> - {GENRE_LABELS[genre]}
         </p>
       </div>
     </div>

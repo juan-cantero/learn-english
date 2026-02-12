@@ -63,7 +63,7 @@ export function ShowDetailPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Link
           to="/generate"
-          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -90,7 +90,7 @@ export function ShowDetailPage() {
       {/* Breadcrumb */}
       <Link
         to="/generate"
-        className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -103,7 +103,7 @@ export function ShowDetailPage() {
 
       {/* Seasons */}
       <div className="mt-10">
-        <h2 className="mb-4 text-xl font-semibold text-text-primary">Select a Season</h2>
+        <h2 className="mb-4 text-xl font-semibold text-content-primary">Select a Season</h2>
         <SeasonGrid seasons={data.seasons} onSelectSeason={handleSelectSeason} />
       </div>
     </div>

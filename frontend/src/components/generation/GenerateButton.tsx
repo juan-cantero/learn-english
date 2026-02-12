@@ -9,7 +9,7 @@ export function GenerateButton({ onClick, disabled, isLoading }: GenerateButtonP
     <button
       onClick={onClick}
       disabled={disabled || isLoading}
-      className="w-full rounded-lg bg-accent-primary px-6 py-3 font-semibold text-white transition-all hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-accent-primary"
+      className="w-full rounded-lg bg-brand px-6 py-3 font-semibold text-white transition-all hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-brand"
     >
       {isLoading ? (
         <span className="flex items-center justify-center gap-2">
