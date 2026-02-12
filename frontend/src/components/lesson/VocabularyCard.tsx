@@ -6,15 +6,15 @@ interface VocabularyCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  MEDICAL: 'bg-red-900/30 text-red-400 border-red-800/50',
-  TECHNICAL: 'bg-blue-900/30 text-blue-400 border-blue-800/50',
-  SLANG: 'bg-purple-900/30 text-purple-400 border-purple-800/50',
-  IDIOM: 'bg-yellow-900/30 text-yellow-400 border-yellow-800/50',
-  PROFESSIONAL: 'bg-cyan-900/30 text-cyan-400 border-cyan-800/50',
-  EVERYDAY: 'bg-green-900/30 text-green-400 border-green-800/50',
-  EMOTIONAL: 'bg-pink-900/30 text-pink-400 border-pink-800/50',
-  COLLOQUIAL: 'bg-orange-900/30 text-orange-400 border-orange-800/50',
-  ACTION: 'bg-indigo-900/30 text-indigo-400 border-indigo-800/50',
+  MEDICAL: 'bg-cat-medical-bg text-cat-medical border-cat-medical/30',
+  TECHNICAL: 'bg-cat-technical-bg text-cat-technical border-cat-technical/30',
+  SLANG: 'bg-cat-emotional-bg text-cat-emotional border-cat-emotional/30',
+  IDIOM: 'bg-cat-general-bg text-cat-general border-cat-general/30',
+  PROFESSIONAL: 'bg-cat-workplace-bg text-cat-workplace border-cat-workplace/30',
+  EVERYDAY: 'bg-cat-informal-bg text-cat-informal border-cat-informal/30',
+  EMOTIONAL: 'bg-cat-academic-bg text-cat-academic border-cat-academic/30',
+  COLLOQUIAL: 'bg-cat-emergency-bg text-cat-emergency border-cat-emergency/30',
+  ACTION: 'bg-cat-legal-bg text-cat-legal border-cat-legal/30',
 };
 
 const categoryLabels: Record<string, string> = {
@@ -34,12 +34,12 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
   const categoryLabel = categoryLabels[vocabulary.category] || vocabulary.category;
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5 transition-colors hover:border-accent-primary/30">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5 transition-colors hover:border-brand/30">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <h4 className="text-lg font-semibold text-text-primary">{vocabulary.term}</h4>
+          <h4 className="text-lg font-semibold text-content-primary">{vocabulary.term}</h4>
           {vocabulary.phonetic && (
-            <p className="font-mono text-sm text-text-secondary">{vocabulary.phonetic}</p>
+            <p className="font-mono text-sm text-content-secondary">{vocabulary.phonetic}</p>
           )}
         </div>
         <div className="flex items-center gap-2">
@@ -54,16 +54,16 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
         </div>
       </div>
 
-      <p className="text-text-primary">{vocabulary.definition}</p>
+      <p className="text-content-primary">{vocabulary.definition}</p>
 
       {vocabulary.exampleSentence && (
-        <div className="mt-4 rounded-lg bg-bg-dark p-3">
-          <p className="text-sm italic text-text-secondary">"{vocabulary.exampleSentence}"</p>
+        <div className="mt-4 rounded-lg bg-bg-inset p-3">
+          <p className="text-sm italic text-content-secondary">"{vocabulary.exampleSentence}"</p>
         </div>
       )}
 
       {vocabulary.contextTimestamp && (
-        <p className="mt-3 font-mono text-xs text-text-secondary">
+        <p className="mt-3 font-mono text-xs text-content-secondary">
           Used at: {vocabulary.contextTimestamp}
         </p>
       )}

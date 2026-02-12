@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearch, Link } from '@tanstack/react-router'
 import { useAuth } from '../context/AuthContext'
-import '../styles/auth.css'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
@@ -13,7 +12,6 @@ export function LoginPage() {
   const search = useSearch({ strict: false }) as { redirect?: string }
   const redirectTo = search?.redirect || '/'
 
-  // If already logged in, redirect away from login page
   useEffect(() => {
     if (user) {
       navigate({ to: redirectTo })
@@ -36,22 +34,22 @@ export function LoginPage() {
   }
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
-        <div className="auth-header">
-          <h1>Welcome Back</h1>
-          <p>Sign in to continue learning</p>
+    <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
+      <div className="w-full max-w-[400px] rounded-xl border border-edge-default bg-bg-card p-8 shadow-lg">
+        <div className="mb-8 text-center">
+          <h1 className="text-2xl font-semibold text-content-primary">Welcome Back</h1>
+          <p className="mt-2 text-content-secondary">Sign in to continue learning</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="auth-form">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
           {error && (
-            <div className="auth-error">
+            <div className="rounded-lg border border-error/30 bg-error-muted px-4 py-3 text-sm text-error">
               {error}
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email" className="text-sm font-medium text-content-secondary">Email</label>
             <input
               id="email"
               type="email"
@@ -60,11 +58,12 @@ export function LoginPage() {
               placeholder="you@example.com"
               required
               disabled={loading}
+              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-muted disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="password" className="text-sm font-medium text-content-secondary">Password</label>
             <input
               id="password"
               type="password"
@@ -73,18 +72,23 @@ export function LoginPage() {
               placeholder="Your password"
               required
               disabled={loading}
+              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-muted disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
-          <button type="submit" className="auth-button" disabled={loading}>
+          <button
+            type="submit"
+            disabled={loading}
+            className="mt-2 rounded-lg bg-brand px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-brand-hover active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+          >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="auth-footer">
+        <div className="mt-6 text-center text-sm text-content-secondary">
           <p>
             Don't have an account?{' '}
-            <Link to="/register">Sign up</Link>
+            <Link to="/register" className="font-medium text-brand hover:text-brand-light">Sign up</Link>
           </p>
         </div>
       </div>

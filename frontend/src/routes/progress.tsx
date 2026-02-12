@@ -17,10 +17,10 @@ export function ProgressPage() {
             ))}
           </div>
           <div className="mt-8 rounded-xl bg-bg-card p-6">
-            <div className="mb-6 h-6 w-40 rounded bg-bg-dark" />
+            <div className="mb-6 h-6 w-40 rounded bg-bg-inset" />
             <div className="space-y-4">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-24 rounded-lg bg-bg-dark" />
+                <div key={i} className="h-24 rounded-lg bg-bg-inset" />
               ))}
             </div>
           </div>
@@ -32,7 +32,7 @@ export function ProgressPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="mb-8 text-3xl font-bold text-text-primary">My Progress</h1>
+        <h1 className="mb-8 text-3xl font-bold text-content-primary">My Progress</h1>
         <EmptyState
           icon="connection"
           title="Failed to load progress"
@@ -55,36 +55,36 @@ export function ProgressPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <h1 className="mb-8 text-3xl font-bold text-text-primary">My Progress</h1>
+      <h1 className="mb-8 text-3xl font-bold text-content-primary">My Progress</h1>
 
       <div className="mb-8 grid gap-6 md:grid-cols-3">
-        <div className="rounded-xl border border-border bg-bg-card p-6">
-          <p className="text-sm text-text-secondary">Total Points</p>
-          <p className="mt-2 font-mono text-4xl font-bold text-accent-primary">
+        <div className="rounded-xl border border-edge-default bg-bg-card p-6">
+          <p className="text-sm text-content-secondary">Total Points</p>
+          <p className="mt-2 font-mono text-4xl font-bold text-brand">
             {snapshot.totalPoints.toLocaleString()}
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-bg-card p-6">
-          <p className="text-sm text-text-secondary">Lessons Started</p>
-          <p className="mt-2 font-mono text-4xl font-bold text-text-primary">
+        <div className="rounded-xl border border-edge-default bg-bg-card p-6">
+          <p className="text-sm text-content-secondary">Lessons Started</p>
+          <p className="mt-2 font-mono text-4xl font-bold text-content-primary">
             {snapshot.totalLessonsStarted}
           </p>
         </div>
 
-        <div className="rounded-xl border border-border bg-bg-card p-6">
-          <p className="text-sm text-text-secondary">Lessons Completed</p>
+        <div className="rounded-xl border border-edge-default bg-bg-card p-6">
+          <p className="text-sm text-content-secondary">Lessons Completed</p>
           <div className="mt-2 flex items-end justify-between">
             <p className="font-mono text-4xl font-bold text-success">
               {snapshot.totalLessonsCompleted}
             </p>
-            <span className="font-mono text-lg text-text-secondary">{completionRate}%</span>
+            <span className="font-mono text-lg text-content-secondary">{completionRate}%</span>
           </div>
         </div>
       </div>
 
-      <div className="rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-6 text-xl font-semibold text-text-primary">Recent Activity</h2>
+      <div className="rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-6 text-xl font-semibold text-content-primary">Recent Activity</h2>
 
         {!snapshot.recentProgress?.length ? (
           <EmptyState
@@ -94,7 +94,7 @@ export function ProgressPage() {
           >
             <Link
               to="/generate"
-              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -114,7 +114,7 @@ export function ProgressPage() {
                 <div className="flex items-center gap-4">
                   <div
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg ${
-                      progress.completed ? 'bg-success/20 text-success' : 'bg-accent-primary/20 text-accent-primary'
+                      progress.completed ? 'bg-success/20 text-success' : 'bg-brand-muted text-brand'
                     }`}
                   >
                     {progress.completed ? (
@@ -140,14 +140,14 @@ export function ProgressPage() {
                   <div className="min-w-0 flex-1">
                     <div className="mb-2 flex items-center justify-between gap-2">
                       <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium text-text-primary">
+                        <p className="truncate font-medium text-content-primary">
                           {episodeTitle}
                         </p>
                         {episodeLabel && (
-                          <p className="text-xs text-text-secondary">{episodeLabel}</p>
+                          <p className="text-xs text-content-secondary">{episodeLabel}</p>
                         )}
                       </div>
-                      <span className="shrink-0 font-mono text-sm text-accent-primary">
+                      <span className="shrink-0 font-mono text-sm text-brand">
                         {progress.totalPoints} pts
                       </span>
                     </div>
@@ -162,7 +162,7 @@ export function ProgressPage() {
                       }
                       size="sm"
                     />
-                    <div className="mt-2 flex flex-wrap gap-3 text-xs text-text-secondary">
+                    <div className="mt-2 flex flex-wrap gap-3 text-xs text-content-secondary">
                       <span>Vocab: {progress.vocabularyScore}</span>
                       <span>Grammar: {progress.grammarScore}</span>
                       <span>Expressions: {progress.expressionsScore}</span>
@@ -171,11 +171,11 @@ export function ProgressPage() {
                   </div>
 
                   <div className="flex shrink-0 flex-col items-end gap-1">
-                    <p className="text-xs text-text-secondary">
+                    <p className="text-xs text-content-secondary">
                       {new Date(progress.lastAccessed).toLocaleDateString()}
                     </p>
                     {progress.episode && !progress.completed && (
-                      <span className="text-xs text-accent-primary">Continue →</span>
+                      <span className="text-xs text-brand">Continue →</span>
                     )}
                   </div>
                 </div>
@@ -191,7 +191,7 @@ export function ProgressPage() {
                       slug: progress.episode.showSlug,
                       episodeSlug: progress.episode.episodeSlug,
                     }}
-                    className="block rounded-lg border border-border bg-bg-dark p-4 transition-colors hover:border-accent-primary/50 hover:bg-bg-card"
+                    className="block rounded-lg border border-edge-default bg-bg-inset p-4 transition-colors hover:border-brand/50 hover:bg-bg-card"
                   >
                     {content}
                   </Link>
@@ -201,7 +201,7 @@ export function ProgressPage() {
               return (
                 <div
                   key={progress.id}
-                  className="rounded-lg border border-border bg-bg-dark p-4"
+                  className="rounded-lg border border-edge-default bg-bg-inset p-4"
                 >
                   {content}
                 </div>

@@ -15,14 +15,14 @@ export function ProgressBar({ percentage, size = 'md', showLabel = false }: Prog
 
   return (
     <div className="w-full">
-      <div className={`w-full overflow-hidden rounded-full bg-bg-dark ${heights[size]}`}>
+      <div className={`w-full overflow-hidden rounded-full bg-bg-inset ${heights[size]}`}>
         <div
-          className="h-full rounded-full bg-accent-primary transition-all duration-500"
+          className="h-full rounded-full bg-brand transition-all duration-500"
           style={{ width: `${clampedPercentage}%` }}
         />
       </div>
       {showLabel && (
-        <span className="mt-1 block text-right font-mono text-xs text-text-secondary">
+        <span className="mt-1 block text-right font-mono text-xs text-content-secondary">
           {Math.round(clampedPercentage)}%
         </span>
       )}

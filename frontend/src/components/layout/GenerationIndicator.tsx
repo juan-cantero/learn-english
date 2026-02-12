@@ -25,13 +25,13 @@ export function GenerationIndicator() {
           to="/shows/$slug/episodes/$episodeSlug"
           params={{ slug: job.showSlug, episodeSlug }}
           onClick={clearGeneration}
-          className="text-sm font-medium text-accent-primary hover:text-accent-primary/80"
+          className="text-sm font-medium text-brand hover:text-brand/80"
         >
           Go to lesson
         </Link>
         <button
           onClick={clearGeneration}
-          className="ml-1 text-text-secondary hover:text-text-primary"
+          className="ml-1 text-content-secondary hover:text-content-primary"
           aria-label="Dismiss"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -56,7 +56,7 @@ export function GenerationIndicator() {
         </div>
         <button
           onClick={clearGeneration}
-          className="text-sm font-medium text-text-secondary hover:text-text-primary"
+          className="text-sm font-medium text-content-secondary hover:text-content-primary"
         >
           Dismiss
         </button>
@@ -66,12 +66,12 @@ export function GenerationIndicator() {
 
   // Processing state
   return (
-    <div className="flex items-center gap-3 rounded-lg bg-accent-primary/10 px-3 py-1.5">
-      <div className="h-4 w-4 animate-spin rounded-full border-2 border-accent-primary border-t-transparent" />
-      <span className="text-sm text-text-primary">
+    <div className="flex items-center gap-3 rounded-lg bg-brand-muted px-3 py-1.5">
+      <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand border-t-transparent" />
+      <span className="text-sm text-content-primary">
         Generating {job.showTitle} S{job.season}E{job.episode}...
       </span>
-      <span className="font-mono text-sm text-accent-primary">{job.progress}%</span>
+      <span className="font-mono text-sm text-brand">{job.progress}%</span>
     </div>
   );
 }

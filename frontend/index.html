@@ -2,10 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%23dc2626' rx='15' width='100' height='100'/><text y='.9em' x='50%' text-anchor='middle' font-size='70' font-family='sans-serif' fill='white'>TV</text></svg>" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' rx='15' width='100' height='100'/><text y='.9em' x='50%' text-anchor='middle' font-size='70' font-family='sans-serif' fill='white'>TV</text></svg>" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="theme-color" content="#6366f1" />
     <title>LearnTV - Learn English with TV Shows</title>
+    <script>
+      // FOUC prevention: apply theme before React loads
+      (function() {
+        var stored = localStorage.getItem('learntv-theme');
+        var theme = stored || 'system';
+        var resolved = theme === 'system'
+          ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+          : theme;
+        document.documentElement.setAttribute('data-theme', resolved);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

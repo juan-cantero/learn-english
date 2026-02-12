@@ -44,16 +44,16 @@ const icons: Record<IconType, ReactNode> = {
 export function EmptyState({ icon, title, description, action, children }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-      <div className="mb-4 text-text-secondary/50">
+      <div className="mb-4 text-content-tertiary">
         {icons[icon]}
       </div>
 
-      <h3 className="mb-2 text-lg font-semibold text-text-primary">
+      <h3 className="mb-2 text-lg font-semibold text-content-primary">
         {title}
       </h3>
 
       {description && (
-        <p className="mb-6 max-w-sm text-sm text-text-secondary">
+        <p className="mb-6 max-w-sm text-sm text-content-secondary">
           {description}
         </p>
       )}
@@ -61,7 +61,7 @@ export function EmptyState({ icon, title, description, action, children }: Empty
       {action && (
         <button
           onClick={action.onClick}
-          className="rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark"
+          className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary"
         >
           {action.label}
         </button>

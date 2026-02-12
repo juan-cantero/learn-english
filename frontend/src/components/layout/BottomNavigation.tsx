@@ -58,7 +58,7 @@ export function BottomNavigation() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-bg-card pb-safe md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-edge-default bg-bg-card pb-safe md:hidden">
       <div className="flex h-16 items-center justify-around">
         {navItems.map((item) => {
           const active = isActive(item);
@@ -68,11 +68,11 @@ export function BottomNavigation() {
               to={item.to}
               className={`flex flex-1 flex-col items-center justify-center gap-1 py-2 transition-colors ${
                 active
-                  ? 'text-accent-primary'
-                  : 'text-text-secondary hover:text-text-primary'
+                  ? 'text-brand'
+                  : 'text-content-secondary hover:text-content-primary'
               }`}
             >
-              <div className={active ? 'text-accent-primary' : ''}>{item.icon}</div>
+              <div className={active ? 'text-brand' : ''}>{item.icon}</div>
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );

@@ -231,9 +231,9 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
   if (allItems.length === 0) {
     return (
-      <div className="rounded-xl border border-border bg-bg-card p-8 text-center">
+      <div className="rounded-xl border border-edge-default bg-bg-card p-8 text-center">
         <svg
-          className="mx-auto mb-4 h-12 w-12 text-text-secondary"
+          className="mx-auto mb-4 h-12 w-12 text-content-secondary"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -245,8 +245,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
             d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
           />
         </svg>
-        <h3 className="mb-2 text-lg font-semibold text-text-primary">No Audio Available</h3>
-        <p className="text-text-secondary">
+        <h3 className="mb-2 text-lg font-semibold text-content-primary">No Audio Available</h3>
+        <p className="text-content-secondary">
           There are no vocabulary or expressions with audio in this lesson.
         </p>
       </div>
@@ -256,11 +256,11 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
   return (
     <div className="space-y-6">
       {/* Header with Controls */}
-      <div className="rounded-xl border border-border bg-bg-card p-5">
+      <div className="rounded-xl border border-edge-default bg-bg-card p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold text-text-primary">Practice Pronunciation</h3>
-            <p className="text-sm text-text-secondary">
+            <h3 className="text-lg font-semibold text-content-primary">Practice Pronunciation</h3>
+            <p className="text-sm text-content-secondary">
               {items.length} items to practice ({vocabulary.filter((v) => v.audioUrl).length}{' '}
               vocabulary, {expressions.filter((e) => e.audioUrl).length} expressions)
             </p>
@@ -272,8 +272,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
               onClick={() => setShowSettings(!showSettings)}
               className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors ${
                 showSettings
-                  ? 'border-accent-primary bg-accent-primary/10 text-accent-primary'
-                  : 'border-border text-text-secondary hover:border-accent-primary/50 hover:text-text-primary'
+                  ? 'border-brand bg-brand-muted text-brand'
+                  : 'border-edge-default text-content-secondary hover:border-brand/50 hover:text-content-primary'
               }`}
               title="Settings"
             >
@@ -299,8 +299,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
               disabled={isPlaying}
               className={`flex h-10 w-10 items-center justify-center rounded-lg border transition-colors ${
                 isShuffled
-                  ? 'border-accent-primary bg-accent-primary/10 text-accent-primary'
-                  : 'border-border text-text-secondary hover:border-accent-primary/50 hover:text-text-primary'
+                  ? 'border-brand bg-brand-muted text-brand'
+                  : 'border-edge-default text-content-secondary hover:border-brand/50 hover:text-content-primary'
               } disabled:opacity-50`}
               title={isShuffled ? 'Unshuffle' : 'Shuffle'}
             >
@@ -332,8 +332,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
               onClick={handlePlayAll}
               className={`flex h-10 items-center gap-2 rounded-lg px-4 font-medium transition-colors ${
                 isPlaying && !isPaused
-                  ? 'bg-accent-primary/20 text-accent-primary'
-                  : 'bg-accent-primary text-white hover:bg-accent-primary/90'
+                  ? 'bg-brand-muted text-brand'
+                  : 'bg-brand text-white hover:bg-brand-hover'
               }`}
             >
               {isPlaying && !isPaused ? (
@@ -364,11 +364,11 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
         {/* Settings Panel */}
         {showSettings && (
-          <div className="mb-4 rounded-lg border border-border bg-bg-dark p-4">
+          <div className="mb-4 rounded-lg border border-edge-default bg-bg-inset p-4">
             <div className="grid gap-4 sm:grid-cols-2">
               {/* Speed Control */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-text-secondary">
+                <label className="mb-2 block text-sm font-medium text-content-secondary">
                   Playback Speed
                 </label>
                 <div className="flex gap-1">
@@ -378,8 +378,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                       onClick={() => setSpeed(s)}
                       className={`rounded-lg px-3 py-1.5 font-mono text-sm transition-colors ${
                         speed === s
-                          ? 'bg-accent-primary text-white'
-                          : 'bg-bg-card text-text-secondary hover:text-text-primary'
+                          ? 'bg-brand text-white'
+                          : 'bg-bg-card text-content-secondary hover:text-content-primary'
                       }`}
                     >
                       {s}x
@@ -390,7 +390,7 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
               {/* Repeat Control */}
               <div>
-                <label className="mb-2 block text-sm font-medium text-text-secondary">
+                <label className="mb-2 block text-sm font-medium text-content-secondary">
                   Repeat Each Word
                 </label>
                 <div className="flex gap-1">
@@ -400,8 +400,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                       onClick={() => setRepeatCount(r)}
                       className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         repeatCount === r
-                          ? 'bg-accent-primary text-white'
-                          : 'bg-bg-card text-text-secondary hover:text-text-primary'
+                          ? 'bg-brand text-white'
+                          : 'bg-bg-card text-content-secondary hover:text-content-primary'
                       }`}
                     >
                       {r}x
@@ -416,19 +416,19 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
         {/* Progress Bar */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm text-text-secondary">
+            <span className="text-sm text-content-secondary">
               {practicedIds.size} of {items.length} practiced
             </span>
             <button
               onClick={resetProgress}
-              className="text-sm text-text-secondary transition-colors hover:text-accent-primary"
+              className="text-sm text-content-secondary transition-colors hover:text-brand"
             >
               Reset
             </button>
           </div>
-          <div className="h-2 overflow-hidden rounded-full bg-bg-dark">
+          <div className="h-2 overflow-hidden rounded-full bg-bg-inset">
             <div
-              className="h-full rounded-full bg-accent-primary transition-all duration-300"
+              className="h-full rounded-full bg-brand transition-all duration-300"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -442,21 +442,21 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
             key={item.id}
             className={`flex items-center gap-4 rounded-xl border p-4 transition-all ${
               currentIndex === index
-                ? 'border-accent-primary bg-accent-primary/5'
+                ? 'border-brand bg-brand-muted'
                 : practicedIds.has(item.id)
                   ? 'border-success/30 bg-success/5'
-                  : 'border-border bg-bg-card hover:border-accent-primary/30'
+                  : 'border-edge-default bg-bg-card hover:border-brand/30'
             }`}
           >
             {/* Index */}
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-dark font-mono text-sm text-text-secondary">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-inset font-mono text-sm text-content-secondary">
               {index + 1}
             </span>
 
             {/* Content */}
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-text-primary">{item.text}</span>
+                <span className="font-medium text-content-primary">{item.text}</span>
                 <span
                   className={`rounded px-1.5 py-0.5 text-xs ${
                     item.type === 'vocabulary'
@@ -476,7 +476,7 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                   </svg>
                 )}
               </div>
-              <p className="truncate text-sm text-text-secondary">{item.definition}</p>
+              <p className="truncate text-sm text-content-secondary">{item.definition}</p>
             </div>
 
             {/* Play Button */}
@@ -485,8 +485,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
               disabled={isPlaying && currentIndex !== index}
               className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
                 currentIndex === index
-                  ? 'bg-accent-primary text-white'
-                  : 'text-text-secondary hover:bg-bg-dark hover:text-accent-primary disabled:opacity-50'
+                  ? 'bg-brand text-white'
+                  : 'text-content-secondary hover:bg-bg-inset hover:text-brand disabled:opacity-50'
               }`}
               title="Play"
             >
@@ -511,7 +511,7 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
             {/* Repeat indicator when playing */}
             {currentIndex === index && repeatCount > 1 && (
-              <span className="shrink-0 font-mono text-sm text-accent-primary">
+              <span className="shrink-0 font-mono text-sm text-brand">
                 {currentRepeat}/{repeatCount}
               </span>
             )}

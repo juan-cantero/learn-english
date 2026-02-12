@@ -59,8 +59,8 @@ export function MultipleChoice({ exercise, showSlug, episodeSlug }: MultipleChoi
   const getOptionStyle = (option: string) => {
     if (state === 'idle' || state === 'checking') {
       return selectedOption === option
-        ? 'border-accent-primary bg-accent-primary/10'
-        : 'border-border hover:border-accent-primary/50 hover:bg-bg-card-hover';
+        ? 'border-brand bg-brand-muted'
+        : 'border-edge-default hover:border-brand/50 hover:bg-bg-card-hover';
     }
 
     if (state === 'correct' && selectedOption === option) {
@@ -76,19 +76,19 @@ export function MultipleChoice({ exercise, showSlug, episodeSlug }: MultipleChoi
       }
     }
 
-    return 'border-border opacity-50';
+    return 'border-edge-default opacity-50';
   };
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5">
       <div className="mb-1 flex items-center justify-between">
-        <span className="rounded bg-bg-dark px-2 py-1 text-xs font-medium text-text-secondary">
+        <span className="rounded bg-bg-inset px-2 py-1 text-xs font-medium text-content-secondary">
           Multiple Choice
         </span>
-        <span className="font-mono text-sm text-accent-primary">{exercise.points} pts</span>
+        <span className="font-mono text-sm text-brand">{exercise.points} pts</span>
       </div>
 
-      <p className="my-4 text-lg text-text-primary">{exercise.question}</p>
+      <p className="my-4 text-lg text-content-primary">{exercise.question}</p>
 
       <div className="space-y-2">
         {options.map((option, index) => (
@@ -105,13 +105,13 @@ export function MultipleChoice({ exercise, showSlug, episodeSlug }: MultipleChoi
                     ? 'border-success bg-success text-white'
                     : state === 'incorrect'
                       ? 'border-error bg-error text-white'
-                      : 'border-accent-primary bg-accent-primary text-white'
-                  : 'border-text-secondary text-text-secondary'
+                      : 'border-brand bg-brand text-white'
+                  : 'border-content-secondary text-content-secondary'
               }`}
             >
               {String.fromCharCode(65 + index)}
             </span>
-            <span className="text-text-primary">{option}</span>
+            <span className="text-content-primary">{option}</span>
             {state === 'correct' && selectedOption === option && (
               <svg className="ml-auto h-5 w-5 text-success" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -176,7 +176,7 @@ export function MultipleChoice({ exercise, showSlug, episodeSlug }: MultipleChoi
           </div>
           <button
             onClick={handleReset}
-            className="rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary"
+            className="rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm text-content-secondary transition-colors hover:bg-bg-card-hover hover:text-content-primary"
           >
             Try Again
           </button>

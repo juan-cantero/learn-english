@@ -6,17 +6,17 @@ interface GrammarCardProps {
 
 export function GrammarCard({ grammarPoint }: GrammarCardProps) {
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5 transition-colors hover:border-accent-primary/30">
-      <h4 className="mb-3 text-lg font-semibold text-text-primary">{grammarPoint.title}</h4>
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5 transition-colors hover:border-brand/30">
+      <h4 className="mb-3 text-lg font-semibold text-content-primary">{grammarPoint.title}</h4>
 
-      <p className="text-text-secondary">{grammarPoint.explanation}</p>
+      <p className="text-content-secondary">{grammarPoint.explanation}</p>
 
       {grammarPoint.structure && (
         <div className="mt-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-content-secondary">
             Structure
           </p>
-          <div className="rounded-lg bg-bg-dark p-3 font-mono text-sm text-accent-primary">
+          <div className="rounded-lg bg-bg-inset p-3 font-mono text-sm text-brand">
             {grammarPoint.structure}
           </div>
         </div>
@@ -24,19 +24,19 @@ export function GrammarCard({ grammarPoint }: GrammarCardProps) {
 
       {grammarPoint.example && (
         <div className="mt-4">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-content-secondary">
             Example
           </p>
-          <p className="rounded-lg bg-bg-dark p-3 text-sm italic text-text-primary">
+          <p className="rounded-lg bg-bg-inset p-3 text-sm italic text-content-primary">
             "{grammarPoint.example}"
           </p>
         </div>
       )}
 
       {grammarPoint.contextQuote && (
-        <div className="mt-4 border-l-2 border-accent-primary pl-4">
-          <p className="text-sm text-text-secondary">
-            <span className="font-medium text-accent-primary">From the show:</span>{' '}
+        <div className="mt-4 border-l-2 border-brand pl-4">
+          <p className="text-sm text-content-secondary">
+            <span className="font-medium text-brand">From the show:</span>{' '}
             "{grammarPoint.contextQuote}"
           </p>
         </div>

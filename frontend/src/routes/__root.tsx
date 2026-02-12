@@ -17,7 +17,7 @@ import { ClassroomDetailPage } from './classrooms.$classroomId';
 
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="min-h-screen bg-bg-dark">
+    <div className="min-h-screen bg-bg-primary">
       <Header />
       <main className="pb-20 md:pb-0">
         <Outlet />

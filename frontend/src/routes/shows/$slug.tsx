@@ -4,9 +4,9 @@ import { Navigation } from '../../components/layout/Navigation';
 import { EpisodeList } from '../../components/show/EpisodeList';
 
 const difficultyColors = {
-  BEGINNER: 'bg-green-900/50 text-green-400',
-  INTERMEDIATE: 'bg-yellow-900/50 text-yellow-400',
-  ADVANCED: 'bg-red-900/50 text-red-400',
+  BEGINNER: 'bg-diff-beginner-bg text-diff-beginner',
+  INTERMEDIATE: 'bg-diff-intermediate-bg text-diff-intermediate',
+  ADVANCED: 'bg-diff-advanced-bg text-diff-advanced',
 };
 
 export function ShowPage() {
@@ -60,7 +60,7 @@ export function ShowPage() {
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center">
-                <span className="text-5xl font-bold text-text-secondary">
+                <span className="text-5xl font-bold text-content-secondary">
                   {show.title.charAt(0)}
                 </span>
               </div>
@@ -69,13 +69,13 @@ export function ShowPage() {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-text-primary">{show.title}</h1>
+          <h1 className="text-3xl font-bold text-content-primary">{show.title}</h1>
 
           <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-text-secondary">
+            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-content-secondary">
               {show.genre}
             </span>
-            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-text-secondary">
+            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-content-secondary">
               {show.accent} English
             </span>
             <span
@@ -85,22 +85,22 @@ export function ShowPage() {
             </span>
           </div>
 
-          <p className="mt-4 text-text-secondary">{show.description}</p>
+          <p className="mt-4 text-content-secondary">{show.description}</p>
 
-          <div className="mt-6 flex gap-6 border-t border-border pt-6">
+          <div className="mt-6 flex gap-6 border-t border-edge-default pt-6">
             <div>
-              <p className="font-mono text-2xl font-bold text-text-primary">
+              <p className="font-mono text-2xl font-bold text-content-primary">
                 {data.seasonCount}
               </p>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-content-secondary">
                 {data.seasonCount === 1 ? 'Season' : 'Seasons'}
               </p>
             </div>
             <div>
-              <p className="font-mono text-2xl font-bold text-text-primary">
+              <p className="font-mono text-2xl font-bold text-content-primary">
                 {data.episodeCount}
               </p>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-content-secondary">
                 {data.episodeCount === 1 ? 'Episode' : 'Episodes'}
               </p>
             </div>
@@ -109,7 +109,7 @@ export function ShowPage() {
       </div>
 
       <div className="mt-12">
-        <h2 className="mb-6 text-2xl font-bold text-text-primary">Episodes</h2>
+        <h2 className="mb-6 text-2xl font-bold text-content-primary">Episodes</h2>
         <EpisodeList episodes={episodes} showSlug={show.slug} />
       </div>
     </div>
