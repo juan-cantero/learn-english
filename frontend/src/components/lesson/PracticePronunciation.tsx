@@ -460,8 +460,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                 <span
                   className={`rounded px-1.5 py-0.5 text-xs ${
                     item.type === 'vocabulary'
-                      ? 'bg-blue-500/10 text-blue-400'
-                      : 'bg-purple-500/10 text-purple-400'
+                      ? 'bg-info-muted text-info'
+                      : 'bg-brand-muted text-brand'
                   }`}
                 >
                   {item.type}

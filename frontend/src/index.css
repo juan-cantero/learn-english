@@ -229,14 +229,6 @@
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
 
-  /* === Backward-compatible aliases (removed in Phase 5) === */
-  --color-bg-dark: var(--bg-primary);
-  --color-accent-primary: var(--brand);
-  --color-accent-secondary: var(--brand-hover);
-  --color-accent-light: var(--brand-light);
-  --color-text-primary: var(--content-primary);
-  --color-text-secondary: var(--content-secondary);
-  --color-border: var(--edge-default);
 }
 
 /* Base styles */
