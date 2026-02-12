@@ -15,7 +15,7 @@ export function ProgressBar({ percentage, size = 'md', showLabel = false }: Prog
 
   return (
     <div className="w-full">
-      <div className={`w-full overflow-hidden rounded-full bg-bg-inset ${heights[size]}`}>
+      <div className={`w-full overflow-hidden rounded-full bg-edge-default ${heights[size]}`}>
         <div
           className="h-full rounded-full bg-brand transition-all duration-500"
           style={{ width: `${clampedPercentage}%` }}

@@ -5,7 +5,7 @@ import { UserMenu } from './UserMenu';
 
 export function Header() {
   return (
-    <header className="border-b border-edge-default bg-bg-card">
+    <header className="border-b border-edge-strong bg-bg-card shadow-sm">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link to="/" className="flex items-center gap-3 no-underline">

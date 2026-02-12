@@ -6,7 +6,7 @@ interface GrammarCardProps {
 
 export function GrammarCard({ grammarPoint }: GrammarCardProps) {
   return (
-    <div className="rounded-xl border border-edge-default bg-bg-card p-5 transition-colors hover:border-brand/30">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5 shadow-sm transition-colors hover:border-brand/30">
       <h4 className="mb-3 text-lg font-semibold text-content-primary">{grammarPoint.title}</h4>
 
       <p className="text-content-secondary">{grammarPoint.explanation}</p>

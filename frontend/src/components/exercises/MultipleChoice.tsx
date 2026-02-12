@@ -90,7 +90,7 @@ export function MultipleChoice({ exercise, showSlug, episodeSlug }: MultipleChoi
 
       <p className="my-4 text-lg text-content-primary">{exercise.question}</p>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {options.map((option, index) => (
           <button
             key={index}

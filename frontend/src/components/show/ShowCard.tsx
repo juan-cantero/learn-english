@@ -16,7 +16,7 @@ export function ShowCard({ show }: ShowCardProps) {
     <Link
       to="/shows/$slug"
       params={{ slug: show.slug }}
-      className="group block overflow-hidden rounded-xl bg-bg-card transition-all hover:bg-bg-card-hover hover:ring-1 hover:ring-brand/50 hover:scale-[1.02] hover:shadow-xl hover:shadow-brand/10 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary"
+      className="group block overflow-hidden rounded-xl bg-bg-card shadow-sm transition-all hover:bg-bg-card-hover hover:ring-1 hover:ring-brand/50 hover:scale-[1.01] hover:shadow-lg hover:shadow-brand/10 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary"
     >
       <div className="aspect-video overflow-hidden bg-bg-inset">
         {show.imageUrl ? (

@@ -7,7 +7,7 @@ interface ExpressionCardProps {
 
 export function ExpressionCard({ expression }: ExpressionCardProps) {
   return (
-    <div className="rounded-xl border border-edge-default bg-bg-card p-5 transition-colors hover:border-brand/30">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5 shadow-sm transition-colors hover:border-brand/30">
       <div className="mb-2 flex items-center gap-3">
         <h4 className="text-lg font-semibold text-brand">
           "{expression.phrase}"

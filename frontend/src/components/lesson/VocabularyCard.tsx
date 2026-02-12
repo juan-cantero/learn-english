@@ -34,7 +34,7 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
   const categoryLabel = categoryLabels[vocabulary.category] || vocabulary.category;
 
   return (
-    <div className="rounded-xl border border-edge-default bg-bg-card p-5 transition-colors hover:border-brand/30">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5 shadow-sm transition-colors hover:border-brand/30">
       <div className="mb-3 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <h4 className="text-lg font-semibold text-content-primary">{vocabulary.term}</h4>

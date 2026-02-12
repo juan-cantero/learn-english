@@ -42,7 +42,7 @@ export function RegisterPage() {
   if (success) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
-        <div className="w-full max-w-[400px] rounded-xl border border-edge-default bg-bg-card p-8 shadow-lg">
+        <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-8 shadow-xl">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-semibold text-content-primary">Check Your Email</h1>
             <p className="mt-2 text-content-secondary">We've sent you a confirmation link. Please check your email to complete registration.</p>
@@ -62,7 +62,7 @@ export function RegisterPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
-      <div className="w-full max-w-[400px] rounded-xl border border-edge-default bg-bg-card p-8 shadow-lg">
+      <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-8 shadow-xl">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold text-content-primary">Create Account</h1>
           <p className="mt-2 text-content-secondary">Start your English learning journey</p>
@@ -85,7 +85,7 @@ export function RegisterPage() {
               placeholder="you@example.com"
               required
               disabled={loading}
-              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-muted disabled:opacity-60 disabled:cursor-not-allowed"
+              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-bg-primary disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -99,7 +99,7 @@ export function RegisterPage() {
               placeholder="At least 6 characters"
               required
               disabled={loading}
-              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-muted disabled:opacity-60 disabled:cursor-not-allowed"
+              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-bg-primary disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
@@ -113,7 +113,7 @@ export function RegisterPage() {
               placeholder="Confirm your password"
               required
               disabled={loading}
-              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand-muted disabled:opacity-60 disabled:cursor-not-allowed"
+              className="rounded-lg border border-edge-default bg-bg-elevated px-4 py-3 text-content-primary placeholder:text-content-tertiary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50 focus:ring-offset-2 focus:ring-offset-bg-primary disabled:opacity-60 disabled:cursor-not-allowed"
             />
           </div>
 
