@@ -31,8 +31,8 @@ export function CategoryFilter({ categories, selected, onSelect, counts }: Categ
           onClick={() => onSelect(category)}
           className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
             selected === category
-              ? 'bg-accent-primary text-white'
-              : 'bg-bg-card text-text-secondary hover:bg-bg-card-hover hover:text-text-primary'
+              ? 'bg-brand text-white'
+              : 'bg-bg-card text-content-secondary hover:bg-bg-card-hover hover:text-content-primary'
           }`}
         >
           {categoryLabels[category]}

@@ -33,10 +33,10 @@ export function EpisodeListPage() {
           <div className="space-y-3">
             {[1, 2, 3, 4, 5, 6].map((i) => (
               <div key={i} className="flex gap-4 rounded-xl bg-bg-card p-4">
-                <div className="h-10 w-10 flex-shrink-0 rounded-full bg-bg-dark" />
+                <div className="h-10 w-10 flex-shrink-0 rounded-full bg-bg-primary" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-5 w-3/4 rounded bg-bg-dark" />
-                  <div className="h-4 w-1/2 rounded bg-bg-dark" />
+                  <div className="h-5 w-3/4 rounded bg-bg-primary" />
+                  <div className="h-4 w-1/2 rounded bg-bg-primary" />
                 </div>
               </div>
             ))}
@@ -52,7 +52,7 @@ export function EpisodeListPage() {
         <Link
           to="/generate/shows/$tmdbId"
           params={{ tmdbId }}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -80,7 +80,7 @@ export function EpisodeListPage() {
       <Link
         to="/generate/shows/$tmdbId"
         params={{ tmdbId }}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -90,10 +90,10 @@ export function EpisodeListPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-text-primary">
+        <h1 className="text-2xl font-bold text-content-primary">
           {data.showTitle} - Season {seasonNumber}
         </h1>
-        <p className="mt-1 text-text-secondary">
+        <p className="mt-1 text-content-secondary">
           {data.episodes.length} {data.episodes.length === 1 ? 'episode' : 'episodes'}
         </p>
       </div>

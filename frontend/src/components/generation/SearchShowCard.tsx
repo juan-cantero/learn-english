@@ -13,9 +13,9 @@ export function SearchShowCard({ show }: SearchShowCardProps) {
     <Link
       to="/generate/shows/$tmdbId"
       params={{ tmdbId: show.tmdbId }}
-      className="group block w-full overflow-hidden rounded-xl bg-bg-card text-left transition-all hover:bg-bg-card-hover hover:scale-[1.02] hover:shadow-xl hover:shadow-accent-primary/10 focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark hover:ring-1 hover:ring-accent-primary/50"
+      className="group block w-full overflow-hidden rounded-xl bg-bg-card text-left transition-all hover:bg-bg-card-hover hover:scale-[1.02] hover:shadow-xl hover:shadow-brand/10 focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary hover:ring-1 hover:ring-brand/50"
     >
-      <div className="aspect-[2/3] overflow-hidden bg-bg-dark">
+      <div className="aspect-[2/3] overflow-hidden bg-bg-inset">
         {posterUrl ? (
           <img
             src={posterUrl}
@@ -24,7 +24,7 @@ export function SearchShowCard({ show }: SearchShowCardProps) {
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center">
-            <span className="text-4xl font-bold text-text-secondary">
+            <span className="text-4xl font-bold text-content-secondary">
               {show.title.charAt(0)}
             </span>
           </div>
@@ -32,15 +32,15 @@ export function SearchShowCard({ show }: SearchShowCardProps) {
       </div>
 
       <div className="p-3 sm:p-4">
-        <h3 className="mb-1 text-sm font-semibold text-text-primary group-hover:text-accent-primary sm:text-lg">
+        <h3 className="mb-1 text-sm font-semibold text-content-primary group-hover:text-brand sm:text-lg">
           {show.title}
         </h3>
 
-        <p className="font-mono text-xs text-text-secondary">
+        <p className="font-mono text-xs text-content-secondary">
           {show.year}
         </p>
 
-        <p className="mt-2 hidden line-clamp-2 text-sm text-text-secondary sm:block sm:line-clamp-3">
+        <p className="mt-2 hidden line-clamp-2 text-sm text-content-secondary sm:block sm:line-clamp-3">
           {show.overview}
         </p>
       </div>

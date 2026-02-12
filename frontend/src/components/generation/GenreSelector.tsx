@@ -26,10 +26,10 @@ export function GenreSelector({ value, onChange }: GenreSelectorProps) {
           key={genre.value}
           type="button"
           onClick={() => onChange(genre.value)}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark ${
+          className={`rounded-full px-4 py-2 text-sm font-medium transition-all focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary ${
             value === genre.value
-              ? 'bg-accent-primary text-white shadow-md shadow-accent-primary/25'
-              : 'bg-bg-card text-text-secondary hover:bg-bg-card-hover hover:text-text-primary'
+              ? 'bg-brand text-white shadow-md shadow-brand/25'
+              : 'bg-bg-card text-content-secondary hover:bg-bg-card-hover hover:text-content-primary'
           }`}
         >
           {genre.label}

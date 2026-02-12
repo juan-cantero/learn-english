@@ -1,28 +1,240 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
-/* Custom theme matching LearnTV prototype */
-@theme {
-  --color-bg-dark: #0a0a0a;
-  --color-bg-card: #141414;
-  --color-bg-card-hover: #1a1a1a;
-  --color-accent-primary: #dc2626;
-  --color-accent-secondary: #991b1b;
-  --color-accent-light: #fecaca;
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #b3b3b3;
-  --color-border: #262626;
-  --color-success: #22c55e;
-  --color-error: #ef4444;
+/* ============================================================
+   LIGHT MODE (default)
+   ============================================================ */
+:root {
+  /* Brand */
+  --brand: #6366f1;
+  --brand-hover: #4f46e5;
+  --brand-light: #a5b4fc;
+  --brand-muted: rgba(99, 102, 241, 0.15);
 
+  /* Secondary */
+  --secondary: #06b6d4;
+  --secondary-hover: #0891b2;
+  --secondary-light: #67e8f9;
+
+  /* Accent / Achievement */
+  --accent: #f59e0b;
+  --accent-hover: #d97706;
+  --accent-light: #fde68a;
+
+  /* Backgrounds */
+  --bg-primary: #fafaf9;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f5f4;
+  --bg-elevated: #f0f0ee;
+  --bg-inset: #e7e5e4;
+
+  /* Text */
+  --content-primary: #1c1917;
+  --content-secondary: #78716c;
+  --content-tertiary: #a8a29e;
+
+  /* Borders */
+  --edge-default: #e7e5e4;
+  --edge-strong: #d6d3d1;
+
+  /* Semantic */
+  --success: #22c55e;
+  --success-muted: rgba(34, 197, 94, 0.12);
+  --error: #ef4444;
+  --error-muted: rgba(239, 68, 68, 0.12);
+  --warning: #f59e0b;
+  --warning-muted: rgba(245, 158, 11, 0.12);
+  --info: #3b82f6;
+  --info-muted: rgba(59, 130, 246, 0.12);
+
+  /* Category colors — vocabulary */
+  --cat-medical: #ef4444;
+  --cat-medical-bg: rgba(239, 68, 68, 0.10);
+  --cat-workplace: #3b82f6;
+  --cat-workplace-bg: rgba(59, 130, 246, 0.10);
+  --cat-emergency: #f97316;
+  --cat-emergency-bg: rgba(249, 115, 22, 0.10);
+  --cat-emotional: #a855f7;
+  --cat-emotional-bg: rgba(168, 85, 247, 0.10);
+  --cat-informal: #22c55e;
+  --cat-informal-bg: rgba(34, 197, 94, 0.10);
+  --cat-technical: #06b6d4;
+  --cat-technical-bg: rgba(6, 182, 212, 0.10);
+  --cat-legal: #6366f1;
+  --cat-legal-bg: rgba(99, 102, 241, 0.10);
+  --cat-academic: #ec4899;
+  --cat-academic-bg: rgba(236, 72, 153, 0.10);
+  --cat-general: #78716c;
+  --cat-general-bg: rgba(120, 113, 108, 0.10);
+
+  /* Difficulty colors */
+  --diff-beginner: #22c55e;
+  --diff-beginner-bg: rgba(34, 197, 94, 0.10);
+  --diff-intermediate: #f59e0b;
+  --diff-intermediate-bg: rgba(245, 158, 11, 0.10);
+  --diff-advanced: #ef4444;
+  --diff-advanced-bg: rgba(239, 68, 68, 0.10);
+}
+
+/* ============================================================
+   DARK MODE
+   ============================================================ */
+[data-theme="dark"] {
+  /* Brand */
+  --brand: #818cf8;
+  --brand-hover: #6366f1;
+  --brand-light: #c7d2fe;
+  --brand-muted: rgba(129, 140, 248, 0.15);
+
+  /* Secondary */
+  --secondary: #22d3ee;
+  --secondary-hover: #06b6d4;
+  --secondary-light: #a5f3fc;
+
+  /* Accent / Achievement */
+  --accent: #fbbf24;
+  --accent-hover: #f59e0b;
+  --accent-light: #fde68a;
+
+  /* Backgrounds */
+  --bg-primary: #0f0f1a;
+  --bg-card: #1a1a2e;
+  --bg-card-hover: #222240;
+  --bg-elevated: #2a2a45;
+  --bg-inset: #12121f;
+
+  /* Text */
+  --content-primary: #f5f5f4;
+  --content-secondary: #d6d3d1;
+  --content-tertiary: #78716c;
+
+  /* Borders */
+  --edge-default: #2a2a45;
+  --edge-strong: #3a3a55;
+
+  /* Semantic */
+  --success: #4ade80;
+  --success-muted: rgba(74, 222, 128, 0.12);
+  --error: #f87171;
+  --error-muted: rgba(248, 113, 113, 0.12);
+  --warning: #fbbf24;
+  --warning-muted: rgba(251, 191, 36, 0.12);
+  --info: #60a5fa;
+  --info-muted: rgba(96, 165, 250, 0.12);
+
+  /* Category colors — brighter for dark bg */
+  --cat-medical: #f87171;
+  --cat-medical-bg: rgba(248, 113, 113, 0.15);
+  --cat-workplace: #60a5fa;
+  --cat-workplace-bg: rgba(96, 165, 250, 0.15);
+  --cat-emergency: #fb923c;
+  --cat-emergency-bg: rgba(251, 146, 60, 0.15);
+  --cat-emotional: #c084fc;
+  --cat-emotional-bg: rgba(192, 132, 252, 0.15);
+  --cat-informal: #4ade80;
+  --cat-informal-bg: rgba(74, 222, 128, 0.15);
+  --cat-technical: #22d3ee;
+  --cat-technical-bg: rgba(34, 211, 238, 0.15);
+  --cat-legal: #818cf8;
+  --cat-legal-bg: rgba(129, 140, 248, 0.15);
+  --cat-academic: #f472b6;
+  --cat-academic-bg: rgba(244, 114, 182, 0.15);
+  --cat-general: #a8a29e;
+  --cat-general-bg: rgba(168, 162, 158, 0.15);
+
+  /* Difficulty colors */
+  --diff-beginner: #4ade80;
+  --diff-beginner-bg: rgba(74, 222, 128, 0.15);
+  --diff-intermediate: #fbbf24;
+  --diff-intermediate-bg: rgba(251, 191, 36, 0.15);
+  --diff-advanced: #f87171;
+  --diff-advanced-bg: rgba(248, 113, 113, 0.15);
+}
+
+/* ============================================================
+   TAILWIND THEME — maps CSS vars to utility classes
+   ============================================================ */
+@theme {
+  /* Brand */
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-light: var(--brand-light);
+  --color-brand-muted: var(--brand-muted);
+
+  /* Secondary */
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-light: var(--secondary-light);
+
+  /* Accent */
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-light: var(--accent-light);
+
+  /* Backgrounds */
+  --color-bg-primary: var(--bg-primary);
+  --color-bg-card: var(--bg-card);
+  --color-bg-card-hover: var(--bg-card-hover);
+  --color-bg-elevated: var(--bg-elevated);
+  --color-bg-inset: var(--bg-inset);
+
+  /* Text */
+  --color-content-primary: var(--content-primary);
+  --color-content-secondary: var(--content-secondary);
+  --color-content-tertiary: var(--content-tertiary);
+
+  /* Borders */
+  --color-edge-default: var(--edge-default);
+  --color-edge-strong: var(--edge-strong);
+
+  /* Semantic */
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
+  --color-error: var(--error);
+  --color-error-muted: var(--error-muted);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-info: var(--info);
+  --color-info-muted: var(--info-muted);
+
+  /* Category colors */
+  --color-cat-medical: var(--cat-medical);
+  --color-cat-medical-bg: var(--cat-medical-bg);
+  --color-cat-workplace: var(--cat-workplace);
+  --color-cat-workplace-bg: var(--cat-workplace-bg);
+  --color-cat-emergency: var(--cat-emergency);
+  --color-cat-emergency-bg: var(--cat-emergency-bg);
+  --color-cat-emotional: var(--cat-emotional);
+  --color-cat-emotional-bg: var(--cat-emotional-bg);
+  --color-cat-informal: var(--cat-informal);
+  --color-cat-informal-bg: var(--cat-informal-bg);
+  --color-cat-technical: var(--cat-technical);
+  --color-cat-technical-bg: var(--cat-technical-bg);
+  --color-cat-legal: var(--cat-legal);
+  --color-cat-legal-bg: var(--cat-legal-bg);
+  --color-cat-academic: var(--cat-academic);
+  --color-cat-academic-bg: var(--cat-academic-bg);
+  --color-cat-general: var(--cat-general);
+  --color-cat-general-bg: var(--cat-general-bg);
+
+  /* Difficulty colors */
+  --color-diff-beginner: var(--diff-beginner);
+  --color-diff-beginner-bg: var(--diff-beginner-bg);
+  --color-diff-intermediate: var(--diff-intermediate);
+  --color-diff-intermediate-bg: var(--diff-intermediate-bg);
+  --color-diff-advanced: var(--diff-advanced);
+  --color-diff-advanced-bg: var(--diff-advanced-bg);
+
+  /* Fonts */
   --font-display: "Space Grotesk", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", monospace;
+
 }
 
 /* Base styles */
 @layer base {
   body {
-    @apply bg-bg-dark text-text-primary font-display antialiased;
+    @apply bg-bg-primary text-content-primary font-display antialiased;
     margin: 0;
     min-height: 100vh;
   }
@@ -32,7 +244,7 @@
   }
 
   a {
-    @apply text-accent-primary hover:text-accent-light transition-colors;
+    @apply text-brand hover:text-brand-light transition-colors;
   }
 }
 

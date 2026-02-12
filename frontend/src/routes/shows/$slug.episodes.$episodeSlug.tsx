@@ -107,21 +107,21 @@ export function LessonPage() {
 
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-text-primary">{episode.title}</h1>
-          <span className="rounded-lg bg-bg-card px-3 py-1 font-mono text-sm text-text-secondary">
+          <h1 className="text-2xl font-bold text-content-primary">{episode.title}</h1>
+          <span className="rounded-lg bg-bg-card px-3 py-1 font-mono text-sm text-content-secondary">
             S{episode.seasonNumber.toString().padStart(2, '0')}E
             {episode.episodeNumber.toString().padStart(2, '0')}
           </span>
         </div>
 
         {episode.synopsis && (
-          <p className="mb-4 text-text-secondary">{episode.synopsis}</p>
+          <p className="mb-4 text-content-secondary">{episode.synopsis}</p>
         )}
 
-        <div className="mb-6 rounded-lg border border-border bg-bg-card p-4">
+        <div className="mb-6 rounded-lg border border-edge-default bg-bg-card p-4">
           <div className="mb-2 flex items-center justify-between">
-            <span className="text-sm text-text-secondary">Lesson Progress</span>
-            <span className="font-mono text-sm text-text-primary">
+            <span className="text-sm text-content-secondary">Lesson Progress</span>
+            <span className="font-mono text-sm text-content-primary">
               {progress.earnedPoints} / {progress.totalPoints} pts
             </span>
           </div>
@@ -141,7 +141,7 @@ export function LessonPage() {
         </div>
       </div>
 
-      <div className="mb-6 border-b border-border">
+      <div className="mb-6 border-b border-edge-default">
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <button
@@ -149,14 +149,14 @@ export function LessonPage() {
               onClick={() => setActiveTab(tab.id)}
               className={`relative px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? 'text-accent-primary'
-                  : 'text-text-secondary hover:text-text-primary'
+                  ? 'text-brand'
+                  : 'text-content-secondary hover:text-content-primary'
               }`}
             >
               {tab.label}
               <span className="ml-2 font-mono text-xs opacity-70">{tab.count}</span>
               {activeTab === tab.id && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent-primary" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand" />
               )}
             </button>
           ))}
@@ -180,7 +180,7 @@ export function LessonPage() {
               ))}
             </div>
             {filteredVocabulary.length === 0 && (
-              <p className="text-center text-text-secondary">
+              <p className="text-center text-content-secondary">
                 No vocabulary items in this category.
               </p>
             )}
@@ -193,7 +193,7 @@ export function LessonPage() {
               <GrammarCard key={gp.id} grammarPoint={gp} />
             ))}
             {lesson.grammarPoints.length === 0 && (
-              <p className="col-span-2 text-center text-text-secondary">
+              <p className="col-span-2 text-center text-content-secondary">
                 No grammar points for this lesson.
               </p>
             )}
@@ -206,7 +206,7 @@ export function LessonPage() {
               <ExpressionCard key={expr.id} expression={expr} />
             ))}
             {lesson.expressions.length === 0 && (
-              <p className="col-span-2 text-center text-text-secondary">
+              <p className="col-span-2 text-center text-content-secondary">
                 No expressions for this lesson.
               </p>
             )}

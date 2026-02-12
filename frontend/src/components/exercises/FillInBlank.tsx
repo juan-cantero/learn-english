@@ -48,15 +48,15 @@ export function FillInBlank({ exercise, showSlug, episodeSlug }: FillInBlankProp
   const questionParts = exercise.question.split('___');
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5">
       <div className="mb-1 flex items-center justify-between">
-        <span className="rounded bg-bg-dark px-2 py-1 text-xs font-medium text-text-secondary">
+        <span className="rounded bg-bg-inset px-2 py-1 text-xs font-medium text-content-secondary">
           Fill in the Blank
         </span>
-        <span className="font-mono text-sm text-accent-primary">{exercise.points} pts</span>
+        <span className="font-mono text-sm text-brand">{exercise.points} pts</span>
       </div>
 
-      <div className="my-4 text-lg text-text-primary">
+      <div className="my-4 text-lg text-content-primary">
         {questionParts.map((part, index) => (
           <span key={index}>
             {part}
@@ -67,7 +67,7 @@ export function FillInBlank({ exercise, showSlug, episodeSlug }: FillInBlankProp
                     ? 'border-success text-success'
                     : state === 'incorrect'
                       ? 'border-error text-error'
-                      : 'border-text-secondary'
+                      : 'border-content-secondary'
                 }`}
               >
                 {state === 'correct' || state === 'incorrect'
@@ -86,13 +86,13 @@ export function FillInBlank({ exercise, showSlug, episodeSlug }: FillInBlankProp
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type your answer..."
-            className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-primary focus:outline-none"
+            className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder:text-content-secondary focus:border-brand focus:outline-none"
             disabled={state === 'checking'}
           />
           <button
             type="submit"
             disabled={!answer.trim() || state === 'checking'}
-            className="rounded-lg bg-accent-primary px-6 py-2 font-medium text-white transition-colors hover:bg-accent-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand px-6 py-2 font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {state === 'checking' ? 'Checking...' : 'Check'}
           </button>
@@ -126,14 +126,14 @@ export function FillInBlank({ exercise, showSlug, episodeSlug }: FillInBlankProp
                 </svg>
                 <span>
                   Incorrect. The correct answer is:{' '}
-                  <strong className="text-text-primary">{correctAnswer}</strong>
+                  <strong className="text-content-primary">{correctAnswer}</strong>
                 </span>
               </>
             )}
           </div>
           <button
             onClick={handleReset}
-            className="rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary"
+            className="rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm text-content-secondary transition-colors hover:bg-bg-card-hover hover:text-content-primary"
           >
             Try Again
           </button>

@@ -20,7 +20,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-text-secondary">Loading...</div>
+        <div className="text-content-secondary">Loading...</div>
       </div>
     )
   }

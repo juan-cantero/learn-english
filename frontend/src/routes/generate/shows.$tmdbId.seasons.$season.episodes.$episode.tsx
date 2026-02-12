@@ -67,17 +67,17 @@ export function EpisodeConfirmationPage() {
           <div className="mb-6 h-4 w-32 rounded bg-bg-card" />
 
           {/* Episode card skeleton */}
-          <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+          <div className="mb-8 rounded-xl border border-edge-default bg-bg-card p-6">
             <div className="mb-4 flex items-start gap-4">
-              <div className="h-12 w-12 flex-shrink-0 rounded-full bg-bg-dark" />
+              <div className="h-12 w-12 flex-shrink-0 rounded-full bg-bg-primary" />
               <div className="flex-1 space-y-2">
-                <div className="h-7 w-3/4 rounded bg-bg-dark" />
-                <div className="h-4 w-1/2 rounded bg-bg-dark" />
+                <div className="h-7 w-3/4 rounded bg-bg-primary" />
+                <div className="h-4 w-1/2 rounded bg-bg-primary" />
               </div>
             </div>
             <div className="space-y-2">
-              <div className="h-4 w-full rounded bg-bg-dark" />
-              <div className="h-4 w-5/6 rounded bg-bg-dark" />
+              <div className="h-4 w-full rounded bg-bg-primary" />
+              <div className="h-4 w-5/6 rounded bg-bg-primary" />
             </div>
           </div>
 
@@ -107,7 +107,7 @@ export function EpisodeConfirmationPage() {
         <Link
           to="/generate/shows/$tmdbId/seasons/$season"
           params={{ tmdbId, season }}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -133,7 +133,7 @@ export function EpisodeConfirmationPage() {
         <Link
           to="/generate/shows/$tmdbId/seasons/$season"
           params={{ tmdbId, season }}
-          className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+          className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -155,7 +155,7 @@ export function EpisodeConfirmationPage() {
       <Link
         to="/generate/shows/$tmdbId/seasons/$season"
         params={{ tmdbId, season }}
-        className="mb-6 inline-flex items-center gap-2 text-sm text-text-secondary transition-colors hover:text-accent-primary"
+        className="mb-6 inline-flex items-center gap-2 text-sm text-content-secondary transition-colors hover:text-brand"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -172,7 +172,7 @@ export function EpisodeConfirmationPage() {
             </svg>
             <div>
               <p className="font-medium text-success">Generation started!</p>
-              <p className="text-sm text-text-secondary">
+              <p className="text-sm text-content-secondary">
                 You can continue browsing. Check the indicator in the header for progress.
               </p>
             </div>
@@ -181,14 +181,14 @@ export function EpisodeConfirmationPage() {
       )}
 
       {/* Episode Summary */}
-      <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+      <div className="mb-8 rounded-xl border border-edge-default bg-bg-card p-6">
         <div className="mb-4 flex items-start gap-4">
-          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-accent-primary/10 font-mono text-lg font-bold text-accent-primary">
+          <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-brand/10 font-mono text-lg font-bold text-brand">
             {episodeNumber}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-text-primary">{selectedEpisode.title}</h1>
-            <p className="mt-1 text-sm text-text-secondary">
+            <h1 className="text-2xl font-bold text-content-primary">{selectedEpisode.title}</h1>
+            <p className="mt-1 text-sm text-content-secondary">
               {data.showTitle} - Season {seasonNumber}, Episode {episodeNumber}
               {selectedEpisode.runtime && ` · ${selectedEpisode.runtime} min`}
             </p>
@@ -196,14 +196,14 @@ export function EpisodeConfirmationPage() {
         </div>
 
         {selectedEpisode.overview && (
-          <p className="text-text-secondary">{selectedEpisode.overview}</p>
+          <p className="text-content-secondary">{selectedEpisode.overview}</p>
         )}
       </div>
 
       {/* Genre Selection */}
       <div className="mb-8">
-        <h2 className="mb-3 text-lg font-semibold text-text-primary">Select Genre</h2>
-        <p className="mb-4 text-sm text-text-secondary">
+        <h2 className="mb-3 text-lg font-semibold text-content-primary">Select Genre</h2>
+        <p className="mb-4 text-sm text-content-secondary">
           Choose the genre that best describes this show for better lesson context
         </p>
         <GenreSelector value={selectedGenre} onChange={setSelectedGenre} />
@@ -227,7 +227,7 @@ export function EpisodeConfirmationPage() {
 
       {/* Already generating hint */}
       {hasActiveJob && !generationStarted && (
-        <p className="mt-4 text-center text-sm text-text-secondary">
+        <p className="mt-4 text-center text-sm text-content-secondary">
           A lesson is already being generated. Check the header for progress.
         </p>
       )}

@@ -71,21 +71,21 @@ function ClassroomCard({ classroom, isTeaching, onLeave, isLeaving }: ClassroomC
     <Link
       to="/classrooms/$classroomId"
       params={{ classroomId: classroom.id }}
-      className="block rounded-xl border border-border bg-bg-card p-6 transition-all hover:border-accent-primary/50 hover:bg-bg-card-hover"
+      className="block rounded-xl border border-edge-default bg-bg-card p-6 transition-all hover:border-brand/50 hover:bg-bg-card-hover"
     >
       <div className="mb-4 flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="mb-1 truncate text-xl font-semibold text-text-primary">
+          <h3 className="mb-1 truncate text-xl font-semibold text-content-primary">
             {classroom.name}
           </h3>
           {classroom.description && (
-            <p className="line-clamp-2 text-sm text-text-secondary">
+            <p className="line-clamp-2 text-sm text-content-secondary">
               {classroom.description}
             </p>
           )}
         </div>
         {isTeaching ? (
-          <span className="shrink-0 rounded-full bg-accent-primary/20 px-3 py-1 text-xs font-medium text-accent-primary">
+          <span className="shrink-0 rounded-full bg-brand-muted px-3 py-1 text-xs font-medium text-brand">
             Teacher
           </span>
         ) : (
@@ -96,7 +96,7 @@ function ClassroomCard({ classroom, isTeaching, onLeave, isLeaving }: ClassroomC
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-text-secondary">
+        <div className="flex items-center gap-2 text-content-secondary">
           <UsersIcon />
           <span className="text-sm">
             {classroom.studentCount} {classroom.studentCount === 1 ? 'student' : 'students'}
@@ -106,7 +106,7 @@ function ClassroomCard({ classroom, isTeaching, onLeave, isLeaving }: ClassroomC
         {isTeaching ? (
           <button
             onClick={copyJoinCode}
-            className="flex items-center gap-2 rounded-lg bg-bg-dark px-3 py-1.5 font-mono text-sm text-text-primary transition-colors hover:bg-accent-primary/10 hover:text-accent-primary"
+            className="flex items-center gap-2 rounded-lg bg-bg-inset px-3 py-1.5 font-mono text-sm text-content-primary transition-colors hover:bg-brand-muted hover:text-brand"
           >
             <CodeIcon />
             <span>{classroom.joinCode}</span>
@@ -118,7 +118,7 @@ function ClassroomCard({ classroom, isTeaching, onLeave, isLeaving }: ClassroomC
           <button
             onClick={handleLeave}
             disabled={isLeaving}
-            className="flex items-center gap-2 rounded-lg bg-bg-dark px-3 py-1.5 text-sm text-text-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-bg-inset px-3 py-1.5 text-sm text-content-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
           >
             <LogoutIcon />
             {isLeaving ? 'Leaving...' : 'Leave'}
@@ -148,12 +148,12 @@ function CreateClassroomModal({ onClose, onCreate, isCreating }: CreateClassroom
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-2xl font-bold text-text-primary">Create Classroom</h2>
+      <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-content-primary">Create Classroom</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="name" className="mb-2 block text-sm font-medium text-content-primary">
               Classroom Name
             </label>
             <input
@@ -162,14 +162,14 @@ function CreateClassroomModal({ onClose, onCreate, isCreating }: CreateClassroom
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g., English 101"
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder-content-secondary focus:border-brand focus:outline-none"
               required
               autoFocus
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="description" className="mb-2 block text-sm font-medium text-content-primary">
               Description (optional)
             </label>
             <textarea
@@ -178,7 +178,7 @@ function CreateClassroomModal({ onClose, onCreate, isCreating }: CreateClassroom
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe your classroom..."
               rows={3}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder-content-secondary focus:border-brand focus:outline-none"
             />
           </div>
 
@@ -187,14 +187,14 @@ function CreateClassroomModal({ onClose, onCreate, isCreating }: CreateClassroom
               type="button"
               onClick={onClose}
               disabled={isCreating}
-              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+              className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isCreating || !name.trim()}
-              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="flex-1 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {isCreating ? 'Creating...' : 'Create'}
             </button>
@@ -224,9 +224,9 @@ function JoinClassroomModal({ onClose, onJoin, isJoining, error }: JoinClassroom
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-2xl font-bold text-text-primary">Join Classroom</h2>
-        <p className="mb-4 text-sm text-text-secondary">
+      <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-content-primary">Join Classroom</h2>
+        <p className="mb-4 text-sm text-content-secondary">
           Enter the code your teacher shared with you.
         </p>
 
@@ -238,7 +238,7 @@ function JoinClassroomModal({ onClose, onJoin, isJoining, error }: JoinClassroom
           )}
 
           <div>
-            <label htmlFor="joinCode" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="joinCode" className="mb-2 block text-sm font-medium text-content-primary">
               Join Code
             </label>
             <input
@@ -247,7 +247,7 @@ function JoinClassroomModal({ onClose, onJoin, isJoining, error }: JoinClassroom
               value={joinCode}
               onChange={(e) => setJoinCode(e.target.value.toUpperCase())}
               placeholder="e.g., ABC123"
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-3 text-center font-mono text-2xl font-bold tracking-wider text-text-primary placeholder-text-secondary/50 uppercase focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-3 text-center font-mono text-2xl font-bold tracking-wider text-content-primary placeholder-content-tertiary uppercase focus:border-brand focus:outline-none"
               required
               autoFocus
               maxLength={10}
@@ -259,14 +259,14 @@ function JoinClassroomModal({ onClose, onJoin, isJoining, error }: JoinClassroom
               type="button"
               onClick={onClose}
               disabled={isJoining}
-              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+              className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isJoining || !joinCode.trim()}
-              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="flex-1 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {isJoining ? 'Joining...' : 'Join'}
             </button>
@@ -338,7 +338,7 @@ export function ClassroomsPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <h1 className="mb-8 text-3xl font-bold text-text-primary">My Classrooms</h1>
+        <h1 className="mb-8 text-3xl font-bold text-content-primary">My Classrooms</h1>
         <EmptyState
           icon="connection"
           title="Failed to load classrooms"
@@ -362,16 +362,16 @@ export function ClassroomsPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="rounded-lg bg-accent-primary/20 p-2 text-accent-primary">
+          <div className="rounded-lg bg-brand-muted p-2 text-brand">
             <GraduationCapIcon />
           </div>
-          <h1 className="text-3xl font-bold text-text-primary">My Classrooms</h1>
+          <h1 className="text-3xl font-bold text-content-primary">My Classrooms</h1>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowJoinModal(true)}
-            className="flex items-center gap-2 rounded-lg border border-border bg-bg-card px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card-hover"
+            className="flex items-center gap-2 rounded-lg border border-edge-default bg-bg-card px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card-hover"
           >
             <LinkIcon />
             Join Classroom
@@ -381,7 +381,7 @@ export function ClassroomsPage() {
             <button
               onClick={handleUpgradeToTeacher}
               disabled={upgradeMutation.isPending}
-              className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               <GraduationCapIcon />
               {upgradeMutation.isPending ? 'Upgrading...' : 'Become a Teacher'}
@@ -389,7 +389,7 @@ export function ClassroomsPage() {
           ) : (
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+              className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
             >
               <PlusIcon />
               Create Classroom
@@ -401,7 +401,7 @@ export function ClassroomsPage() {
       {/* Teaching Section */}
       {isTeacher && (
         <div className="mb-12">
-          <h2 className="mb-4 text-xl font-semibold text-text-primary">Teaching</h2>
+          <h2 className="mb-4 text-xl font-semibold text-content-primary">Teaching</h2>
           {hasTeachingClassrooms ? (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {classrooms.teaching.map((classroom) => (
@@ -420,7 +420,7 @@ export function ClassroomsPage() {
             >
               <button
                 onClick={() => setShowCreateModal(true)}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
               >
                 <PlusIcon />
                 Create Classroom
@@ -433,7 +433,7 @@ export function ClassroomsPage() {
       {/* Enrolled Section */}
       {hasEnrolledClassrooms && (
         <div>
-          <h2 className="mb-4 text-xl font-semibold text-text-primary">Enrolled</h2>
+          <h2 className="mb-4 text-xl font-semibold text-content-primary">Enrolled</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {classrooms.enrolled.map((classroom) => (
               <ClassroomCard
@@ -457,7 +457,7 @@ export function ClassroomsPage() {
         >
           <button
             onClick={() => setShowJoinModal(true)}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
           >
             <LinkIcon />
             Join Classroom

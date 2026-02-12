@@ -8,8 +8,8 @@ interface NavigationProps {
 
 export function Navigation({ showTitle, showSlug, episodeTitle }: NavigationProps) {
   return (
-    <nav className="flex items-center gap-2 text-sm text-text-secondary">
-      <Link to="/" className="hover:text-text-primary">
+    <nav className="flex items-center gap-2 text-sm text-content-secondary">
+      <Link to="/" className="hover:text-content-primary">
         Shows
       </Link>
       {showTitle && (
@@ -18,7 +18,7 @@ export function Navigation({ showTitle, showSlug, episodeTitle }: NavigationProp
           <Link
             to="/shows/$slug"
             params={{ slug: showSlug! }}
-            className="hover:text-text-primary"
+            className="hover:text-content-primary"
           >
             {showTitle}
           </Link>
@@ -27,7 +27,7 @@ export function Navigation({ showTitle, showSlug, episodeTitle }: NavigationProp
       {episodeTitle && (
         <>
           <span>/</span>
-          <span className="text-text-primary">{episodeTitle}</span>
+          <span className="text-content-primary">{episodeTitle}</span>
         </>
       )}
     </nav>

@@ -20,10 +20,10 @@ export function HomePage() {
       {inProgressLessons.length > 0 && (
         <div className="mb-10">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-text-primary">Continue Learning</h2>
+            <h2 className="text-xl font-semibold text-content-primary">Continue Learning</h2>
             <Link
               to="/progress"
-              className="text-sm text-text-secondary transition-colors hover:text-accent-primary"
+              className="text-sm text-content-secondary transition-colors hover:text-brand"
             >
               View all →
             </Link>
@@ -37,19 +37,19 @@ export function HomePage() {
                   slug: lesson.episode!.showSlug,
                   episodeSlug: lesson.episode!.episodeSlug,
                 }}
-                className="group rounded-xl border border-border bg-bg-card p-4 transition-all hover:border-accent-primary/50 hover:bg-bg-card-hover"
+                className="group rounded-xl border border-edge-default bg-bg-card p-4 transition-all hover:border-brand/50 hover:bg-bg-card-hover"
               >
                 <div className="mb-3 flex items-start justify-between gap-2">
                   <div className="min-w-0">
-                    <p className="truncate font-medium text-text-primary group-hover:text-accent-primary">
+                    <p className="truncate font-medium text-content-primary group-hover:text-brand">
                       {lesson.episode!.title}
                     </p>
-                    <p className="text-sm text-text-secondary">
+                    <p className="text-sm text-content-secondary">
                       S{String(lesson.episode!.seasonNumber).padStart(2, '0')}E
                       {String(lesson.episode!.episodeNumber).padStart(2, '0')}
                     </p>
                   </div>
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10 text-accent-primary">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-muted text-brand">
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
@@ -66,7 +66,7 @@ export function HomePage() {
                   )}
                   size="sm"
                 />
-                <p className="mt-2 text-xs text-text-secondary">
+                <p className="mt-2 text-xs text-content-secondary">
                   {lesson.totalPoints} points earned
                 </p>
               </Link>
@@ -77,10 +77,10 @@ export function HomePage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary">
+        <h1 className="text-3xl font-bold text-content-primary">
           {inProgressLessons.length > 0 ? 'Browse Shows' : 'Learn English with TV Shows'}
         </h1>
-        <p className="mt-2 text-text-secondary">
+        <p className="mt-2 text-content-secondary">
           Choose a show to start learning vocabulary, grammar, and expressions from real dialogue.
         </p>
       </div>
@@ -91,9 +91,9 @@ export function HomePage() {
             <div key={i} className="animate-pulse">
               <div className="aspect-video rounded-t-xl bg-bg-card" />
               <div className="rounded-b-xl bg-bg-card p-4">
-                <div className="mb-2 h-6 w-3/4 rounded bg-bg-dark" />
-                <div className="h-4 w-full rounded bg-bg-dark" />
-                <div className="mt-2 h-4 w-2/3 rounded bg-bg-dark" />
+                <div className="mb-2 h-6 w-3/4 rounded bg-bg-inset" />
+                <div className="h-4 w-full rounded bg-bg-inset" />
+                <div className="mt-2 h-4 w-2/3 rounded bg-bg-inset" />
               </div>
             </div>
           ))}
@@ -120,7 +120,7 @@ export function HomePage() {
         >
           <Link
             to="/generate"
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

@@ -97,12 +97,12 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
         : 'border-error bg-error/10 text-error';
     }
     if (isSelected) {
-      return 'border-accent-primary bg-accent-primary/10 text-accent-primary';
+      return 'border-brand bg-brand-muted text-brand';
     }
     if (isMatched) {
-      return 'border-accent-primary/50 bg-bg-card-hover text-text-primary';
+      return 'border-brand/50 bg-bg-card-hover text-content-primary';
     }
-    return 'border-border hover:border-accent-primary/50 text-text-primary';
+    return 'border-edge-default hover:border-brand/50 text-content-primary';
   };
 
   const getDefinitionStyle = (definition: string) => {
@@ -118,32 +118,32 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
         : 'border-error bg-error/10 text-error';
     }
     if (matchedTerm) {
-      return 'border-accent-primary/50 bg-bg-card-hover text-text-primary';
+      return 'border-brand/50 bg-bg-card-hover text-content-primary';
     }
     if (selectedTerm) {
-      return 'border-border hover:border-accent-primary cursor-pointer text-text-primary';
+      return 'border-edge-default hover:border-brand cursor-pointer text-content-primary';
     }
-    return 'border-border text-text-secondary';
+    return 'border-edge-default text-content-secondary';
   };
 
   const allMatched = Object.keys(matches).length === pairs.length;
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5">
       <div className="mb-1 flex items-center justify-between">
-        <span className="rounded bg-bg-dark px-2 py-1 text-xs font-medium text-text-secondary">
+        <span className="rounded bg-bg-inset px-2 py-1 text-xs font-medium text-content-secondary">
           Matching
         </span>
-        <span className="font-mono text-sm text-accent-primary">{exercise.points} pts</span>
+        <span className="font-mono text-sm text-brand">{exercise.points} pts</span>
       </div>
 
-      <p className="my-4 text-lg text-text-primary">{exercise.question}</p>
+      <p className="my-4 text-lg text-content-primary">{exercise.question}</p>
 
-      <div className="mb-4 text-sm text-text-secondary">
+      <div className="mb-4 text-sm text-content-secondary">
         {state === 'idle' && !selectedTerm && 'Click a term, then click its matching definition.'}
         {state === 'idle' && selectedTerm && (
           <span>
-            Selected: <strong className="text-accent-primary">{selectedTerm}</strong> — now click
+            Selected: <strong className="text-brand">{selectedTerm}</strong> — now click
             its definition
           </span>
         )}
@@ -151,7 +151,7 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-content-secondary">
             Terms
           </p>
           {pairs.map((pair) => (
@@ -172,7 +172,7 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
         </div>
 
         <div className="space-y-2">
-          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-text-secondary">
+          <p className="mb-2 text-xs font-medium uppercase tracking-wider text-content-secondary">
             Definitions
           </p>
           {shuffledDefinitions.map((definition, index) => (
@@ -193,14 +193,14 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
           <button
             onClick={handleSubmit}
             disabled={!allMatched}
-            className="rounded-lg bg-accent-primary px-6 py-2 font-medium text-white transition-colors hover:bg-accent-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand px-6 py-2 font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             Check Answers
           </button>
           {Object.keys(matches).length > 0 && (
             <button
               onClick={handleReset}
-              className="rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary"
+              className="rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm text-content-secondary transition-colors hover:bg-bg-card-hover hover:text-content-primary"
             >
               Clear
             </button>
@@ -241,7 +241,7 @@ export function MatchingGame({ exercise, showSlug, episodeSlug }: MatchingGamePr
           </div>
           <button
             onClick={handleReset}
-            className="rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary"
+            className="rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm text-content-secondary transition-colors hover:bg-bg-card-hover hover:text-content-primary"
           >
             Try Again
           </button>

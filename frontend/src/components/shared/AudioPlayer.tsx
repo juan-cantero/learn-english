@@ -160,12 +160,12 @@ export function AudioPlayer({
       <button
         onClick={state === 'error' ? handleRetry : handlePlay}
         disabled={state === 'loading'}
-        className={`flex items-center justify-center rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-card ${sizeClasses[size]} ${
+        className={`flex items-center justify-center rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-card ${sizeClasses[size]} ${
           state === 'error'
             ? 'bg-error/10 text-error hover:bg-error/20'
             : state === 'playing'
-              ? 'bg-accent-primary/10 text-accent-primary'
-              : 'text-text-secondary hover:bg-bg-dark hover:text-accent-primary'
+              ? 'bg-brand-muted text-brand'
+              : 'text-content-secondary hover:bg-bg-elevated hover:text-brand'
         }`}
         title={
           state === 'error'
@@ -222,7 +222,7 @@ export function AudioPlayer({
       {(state === 'playing' || state === 'paused') && (
         <button
           onClick={handleRepeat}
-          className={`flex items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-dark hover:text-accent-primary focus:outline-none ${sizeClasses[size]}`}
+          className={`flex items-center justify-center rounded-lg text-content-secondary transition-colors hover:bg-bg-elevated hover:text-brand focus:outline-none ${sizeClasses[size]}`}
           title="Repeat"
         >
           <svg className={iconSizes[size]} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -241,20 +241,20 @@ export function AudioPlayer({
         <div className="relative">
           <button
             onClick={toggleSpeedMenu}
-            className={`flex items-center justify-center rounded-lg px-2 font-mono text-xs text-text-secondary transition-colors hover:bg-bg-dark hover:text-accent-primary focus:outline-none ${size === 'sm' ? 'h-8' : 'h-10'}`}
+            className={`flex items-center justify-center rounded-lg px-2 font-mono text-xs text-content-secondary transition-colors hover:bg-bg-elevated hover:text-brand focus:outline-none ${size === 'sm' ? 'h-8' : 'h-10'}`}
             title="Playback speed"
           >
             {speed}x
           </button>
 
           {showSpeedMenu && (
-            <div className="absolute bottom-full left-0 z-10 mb-1 rounded-lg border border-border bg-bg-card py-1 shadow-lg">
+            <div className="absolute bottom-full left-0 z-10 mb-1 rounded-lg border border-edge-default bg-bg-inset py-1 shadow-lg">
               {SPEEDS.map((s) => (
                 <button
                   key={s}
                   onClick={() => handleSpeedChange(s)}
-                  className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-dark ${
-                    speed === s ? 'text-accent-primary' : 'text-text-secondary'
+                  className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-elevated ${
+                    speed === s ? 'text-brand' : 'text-content-secondary'
                   }`}
                 >
                   {s}x

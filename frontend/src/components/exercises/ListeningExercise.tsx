@@ -152,15 +152,15 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
   const needsMoreListening = playCount < RECOMMENDED_LISTENS && answerState === 'idle';
 
   return (
-    <div className="rounded-xl border border-border bg-bg-card p-5">
+    <div className="rounded-xl border border-edge-default bg-bg-card p-5">
       <div className="mb-1 flex items-center justify-between">
-        <span className="rounded bg-bg-dark px-2 py-1 text-xs font-medium text-text-secondary">
+        <span className="rounded bg-bg-inset px-2 py-1 text-xs font-medium text-content-secondary">
           Listening Exercise
         </span>
-        <span className="font-mono text-sm text-accent-primary">{exercise.points} pts</span>
+        <span className="font-mono text-sm text-brand">{exercise.points} pts</span>
       </div>
 
-      <p className="my-4 text-lg text-text-primary">Listen and type what you hear</p>
+      <p className="my-4 text-lg text-content-primary">Listen and type what you hear</p>
 
       {/* Audio Player */}
       <div className="mb-4">
@@ -175,8 +175,8 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
               audioState === 'error'
                 ? 'cursor-not-allowed border-error bg-error/10 text-error'
                 : audioState === 'playing'
-                  ? 'border-accent-primary bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20'
-                  : 'border-border bg-bg-dark text-text-primary hover:border-accent-primary hover:bg-bg-card-hover'
+                  ? 'border-brand bg-brand-muted text-brand hover:bg-brand-muted'
+                  : 'border-edge-default bg-bg-inset text-content-primary hover:border-brand hover:bg-bg-card-hover'
             } disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {audioState === 'loading' ? (
@@ -238,7 +238,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
           {playCount > 0 && audioState !== 'loading' && audioState !== 'error' && (
             <button
               onClick={handleReplay}
-              className="flex h-14 w-14 items-center justify-center rounded-lg border border-border bg-bg-dark text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+              className="flex h-14 w-14 items-center justify-center rounded-lg border border-edge-default bg-bg-inset text-content-secondary transition-colors hover:border-brand hover:text-brand"
               title="Replay from start"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -256,20 +256,20 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
           <div className="relative">
             <button
               onClick={toggleSpeedMenu}
-              className="flex h-14 items-center justify-center rounded-lg border border-border bg-bg-dark px-3 font-mono text-sm text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+              className="flex h-14 items-center justify-center rounded-lg border border-edge-default bg-bg-inset px-3 font-mono text-sm text-content-secondary transition-colors hover:border-brand hover:text-brand"
               title="Playback speed"
             >
               {speed}x
             </button>
 
             {showSpeedMenu && (
-              <div className="absolute bottom-full right-0 z-10 mb-1 rounded-lg border border-border bg-bg-card py-1 shadow-lg">
+              <div className="absolute bottom-full right-0 z-10 mb-1 rounded-lg border border-edge-default bg-bg-card py-1 shadow-lg">
                 {SPEEDS.map((s) => (
                   <button
                     key={s}
                     onClick={() => handleSpeedChange(s)}
-                    className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-dark ${
-                      speed === s ? 'text-accent-primary' : 'text-text-secondary'
+                    className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-inset ${
+                      speed === s ? 'text-brand' : 'text-content-secondary'
                     }`}
                   >
                     {s}x {s === 0.5 && '(slow)'} {s === 1 && '(normal)'}
@@ -282,17 +282,17 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
         {/* Play count and hint */}
         <div className="mt-2 flex items-center justify-between text-xs">
-          <span className="text-text-secondary">
-            Played: <span className="font-mono text-text-primary">{playCount}</span> time
+          <span className="text-content-secondary">
+            Played: <span className="font-mono text-content-primary">{playCount}</span> time
             {playCount !== 1 ? 's' : ''}
           </span>
           {needsMoreListening && (
-            <span className="text-yellow-500">
+            <span className="text-warning">
               Listen at least {RECOMMENDED_LISTENS} times before answering
             </span>
           )}
           {speed !== 1 && (
-            <span className="text-accent-primary">Speed: {speed}x</span>
+            <span className="text-brand">Speed: {speed}x</span>
           )}
         </div>
       </div>
@@ -305,13 +305,13 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type what you heard..."
-            className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder:text-text-secondary focus:border-accent-primary focus:outline-none"
+            className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder:text-content-secondary focus:border-brand focus:outline-none"
             disabled={answerState === 'checking' || audioState === 'loading'}
           />
           <button
             type="submit"
             disabled={!answer.trim() || answerState === 'checking' || audioState === 'loading'}
-            className="rounded-lg bg-accent-primary px-6 py-2 font-medium text-white transition-colors hover:bg-accent-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-brand px-6 py-2 font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {answerState === 'checking' ? 'Checking...' : 'Check'}
           </button>
@@ -340,7 +340,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
                 </svg>
                 <div>
                   <p className="font-medium text-success">Correct! +{exercise.points} points</p>
-                  <p className="mt-1 text-sm text-text-secondary">
+                  <p className="mt-1 text-sm text-content-secondary">
                     Great listening skills! You heard it correctly.
                   </p>
                 </div>
@@ -361,13 +361,13 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-error">Not quite right</p>
                   <div className="mt-2 space-y-1 text-sm">
-                    <p className="text-text-secondary">
+                    <p className="text-content-secondary">
                       You wrote:{' '}
                       <span className="rounded bg-error/20 px-1.5 py-0.5 font-mono text-error">
                         {answer}
                       </span>
                     </p>
-                    <p className="text-text-secondary">
+                    <p className="text-content-secondary">
                       Correct:{' '}
                       <span className="rounded bg-success/20 px-1.5 py-0.5 font-mono text-success">
                         {correctAnswer}
@@ -382,14 +382,14 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
           <div className="flex gap-2">
             <button
               onClick={handleReset}
-              className="rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-card-hover hover:text-text-primary"
+              className="rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm text-content-secondary transition-colors hover:bg-bg-card-hover hover:text-content-primary"
             >
               Try Again
             </button>
             {answerState === 'incorrect' && (
               <button
                 onClick={handleReplay}
-                className="rounded-lg border border-accent-primary/50 bg-accent-primary/10 px-4 py-2 text-sm text-accent-primary transition-colors hover:bg-accent-primary/20"
+                className="rounded-lg border border-brand/50 bg-brand-muted px-4 py-2 text-sm text-brand transition-colors hover:bg-brand-muted"
               >
                 Listen Again
               </button>

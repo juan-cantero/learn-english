@@ -87,8 +87,8 @@ export function ExerciseSection({ exercises, showSlug, episodeSlug }: ExerciseSe
               onClick={() => setActiveTab(tab.id)}
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                 activeTab === tab.id
-                  ? 'bg-accent-primary text-white'
-                  : 'bg-bg-card text-text-secondary hover:bg-bg-card-hover hover:text-text-primary'
+                  ? 'bg-brand text-white'
+                  : 'bg-bg-card text-content-secondary hover:bg-bg-card-hover hover:text-content-primary'
               }`}
             >
               {tab.label}
@@ -101,7 +101,7 @@ export function ExerciseSection({ exercises, showSlug, episodeSlug }: ExerciseSe
       <div className="space-y-4">
         {filteredExercises.map(renderExercise)}
         {filteredExercises.length === 0 && (
-          <p className="text-center text-text-secondary">No exercises available.</p>
+          <p className="text-center text-content-secondary">No exercises available.</p>
         )}
       </div>
     </div>

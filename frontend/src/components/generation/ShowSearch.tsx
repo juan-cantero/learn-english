@@ -38,7 +38,7 @@ export function ShowSearch() {
   return (
     <div className="space-y-6">
       <div>
-        <label htmlFor="show-search" className="mb-2 block text-sm font-medium text-text-primary">
+        <label htmlFor="show-search" className="mb-2 block text-sm font-medium text-content-primary">
           Search for a TV Show
         </label>
         <input
@@ -47,16 +47,16 @@ export function ShowSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Type show name..."
-          className="w-full rounded-lg border border-border bg-bg-card px-4 py-3 text-text-primary placeholder-text-secondary transition-colors focus:border-accent-primary focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+          className="w-full rounded-lg border border-edge-default bg-bg-card px-4 py-3 text-content-primary placeholder-content-secondary transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/50"
         />
-        <p className="mt-2 text-xs text-text-secondary">
+        <p className="mt-2 text-xs text-content-secondary">
           Search The Movie Database for TV shows
         </p>
       </div>
 
       {query.length > 0 && query.length < 2 && (
-        <div className="rounded-lg border border-border bg-bg-card p-4 text-center">
-          <p className="text-sm text-text-secondary">Type at least 2 characters to search</p>
+        <div className="rounded-lg border border-edge-default bg-bg-card p-4 text-center">
+          <p className="text-sm text-content-secondary">Type at least 2 characters to search</p>
         </div>
       )}
 
@@ -66,10 +66,10 @@ export function ShowSearch() {
             <div key={i} className="animate-pulse">
               <div className="aspect-[2/3] rounded-t-xl bg-bg-card" />
               <div className="rounded-b-xl bg-bg-card p-3 sm:p-4">
-                <div className="mb-2 h-4 w-3/4 rounded bg-bg-dark sm:h-5" />
-                <div className="mb-2 h-3 w-1/4 rounded bg-bg-dark" />
-                <div className="hidden h-4 w-full rounded bg-bg-dark sm:block" />
-                <div className="mt-1 hidden h-4 w-5/6 rounded bg-bg-dark sm:block" />
+                <div className="mb-2 h-4 w-3/4 rounded bg-bg-primary sm:h-5" />
+                <div className="mb-2 h-3 w-1/4 rounded bg-bg-primary" />
+                <div className="hidden h-4 w-full rounded bg-bg-primary sm:block" />
+                <div className="mt-1 hidden h-4 w-5/6 rounded bg-bg-primary sm:block" />
               </div>
             </div>
           ))}
@@ -95,13 +95,13 @@ export function ShowSearch() {
           description={`We couldn't find any shows matching "${debouncedQuery}". Try a different search term.`}
         >
           <div className="mt-6">
-            <p className="mb-3 text-sm text-text-secondary">Popular shows:</p>
+            <p className="mb-3 text-sm text-content-secondary">Popular shows:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {POPULAR_SHOWS.slice(0, 4).map((show) => (
                 <button
                   key={show.query}
                   onClick={() => handlePopularClick(show.query)}
-                  className="rounded-full border border-border bg-bg-card px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+                  className="rounded-full border border-edge-default bg-bg-card px-3 py-1.5 text-sm text-content-secondary transition-colors hover:border-brand hover:text-brand"
                 >
                   {show.name}
                 </button>
@@ -118,13 +118,13 @@ export function ShowSearch() {
           description="Search for your favorite TV show to create an English lesson from real dialogue."
         >
           <div className="mt-6 w-full max-w-md">
-            <p className="mb-3 text-sm text-text-secondary">Popular shows:</p>
+            <p className="mb-3 text-sm text-content-secondary">Popular shows:</p>
             <div className="flex flex-wrap justify-center gap-2">
               {POPULAR_SHOWS.map((show) => (
                 <button
                   key={show.query}
                   onClick={() => handlePopularClick(show.query)}
-                  className="rounded-full border border-border bg-bg-card px-3 py-1.5 text-sm text-text-secondary transition-colors hover:border-accent-primary hover:text-accent-primary"
+                  className="rounded-full border border-edge-default bg-bg-card px-3 py-1.5 text-sm text-content-secondary transition-colors hover:border-brand hover:text-brand"
                 >
                   {show.name}
                 </button>

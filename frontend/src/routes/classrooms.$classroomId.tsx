@@ -112,12 +112,12 @@ function EditModal({ classroomId, initialName, initialDescription, onClose }: Ed
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-2xl font-bold text-text-primary">Edit Classroom</h2>
+      <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-content-primary">Edit Classroom</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="name" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="name" className="mb-2 block text-sm font-medium text-content-primary">
               Classroom Name
             </label>
             <input
@@ -125,14 +125,14 @@ function EditModal({ classroomId, initialName, initialDescription, onClose }: Ed
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary focus:border-brand focus:outline-none"
               required
               autoFocus
             />
           </div>
 
           <div>
-            <label htmlFor="description" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="description" className="mb-2 block text-sm font-medium text-content-primary">
               Description
             </label>
             <textarea
@@ -140,7 +140,7 @@ function EditModal({ classroomId, initialName, initialDescription, onClose }: Ed
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary focus:border-brand focus:outline-none"
             />
           </div>
 
@@ -149,14 +149,14 @@ function EditModal({ classroomId, initialName, initialDescription, onClose }: Ed
               type="button"
               onClick={onClose}
               disabled={updateMutation.isPending}
-              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+              className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={updateMutation.isPending || !name.trim()}
-              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="flex-1 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {updateMutation.isPending ? 'Saving...' : 'Save'}
             </button>
@@ -219,19 +219,19 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-lg rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-2xl font-bold text-text-primary">Create Assignment</h2>
+      <div className="w-full max-w-lg rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-content-primary">Create Assignment</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="show" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="show" className="mb-2 block text-sm font-medium text-content-primary">
               Show
             </label>
             <select
               id="show"
               value={selectedShowSlug}
               onChange={(e) => handleShowChange(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary focus:border-brand focus:outline-none"
               required
             >
               <option value="">Select a show...</option>
@@ -245,14 +245,14 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
 
           {selectedShowSlug && (
             <div>
-              <label htmlFor="episode" className="mb-2 block text-sm font-medium text-text-primary">
+              <label htmlFor="episode" className="mb-2 block text-sm font-medium text-content-primary">
                 Episode
               </label>
               <select
                 id="episode"
                 value={selectedEpisodeId}
                 onChange={(e) => handleEpisodeChange(e.target.value)}
-                className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+                className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary focus:border-brand focus:outline-none"
                 required
               >
                 <option value="">Select an episode...</option>
@@ -266,7 +266,7 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
           )}
 
           <div>
-            <label htmlFor="assignTitle" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="assignTitle" className="mb-2 block text-sm font-medium text-content-primary">
               Title
             </label>
             <input
@@ -275,13 +275,13 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Assignment title"
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder-content-secondary focus:border-brand focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="instructions" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="instructions" className="mb-2 block text-sm font-medium text-content-primary">
               Instructions
             </label>
             <textarea
@@ -290,13 +290,13 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
               onChange={(e) => setInstructions(e.target.value)}
               placeholder="What should students do?"
               rows={3}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary placeholder-text-secondary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder-content-secondary focus:border-brand focus:outline-none"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="dueDate" className="mb-2 block text-sm font-medium text-text-primary">
+            <label htmlFor="dueDate" className="mb-2 block text-sm font-medium text-content-primary">
               Due Date (optional)
             </label>
             <input
@@ -304,7 +304,7 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
               type="datetime-local"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full rounded-lg border border-border bg-bg-dark px-4 py-2 text-text-primary focus:border-accent-primary focus:outline-none"
+              className="w-full rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary focus:border-brand focus:outline-none"
             />
           </div>
 
@@ -313,14 +313,14 @@ function CreateAssignmentModal({ classroomId, shows, onClose }: CreateAssignment
               type="button"
               onClick={onClose}
               disabled={createMutation.isPending}
-              className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+              className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={createMutation.isPending || !selectedEpisodeId || !title.trim() || !instructions.trim()}
-              className="flex-1 rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="flex-1 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {createMutation.isPending ? 'Creating...' : 'Create'}
             </button>
@@ -343,12 +343,12 @@ function SubmissionsPanel({ assignmentId }: SubmissionsPanelProps) {
   const { data: submissions, isLoading } = useAssignmentSubmissions(assignmentId);
 
   if (isLoading) {
-    return <div className="animate-pulse h-16 rounded-lg bg-bg-dark" />;
+    return <div className="animate-pulse h-16 rounded-lg bg-bg-inset" />;
   }
 
   if (!submissions || submissions.length === 0) {
     return (
-      <p className="py-3 text-center text-sm text-text-secondary">No submissions yet.</p>
+      <p className="py-3 text-center text-sm text-content-secondary">No submissions yet.</p>
     );
   }
 
@@ -357,21 +357,21 @@ function SubmissionsPanel({ assignmentId }: SubmissionsPanelProps) {
       {submissions.map((sub) => (
         <div
           key={sub.id}
-          className="flex items-center justify-between gap-4 rounded-lg bg-bg-dark px-4 py-3"
+          className="flex items-center justify-between gap-4 rounded-lg bg-bg-inset px-4 py-3"
         >
           <div>
-            <p className="text-sm font-medium text-text-primary">
+            <p className="text-sm font-medium text-content-primary">
               {sub.studentName || sub.studentEmail}
             </p>
             {sub.completedAt && (
-              <p className="text-xs text-text-secondary">
+              <p className="text-xs text-content-secondary">
                 Completed {new Date(sub.completedAt).toLocaleDateString()}
               </p>
             )}
           </div>
           <div className="flex items-center gap-3">
             {sub.score !== null && (
-              <span className="font-mono text-sm font-bold text-accent-primary">{sub.score}%</span>
+              <span className="font-mono text-sm font-bold text-brand">{sub.score}%</span>
             )}
             <StatusBadge status={sub.status} />
           </div>
@@ -383,10 +383,10 @@ function SubmissionsPanel({ assignmentId }: SubmissionsPanelProps) {
 
 function StatusBadge({ status }: { status: string }) {
   const styles = {
-    NOT_STARTED: 'bg-text-secondary/20 text-text-secondary',
+    NOT_STARTED: 'bg-text-secondary/20 text-content-secondary',
     IN_PROGRESS: 'bg-warning/20 text-warning',
     COMPLETED: 'bg-success/20 text-success',
-  }[status] || 'bg-text-secondary/20 text-text-secondary';
+  }[status] || 'bg-text-secondary/20 text-content-secondary';
 
   const label = {
     NOT_STARTED: 'Not Started',
@@ -415,19 +415,19 @@ function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProp
     : 0;
 
   return (
-    <div className="rounded-lg border border-border bg-bg-dark">
+    <div className="rounded-lg border border-edge-default bg-bg-inset">
       <div className="flex items-center justify-between gap-4 p-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="truncate font-medium text-text-primary">{assignment.title}</h4>
+            <h4 className="truncate font-medium text-content-primary">{assignment.title}</h4>
             {assignment.overdue && (
               <span className="shrink-0 rounded-full bg-error/20 px-2 py-0.5 text-xs font-medium text-error">
                 Overdue
               </span>
             )}
           </div>
-          <p className="mt-1 line-clamp-1 text-sm text-text-secondary">{assignment.instructions}</p>
-          <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+          <p className="mt-1 line-clamp-1 text-sm text-content-secondary">{assignment.instructions}</p>
+          <div className="mt-2 flex items-center gap-4 text-xs text-content-secondary">
             <span>{assignment.completedSubmissions}/{assignment.totalSubmissions} completed</span>
             {assignment.dueDate && (
               <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span>
@@ -438,12 +438,12 @@ function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProp
         <div className="flex shrink-0 items-center gap-2">
           {assignment.totalSubmissions > 0 && (
             <div className="text-right">
-              <span className="font-mono text-lg font-bold text-accent-primary">{completionRate}%</span>
+              <span className="font-mono text-lg font-bold text-brand">{completionRate}%</span>
             </div>
           )}
           <button
             onClick={() => setExpanded(!expanded)}
-            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-card hover:text-text-primary"
+            className="rounded-lg p-2 text-content-secondary transition-colors hover:bg-bg-card hover:text-content-primary"
           >
             {expanded ? <ChevronUpIcon /> : <ChevronDownIcon />}
           </button>
@@ -454,7 +454,7 @@ function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProp
               }
             }}
             disabled={isDeleting}
-            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
+            className="rounded-lg p-2 text-content-secondary transition-colors hover:bg-error/10 hover:text-error disabled:opacity-50"
           >
             <TrashIcon />
           </button>
@@ -462,8 +462,8 @@ function AssignmentCard({ assignment, onDelete, isDeleting }: AssignmentCardProp
       </div>
 
       {expanded && (
-        <div className="border-t border-border p-4">
-          <h5 className="mb-2 text-sm font-medium text-text-secondary">Submissions</h5>
+        <div className="border-t border-edge-default p-4">
+          <h5 className="mb-2 text-sm font-medium text-content-secondary">Submissions</h5>
           <SubmissionsPanel assignmentId={assignment.id} />
         </div>
       )}
@@ -483,11 +483,11 @@ interface StudentAssignmentCardProps {
 
 function StudentAssignmentCard({ assignment, onStart, onComplete, isStarting, isCompleting }: StudentAssignmentCardProps) {
   return (
-    <div className="rounded-lg border border-border bg-bg-dark p-4">
+    <div className="rounded-lg border border-edge-default bg-bg-inset p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="truncate font-medium text-text-primary">{assignment.title}</h4>
+            <h4 className="truncate font-medium text-content-primary">{assignment.title}</h4>
             {assignment.overdue && assignment.status !== 'COMPLETED' && (
               <span className="shrink-0 rounded-full bg-error/20 px-2 py-0.5 text-xs font-medium text-error">
                 Overdue
@@ -495,13 +495,13 @@ function StudentAssignmentCard({ assignment, onStart, onComplete, isStarting, is
             )}
             <StatusBadge status={assignment.status} />
           </div>
-          <p className="mt-1 text-sm text-text-secondary">{assignment.instructions}</p>
-          <div className="mt-2 flex items-center gap-4 text-xs text-text-secondary">
+          <p className="mt-1 text-sm text-content-secondary">{assignment.instructions}</p>
+          <div className="mt-2 flex items-center gap-4 text-xs text-content-secondary">
             {assignment.dueDate && (
               <span>Due {new Date(assignment.dueDate).toLocaleDateString()}</span>
             )}
             {assignment.score !== null && (
-              <span className="font-mono font-bold text-accent-primary">Score: {assignment.score}%</span>
+              <span className="font-mono font-bold text-brand">Score: {assignment.score}%</span>
             )}
           </div>
         </div>
@@ -511,7 +511,7 @@ function StudentAssignmentCard({ assignment, onStart, onComplete, isStarting, is
             <button
               onClick={() => onStart(assignment.id)}
               disabled={isStarting}
-              className="rounded-lg bg-accent-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-secondary disabled:opacity-50"
+              className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-hover disabled:opacity-50"
             >
               {isStarting ? 'Starting...' : 'Start'}
             </button>
@@ -546,10 +546,10 @@ interface ConfirmDeleteModalProps {
 function ConfirmDeleteModal({ classroomName, onConfirm, onCancel, isDeleting }: ConfirmDeleteModalProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="w-full max-w-md rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-2xl font-bold text-text-primary">Delete Classroom</h2>
-        <p className="mb-6 text-text-secondary">
-          Are you sure you want to delete <span className="font-semibold text-text-primary">{classroomName}</span>?
+      <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-2xl font-bold text-content-primary">Delete Classroom</h2>
+        <p className="mb-6 text-content-secondary">
+          Are you sure you want to delete <span className="font-semibold text-content-primary">{classroomName}</span>?
           This action cannot be undone and all students will be removed.
         </p>
         <div className="flex gap-3">
@@ -557,7 +557,7 @@ function ConfirmDeleteModal({ classroomName, onConfirm, onCancel, isDeleting }: 
             type="button"
             onClick={onCancel}
             disabled={isDeleting}
-            className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card disabled:opacity-50"
+            className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card disabled:opacity-50"
           >
             Cancel
           </button>
@@ -669,19 +669,19 @@ export function ClassroomDetailPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <button
         onClick={() => navigate({ to: '/classrooms' })}
-        className="mb-6 flex items-center gap-2 text-text-secondary transition-colors hover:text-text-primary"
+        className="mb-6 flex items-center gap-2 text-content-secondary transition-colors hover:text-content-primary"
       >
         <BackIcon />
         <span className="text-sm">Back to Classrooms</span>
       </button>
 
       {/* Classroom Header */}
-      <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+      <div className="mb-8 rounded-xl border border-edge-default bg-bg-card p-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <h1 className="mb-2 text-3xl font-bold text-text-primary">{classroom.name}</h1>
+            <h1 className="mb-2 text-3xl font-bold text-content-primary">{classroom.name}</h1>
             {classroom.description && (
-              <p className="text-text-secondary">{classroom.description}</p>
+              <p className="text-content-secondary">{classroom.description}</p>
             )}
           </div>
 
@@ -689,7 +689,7 @@ export function ClassroomDetailPage() {
             <div className="flex shrink-0 gap-2">
               <button
                 onClick={() => setShowEditModal(true)}
-                className="rounded-lg border border-border bg-bg-dark px-3 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-card"
+                className="rounded-lg border border-edge-default bg-bg-inset px-3 py-2 text-sm font-medium text-content-primary transition-colors hover:bg-bg-card"
               >
                 <EditIcon />
               </button>
@@ -715,25 +715,25 @@ export function ClassroomDetailPage() {
         {isTeacher && (
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <label className="text-sm font-medium text-text-secondary">Join Code</label>
+              <label className="text-sm font-medium text-content-secondary">Join Code</label>
               <button
                 onClick={handleRegenerateCode}
                 disabled={regenerateMutation.isPending}
-                className="flex items-center gap-2 rounded-lg bg-bg-dark px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-accent-primary/10 hover:text-accent-primary disabled:opacity-50"
+                className="flex items-center gap-2 rounded-lg bg-bg-inset px-3 py-1.5 text-xs font-medium text-content-secondary transition-colors hover:bg-brand-muted hover:text-brand disabled:opacity-50"
               >
                 <RefreshIcon />
                 Regenerate
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex-1 rounded-lg border border-border bg-bg-dark px-4 py-3">
-                <p className="font-mono text-2xl font-bold tracking-wider text-accent-primary">
+              <div className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-3">
+                <p className="font-mono text-2xl font-bold tracking-wider text-brand">
                   {classroom.joinCode}
                 </p>
               </div>
               <button
                 onClick={copyJoinCode}
-                className="rounded-lg bg-accent-primary px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+                className="rounded-lg bg-brand px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
               >
                 <div className="flex items-center gap-2">
                   <CopyIcon />
@@ -747,17 +747,17 @@ export function ClassroomDetailPage() {
 
       {/* Assignments Section */}
       {isTeacher && (
-        <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+        <div className="mb-8 rounded-xl border border-edge-default bg-bg-card p-6">
           <div className="mb-4 flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <ClipboardIcon />
-              <h2 className="text-xl font-semibold text-text-primary">
+              <h2 className="text-xl font-semibold text-content-primary">
                 Assignments ({assignments?.length || 0})
               </h2>
             </div>
             <button
               onClick={() => setShowAssignmentModal(true)}
-              className="flex items-center gap-2 rounded-lg bg-accent-primary px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-accent-secondary"
+              className="flex items-center gap-2 rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-brand-hover"
             >
               <PlusIcon />
               New Assignment
@@ -767,7 +767,7 @@ export function ClassroomDetailPage() {
           {assignmentsLoading ? (
             <div className="space-y-3">
               {[...Array(2)].map((_, i) => (
-                <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-dark" />
+                <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-inset" />
               ))}
             </div>
           ) : !assignments || assignments.length === 0 ? (
@@ -795,10 +795,10 @@ export function ClassroomDetailPage() {
       {!isTeacher && (() => {
         const classroomAssignments = myAssignments?.filter((a) => a.classroomId === classroomId) || [];
         return (
-          <div className="mb-8 rounded-xl border border-border bg-bg-card p-6">
+          <div className="mb-8 rounded-xl border border-edge-default bg-bg-card p-6">
             <div className="mb-4 flex items-center gap-2">
               <ClipboardIcon />
-              <h2 className="text-xl font-semibold text-text-primary">
+              <h2 className="text-xl font-semibold text-content-primary">
                 My Assignments ({classroomAssignments.length})
               </h2>
             </div>
@@ -806,7 +806,7 @@ export function ClassroomDetailPage() {
             {myAssignmentsLoading ? (
               <div className="space-y-3">
                 {[...Array(2)].map((_, i) => (
-                  <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-dark" />
+                  <div key={i} className="h-20 animate-pulse rounded-lg bg-bg-inset" />
                 ))}
               </div>
             ) : classroomAssignments.length === 0 ? (
@@ -834,15 +834,15 @@ export function ClassroomDetailPage() {
       })()}
 
       {/* Students List */}
-      <div className="rounded-xl border border-border bg-bg-card p-6">
-        <h2 className="mb-4 text-xl font-semibold text-text-primary">
+      <div className="rounded-xl border border-edge-default bg-bg-card p-6">
+        <h2 className="mb-4 text-xl font-semibold text-content-primary">
           Students ({classroom.studentCount})
         </h2>
 
         {studentsLoading ? (
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="h-16 animate-pulse rounded-lg bg-bg-dark" />
+              <div key={i} className="h-16 animate-pulse rounded-lg bg-bg-inset" />
             ))}
           </div>
         ) : !students || students.length === 0 ? (
@@ -860,20 +860,20 @@ export function ClassroomDetailPage() {
             {students.map((student) => (
               <div
                 key={student.id}
-                className="flex items-center justify-between gap-4 rounded-lg border border-border bg-bg-dark p-4"
+                className="flex items-center justify-between gap-4 rounded-lg border border-edge-default bg-bg-inset p-4"
               >
                 <div className="flex items-center gap-3">
-                  <div className="rounded-full bg-accent-primary/20 p-2 text-accent-primary">
+                  <div className="rounded-full bg-brand-muted p-2 text-brand">
                     <UserIcon />
                   </div>
                   <div>
-                    <p className="font-medium text-text-primary">
+                    <p className="font-medium text-content-primary">
                       {student.displayName || student.email}
                     </p>
                     {student.displayName && (
-                      <p className="text-sm text-text-secondary">{student.email}</p>
+                      <p className="text-sm text-content-secondary">{student.email}</p>
                     )}
-                    <p className="text-xs text-text-secondary">
+                    <p className="text-xs text-content-secondary">
                       Joined {new Date(student.joinedAt).toLocaleDateString()}
                     </p>
                   </div>

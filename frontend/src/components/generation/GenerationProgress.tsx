@@ -76,7 +76,7 @@ function StatusIcon({ status }: { status: GenerationStatus }) {
   // PENDING or PROCESSING
   return (
     <div className="flex h-16 w-16 items-center justify-center">
-      <svg className="h-12 w-12 animate-spin text-accent-primary" viewBox="0 0 24 24">
+      <svg className="h-12 w-12 animate-spin text-brand" viewBox="0 0 24 24">
         <circle
           className="opacity-25"
           cx="12"
@@ -111,11 +111,11 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
 
   if (isLoading || !job) {
     return (
-      <div className="flex flex-col items-center justify-center space-y-6 rounded-xl border border-border bg-bg-card p-12">
+      <div className="flex flex-col items-center justify-center space-y-6 rounded-xl border border-edge-default bg-bg-card p-12">
         <StatusIcon status="PENDING" />
         <div className="text-center">
-          <h3 className="text-xl font-semibold text-text-primary">Loading...</h3>
-          <p className="mt-2 text-sm text-text-secondary">Fetching generation status...</p>
+          <h3 className="text-xl font-semibold text-content-primary">Loading...</h3>
+          <p className="mt-2 text-sm text-content-secondary">Fetching generation status...</p>
         </div>
       </div>
     );
@@ -124,7 +124,7 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
   const stepText = getStepText(job.progress, job.currentStep);
 
   return (
-    <div className="flex flex-col items-center justify-center space-y-6 rounded-xl border border-border bg-bg-card p-12">
+    <div className="flex flex-col items-center justify-center space-y-6 rounded-xl border border-edge-default bg-bg-card p-12">
       {/* Status Icon */}
       <StatusIcon status={job.status} />
 
@@ -133,21 +133,21 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
         {job.status === 'COMPLETED' ? (
           <>
             <h3 className="text-2xl font-bold text-success">Lesson Ready!</h3>
-            <p className="mt-2 text-text-secondary">
+            <p className="mt-2 text-content-secondary">
               Your lesson has been generated successfully.
             </p>
           </>
         ) : job.status === 'FAILED' ? (
           <>
             <h3 className="text-2xl font-bold text-error">Generation Failed</h3>
-            <p className="mt-2 text-text-secondary">
+            <p className="mt-2 text-content-secondary">
               {job.error || 'An unexpected error occurred during generation.'}
             </p>
           </>
         ) : (
           <>
-            <h3 className="text-2xl font-bold text-text-primary">Generating Lesson</h3>
-            <p className="mt-2 text-text-secondary transition-all duration-300">{stepText}</p>
+            <h3 className="text-2xl font-bold text-content-primary">Generating Lesson</h3>
+            <p className="mt-2 text-content-secondary transition-all duration-300">{stepText}</p>
           </>
         )}
       </div>
@@ -155,13 +155,13 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
       {/* Progress Bar (only show for PENDING/PROCESSING) */}
       {(job.status === 'PENDING' || job.status === 'PROCESSING') && (
         <div className="w-full max-w-md space-y-2" role="progressbar" aria-valuenow={job.progress} aria-valuemin={0} aria-valuemax={100}>
-          <div className="h-2 overflow-hidden rounded-full bg-border">
+          <div className="h-2 overflow-hidden rounded-full bg-edge-default">
             <div
-              className="h-full rounded-full bg-accent-primary transition-all duration-500 ease-out"
+              className="h-full rounded-full bg-brand transition-all duration-500 ease-out"
               style={{ width: `${job.progress}%` }}
             />
           </div>
-          <p className="text-center text-sm font-mono text-text-secondary">{job.progress}%</p>
+          <p className="text-center text-sm font-mono text-content-secondary">{job.progress}%</p>
         </div>
       )}
 
@@ -169,7 +169,7 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
       {job.status === 'COMPLETED' && job.episodeId && (
         <button
           onClick={() => onComplete(job.episodeId!)}
-          className="mt-4 rounded-lg bg-accent-primary px-8 py-3 font-semibold text-white transition-all hover:bg-accent-secondary focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark"
+          className="mt-4 rounded-lg bg-brand px-8 py-3 font-semibold text-white transition-all hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary"
         >
           View Lesson
         </button>
@@ -178,14 +178,14 @@ export function GenerationProgress({ jobId, onComplete, onError }: GenerationPro
       {job.status === 'FAILED' && (
         <button
           onClick={onError}
-          className="mt-4 rounded-lg border border-border bg-bg-dark px-8 py-3 font-semibold text-text-primary transition-all hover:bg-bg-card-hover focus:outline-none focus:ring-2 focus:ring-accent-primary focus:ring-offset-2 focus:ring-offset-bg-dark"
+          className="mt-4 rounded-lg border border-edge-default bg-bg-primary px-8 py-3 font-semibold text-content-primary transition-all hover:bg-bg-card-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary"
         >
           Try Again
         </button>
       )}
 
       {/* Job ID for debugging */}
-      <p className="mt-4 text-xs font-mono text-text-secondary opacity-50">
+      <p className="mt-4 text-xs font-mono text-content-secondary opacity-50">
         Job ID: {jobId}
       </p>
     </div>
