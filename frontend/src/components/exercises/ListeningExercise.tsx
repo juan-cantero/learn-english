@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useCheckAnswer } from '../../hooks/useLesson';
-import { API_BASE_URL } from '../../api/client';
+import { useSpeechSynthesis } from '../../hooks/useSpeechSynthesis';
 import type { Exercise } from '../../types/lesson';
 
 interface ListeningExerciseProps {
@@ -10,75 +10,39 @@ interface ListeningExerciseProps {
 }
 
 type AnswerState = 'idle' | 'checking' | 'correct' | 'incorrect';
-type AudioState = 'loading' | 'ready' | 'playing' | 'error';
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5;
 
 const SPEEDS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5];
 const RECOMMENDED_LISTENS = 2;
 
+function extractSpeechText(exercise: Exercise): string {
+  // Use correctAnswer directly if available
+  if (exercise.correctAnswer) return exercise.correctAnswer;
+
+  // Try to extract from question brackets: [word]
+  const bracketMatch = exercise.question.match(/\[([^\]]+)\]/);
+  if (bracketMatch) return bracketMatch[1];
+
+  // Try colon format: "Listen: word"
+  const colonMatch = exercise.question.match(/:\s*(.+)$/);
+  if (colonMatch) return colonMatch[1].trim();
+
+  return exercise.question;
+}
+
 export function ListeningExercise({ exercise, showSlug, episodeSlug }: ListeningExerciseProps) {
   const [answer, setAnswer] = useState('');
   const [answerState, setAnswerState] = useState<AnswerState>('idle');
-  const [audioState, setAudioState] = useState<AudioState>('loading');
   const [correctAnswer, setCorrectAnswer] = useState<string | null>(null);
   const [playCount, setPlayCount] = useState(0);
-  const [speed, setSpeed] = useState<PlaybackSpeed>(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
 
   const checkAnswerMutation = useCheckAnswer(showSlug, episodeSlug);
+  const tts = useSpeechSynthesis({
+    onEnd: useCallback(() => setPlayCount((prev) => prev + 1), []),
+  });
 
-  // Use stored audioUrl, or fallback to on-demand TTS
-  const getAudioUrl = (): string => {
-    // Prefer stored audio URL from backend
-    if (exercise.audioUrl) {
-      return exercise.audioUrl;
-    }
-
-    // Fallback: extract word from question and use TTS
-    const extractWord = (question: string): string => {
-      const bracketMatch = question.match(/\[([^\]]+)\]/);
-      if (bracketMatch) return bracketMatch[1];
-      const colonMatch = question.match(/:\s*(.+)$/);
-      if (colonMatch) return colonMatch[1].trim();
-      return '';
-    };
-
-    const word = extractWord(exercise.question);
-    return word
-      ? `${API_BASE_URL}/tts/speak?text=${encodeURIComponent(word)}`
-      : '';
-  };
-
-  const audioUrl = getAudioUrl();
-
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const handleCanPlay = () => setAudioState('ready');
-    const handleError = () => setAudioState('error');
-    const handlePlay = () => setAudioState('playing');
-    const handlePause = () => setAudioState('ready');
-    const handleEnded = () => {
-      setAudioState('ready');
-      setPlayCount((prev) => prev + 1);
-    };
-
-    audio.addEventListener('canplay', handleCanPlay);
-    audio.addEventListener('error', handleError);
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handleEnded);
-
-    return () => {
-      audio.removeEventListener('canplay', handleCanPlay);
-      audio.removeEventListener('error', handleError);
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, []);
+  const speechText = extractSpeechText(exercise);
 
   // Close speed menu when clicking outside
   useEffect(() => {
@@ -89,30 +53,22 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
   }, [showSpeedMenu]);
 
   const handlePlayPause = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (audioState === 'playing') {
-      audio.pause();
+    if (tts.state === 'speaking') {
+      tts.pause();
+    } else if (tts.state === 'paused') {
+      tts.resume();
     } else {
-      audio.playbackRate = speed;
-      audio.play();
+      tts.speak(speechText);
     }
   };
 
   const handleReplay = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.playbackRate = speed;
-    audio.play();
+    tts.stop();
+    tts.speak(speechText);
   };
 
   const handleSpeedChange = (newSpeed: PlaybackSpeed) => {
-    setSpeed(newSpeed);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = newSpeed;
-    }
+    tts.setRate(newSpeed);
     setShowSpeedMenu(false);
   };
 
@@ -164,41 +120,19 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
 
       {/* Audio Player */}
       <div className="mb-4">
-        <audio ref={audioRef} src={audioUrl} preload="auto" className="hidden" />
-
         <div className="flex items-center gap-2">
           {/* Play/Pause Button */}
           <button
             onClick={handlePlayPause}
-            disabled={audioState === 'loading' || audioState === 'error'}
             className={`flex flex-1 items-center justify-center gap-3 rounded-lg border p-4 transition-all ${
-              audioState === 'error'
+              tts.state === 'error'
                 ? 'cursor-not-allowed border-error bg-error/10 text-error'
-                : audioState === 'playing'
+                : tts.state === 'speaking'
                   ? 'border-brand bg-brand-muted text-brand hover:bg-brand-muted'
                   : 'border-edge-default bg-bg-inset text-content-primary hover:border-brand hover:bg-bg-card-hover'
-            } disabled:cursor-not-allowed disabled:opacity-50`}
+            }`}
           >
-            {audioState === 'loading' ? (
-              <>
-                <svg className="h-6 w-6 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  />
-                </svg>
-                <span>Loading...</span>
-              </>
-            ) : audioState === 'error' ? (
+            {tts.state === 'error' ? (
               <>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -207,9 +141,9 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
                     clipRule="evenodd"
                   />
                 </svg>
-                <span>Audio Error</span>
+                <span>Speech Error</span>
               </>
-            ) : audioState === 'playing' ? (
+            ) : tts.state === 'speaking' ? (
               <>
                 <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -235,7 +169,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
           </button>
 
           {/* Replay Button */}
-          {playCount > 0 && audioState !== 'loading' && audioState !== 'error' && (
+          {playCount > 0 && tts.state !== 'error' && (
             <button
               onClick={handleReplay}
               className="flex h-14 w-14 items-center justify-center rounded-lg border border-edge-default bg-bg-inset text-content-secondary transition-colors hover:border-brand hover:text-brand"
@@ -259,7 +193,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
               className="flex h-14 items-center justify-center rounded-lg border border-edge-default bg-bg-inset px-3 font-mono text-sm text-content-secondary transition-colors hover:border-brand hover:text-brand"
               title="Playback speed"
             >
-              {speed}x
+              {tts.rate}x
             </button>
 
             {showSpeedMenu && (
@@ -269,7 +203,7 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
                     key={s}
                     onClick={() => handleSpeedChange(s)}
                     className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-inset ${
-                      speed === s ? 'text-brand' : 'text-content-secondary'
+                      tts.rate === s ? 'text-brand' : 'text-content-secondary'
                     }`}
                   >
                     {s}x {s === 0.5 && '(slow)'} {s === 1 && '(normal)'}
@@ -291,8 +225,8 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
               Listen at least {RECOMMENDED_LISTENS} times before answering
             </span>
           )}
-          {speed !== 1 && (
-            <span className="text-brand">Speed: {speed}x</span>
+          {tts.rate !== 1 && (
+            <span className="text-brand">Speed: {tts.rate}x</span>
           )}
         </div>
       </div>
@@ -306,11 +240,11 @@ export function ListeningExercise({ exercise, showSlug, episodeSlug }: Listening
             onChange={(e) => setAnswer(e.target.value)}
             placeholder="Type what you heard..."
             className="flex-1 rounded-lg border border-edge-default bg-bg-inset px-4 py-2 text-content-primary placeholder:text-content-secondary focus:border-brand focus:outline-none"
-            disabled={answerState === 'checking' || audioState === 'loading'}
+            disabled={answerState === 'checking'}
           />
           <button
             type="submit"
-            disabled={!answer.trim() || answerState === 'checking' || audioState === 'loading'}
+            disabled={!answer.trim() || answerState === 'checking'}
             className="rounded-lg bg-brand px-6 py-2 font-medium text-white transition-colors hover:bg-brand-hover disabled:cursor-not-allowed disabled:opacity-50"
           >
             {answerState === 'checking' ? 'Checking...' : 'Check'}

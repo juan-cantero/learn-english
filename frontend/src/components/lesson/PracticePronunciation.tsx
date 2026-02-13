@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useSpeechSynthesis } from '../../hooks/useSpeechSynthesis';
 import type { Vocabulary, Expression } from '../../types/lesson';
 
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5;
 type PracticeItem = {
   id: string;
   text: string;
-  audioUrl: string | null;
   type: 'vocabulary' | 'expression';
   definition: string;
 };
@@ -19,40 +19,35 @@ const SPEEDS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5];
 const REPEAT_OPTIONS = [1, 2, 3];
 
 export function PracticePronunciation({ vocabulary, expressions }: PracticePronunciationProps) {
-  // Convert vocabulary and expressions to practice items
   const allItems: PracticeItem[] = [
     ...vocabulary.map((v) => ({
       id: v.id,
       text: v.term,
-      audioUrl: v.audioUrl,
       type: 'vocabulary' as const,
       definition: v.definition,
     })),
-    ...expressions
-      .filter((e) => e.audioUrl)
-      .map((e) => ({
-        id: e.id,
-        text: e.phrase,
-        audioUrl: e.audioUrl,
-        type: 'expression' as const,
-        definition: e.meaning,
-      })),
-  ].filter((item) => item.audioUrl);
+    ...expressions.map((e) => ({
+      id: e.id,
+      text: e.phrase,
+      type: 'expression' as const,
+      definition: e.meaning,
+    })),
+  ];
 
   const [items, setItems] = useState<PracticeItem[]>(allItems);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
   const [currentRepeat, setCurrentRepeat] = useState(1);
-  const [speed, setSpeed] = useState<PlaybackSpeed>(1);
   const [repeatCount, setRepeatCount] = useState(2);
   const [isShuffled, setIsShuffled] = useState(false);
   const [practicedIds, setPracticedIds] = useState<Set<string>>(new Set());
   const [showSettings, setShowSettings] = useState(false);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
   const shouldStopRef = useRef(false);
   const isPausedRef = useRef(false);
+
+  const tts = useSpeechSynthesis();
 
   // Keep isPausedRef in sync
   useEffect(() => {
@@ -62,10 +57,7 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
+      speechSynthesis.cancel();
     };
   }, []);
 
@@ -87,26 +79,6 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
     setIsShuffled(!isShuffled);
   };
 
-  const playAudio = useCallback(
-    (url: string): Promise<void> => {
-      return new Promise((resolve, reject) => {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        }
-
-        const audio = new Audio(url);
-        audio.playbackRate = speed;
-        audioRef.current = audio;
-
-        audio.onended = () => resolve();
-        audio.onerror = () => reject(new Error('Audio failed to load'));
-
-        audio.play().catch(reject);
-      });
-    },
-    [speed]
-  );
-
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
   const waitWhilePaused = async () => {
@@ -114,6 +86,30 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
       await sleep(100);
     }
   };
+
+  const speakAndWait = useCallback(
+    (text: string): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        speechSynthesis.cancel();
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'en-US';
+        utterance.rate = tts.rate;
+
+        utterance.onend = () => resolve();
+        utterance.onerror = (e) => {
+          if (e.error === 'canceled') {
+            reject(new Error('canceled'));
+          } else {
+            reject(new Error(e.error));
+          }
+        };
+
+        speechSynthesis.speak(utterance);
+      });
+    },
+    [tts.rate],
+  );
 
   const playSequence = useCallback(async () => {
     shouldStopRef.current = false;
@@ -127,8 +123,6 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
       if (shouldStopRef.current) break;
 
       const item = items[i];
-      if (!item.audioUrl) continue;
-
       setCurrentIndex(i);
 
       for (let rep = 1; rep <= repeatCount; rep++) {
@@ -140,7 +134,7 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
         setCurrentRepeat(rep);
 
         try {
-          await playAudio(item.audioUrl);
+          await speakAndWait(item.text);
           setPracticedIds((prev) => new Set(prev).add(item.id));
         } catch {
           // Continue to next item on error
@@ -162,21 +156,17 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
     setIsPaused(false);
     setCurrentIndex(null);
     setCurrentRepeat(1);
-  }, [items, repeatCount, playAudio]);
+  }, [items, repeatCount, speakAndWait]);
 
   const handlePlayAll = () => {
     if (isPlaying && !isPaused) {
       // Pause
       setIsPaused(true);
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
+      speechSynthesis.pause();
     } else if (isPaused) {
       // Resume
       setIsPaused(false);
-      if (audioRef.current) {
-        audioRef.current.play();
-      }
+      speechSynthesis.resume();
     } else {
       // Start fresh
       playSequence();
@@ -189,25 +179,22 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
     setIsPaused(false);
     setCurrentIndex(null);
     setCurrentRepeat(1);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
+    speechSynthesis.cancel();
   };
 
   const handlePlaySingle = async (item: PracticeItem, index: number) => {
-    if (!item.audioUrl) return;
-
     // Stop any current playback
     handleStop();
 
     setCurrentIndex(index);
     setIsPlaying(true);
+    shouldStopRef.current = false;
 
     for (let rep = 1; rep <= repeatCount; rep++) {
+      if (shouldStopRef.current) break;
       setCurrentRepeat(rep);
       try {
-        await playAudio(item.audioUrl);
+        await speakAndWait(item.text);
         setPracticedIds((prev) => new Set(prev).add(item.id));
       } catch {
         break;
@@ -245,9 +232,9 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
             d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
           />
         </svg>
-        <h3 className="mb-2 text-lg font-semibold text-content-primary">No Audio Available</h3>
+        <h3 className="mb-2 text-lg font-semibold text-content-primary">Nothing to Practice</h3>
         <p className="text-content-secondary">
-          There are no vocabulary or expressions with audio in this lesson.
+          There are no vocabulary or expressions in this lesson yet.
         </p>
       </div>
     );
@@ -261,8 +248,8 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
           <div>
             <h3 className="text-lg font-semibold text-content-primary">Practice Pronunciation</h3>
             <p className="text-sm text-content-secondary">
-              {items.length} items to practice ({vocabulary.filter((v) => v.audioUrl).length}{' '}
-              vocabulary, {expressions.filter((e) => e.audioUrl).length} expressions)
+              {items.length} items to practice ({vocabulary.length} vocabulary,{' '}
+              {expressions.length} expressions)
             </p>
           </div>
 
@@ -375,9 +362,9 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                   {SPEEDS.map((s) => (
                     <button
                       key={s}
-                      onClick={() => setSpeed(s)}
+                      onClick={() => tts.setRate(s)}
                       className={`rounded-lg px-3 py-1.5 font-mono text-sm transition-colors ${
-                        speed === s
+                        tts.rate === s
                           ? 'bg-brand text-white'
                           : 'bg-bg-card text-content-secondary hover:text-content-primary'
                       }`}

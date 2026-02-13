@@ -144,8 +144,7 @@ class GenerationJobTest {
         assertEquals(40, GenerationProgressStep.EXTRACTING_VOCABULARY.getProgress());
         assertEquals(55, GenerationProgressStep.EXTRACTING_GRAMMAR.getProgress());
         assertEquals(70, GenerationProgressStep.EXTRACTING_EXPRESSIONS.getProgress());
-        assertEquals(80, GenerationProgressStep.GENERATING_EXERCISES.getProgress());
-        assertEquals(90, GenerationProgressStep.GENERATING_AUDIO.getProgress());
+        assertEquals(85, GenerationProgressStep.GENERATING_EXERCISES.getProgress());
         assertEquals(95, GenerationProgressStep.SAVING.getProgress());
         assertEquals(100, GenerationProgressStep.COMPLETED.getProgress());
     }

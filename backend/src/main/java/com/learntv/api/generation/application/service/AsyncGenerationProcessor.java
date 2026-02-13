@@ -28,7 +28,6 @@ public class AsyncGenerationProcessor {
     private final ScriptFetchService scriptFetchService;
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
-    private final AudioGenerationService audioGenerationService;
     private final LessonPersistencePort lessonPersistencePort;
     private final EpisodeLessonGenerator episodeLessonGenerator;
 
@@ -37,14 +36,12 @@ public class AsyncGenerationProcessor {
             ScriptFetchService scriptFetchService,
             ContentExtractionPort contentExtractionPort,
             ExerciseGenerationPort exerciseGenerationPort,
-            AudioGenerationService audioGenerationService,
             LessonPersistencePort lessonPersistencePort,
             EpisodeLessonGenerator episodeLessonGenerator) {
         this.jobProgressService = jobProgressService;
         this.scriptFetchService = scriptFetchService;
         this.contentExtractionPort = contentExtractionPort;
         this.exerciseGenerationPort = exerciseGenerationPort;
-        this.audioGenerationService = audioGenerationService;
         this.lessonPersistencePort = lessonPersistencePort;
         this.episodeLessonGenerator = episodeLessonGenerator;
     }
@@ -99,15 +96,9 @@ public class AsyncGenerationProcessor {
             );
             log.info("Generated {} exercises for job: {}", exercises.size(), jobId);
 
-            // Step 6: Generate audio for vocabulary
-            jobProgressService.updateProgress(jobId, GenerationProgressStep.GENERATING_AUDIO);
-            List<ExtractedVocabulary> vocabularyWithAudio =
-                    audioGenerationService.generateAudioForVocabulary(vocabulary);
-            log.info("Generated audio for job: {}", jobId);
-
-            // Step 7: Compose lesson using domain service
+            // Step 6: Compose lesson using domain service
             GeneratedLesson lesson = episodeLessonGenerator.generate(
-                    vocabularyWithAudio,
+                    vocabulary,
                     grammar,
                     expressions,
                     exercises

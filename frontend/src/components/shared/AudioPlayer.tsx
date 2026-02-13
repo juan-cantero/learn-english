@@ -1,32 +1,25 @@
-import { useState, useRef, useEffect } from 'react';
-import { API_BASE_URL } from '../../api/client';
+import { useState, useEffect } from 'react';
+import { useSpeechSynthesis } from '../../hooks/useSpeechSynthesis';
 
 interface AudioPlayerProps {
-  src: string;
-  fallbackText?: string; // Text to use with TTS API if src fails
+  text: string;
   size?: 'sm' | 'md';
   showSpeedControl?: boolean;
   className?: string;
 }
 
-type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused' | 'error';
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5;
 
 const SPEEDS: PlaybackSpeed[] = [0.5, 0.75, 1, 1.25, 1.5];
-const TTS_API_BASE = `${API_BASE_URL}/tts/speak`;
 
 export function AudioPlayer({
-  src,
-  fallbackText,
+  text,
   size = 'md',
   showSpeedControl = false,
   className = '',
 }: AudioPlayerProps) {
-  const [state, setState] = useState<PlaybackState>('idle');
-  const [speed, setSpeed] = useState<PlaybackSpeed>(1);
+  const { state, speak, pause, resume, stop, rate, setRate } = useSpeechSynthesis();
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const retryCountRef = useRef(0);
 
   const sizeClasses = {
     sm: 'h-8 w-8',
@@ -38,16 +31,6 @@ export function AudioPlayer({
     md: 'h-5 w-5',
   };
 
-  // Cleanup audio on unmount
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
   // Close speed menu when clicking outside
   useEffect(() => {
     if (!showSpeedMenu) return;
@@ -57,95 +40,32 @@ export function AudioPlayer({
     return () => document.removeEventListener('click', handleClickOutside);
   }, [showSpeedMenu]);
 
-  const getAudioUrl = (): string => {
-    // If we've failed with the main src and have fallback text, use TTS API
-    if (retryCountRef.current > 0 && fallbackText) {
-      return `${TTS_API_BASE}?text=${encodeURIComponent(fallbackText)}`;
-    }
-    return src;
-  };
-
-  const handlePlay = async () => {
-    if (state === 'loading') return;
-
-    // If playing, pause
-    if (state === 'playing' && audioRef.current) {
-      audioRef.current.pause();
-      setState('paused');
+  const handlePlay = () => {
+    if (state === 'speaking') {
+      pause();
       return;
     }
 
-    // If paused, resume
-    if (state === 'paused' && audioRef.current) {
-      try {
-        await audioRef.current.play();
-        setState('playing');
-      } catch {
-        setState('error');
-      }
+    if (state === 'paused') {
+      resume();
       return;
     }
 
-    // Start fresh playback
-    setState('loading');
-
-    try {
-      // Cleanup previous audio
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-
-      const audio = new Audio(getAudioUrl());
-      audio.playbackRate = speed;
-      audioRef.current = audio;
-
-      audio.oncanplaythrough = () => {
-        audio.play().catch(() => setState('error'));
-        setState('playing');
-      };
-
-      audio.onended = () => {
-        setState('idle');
-        retryCountRef.current = 0;
-      };
-
-      audio.onerror = () => {
-        // Try fallback if available and not already tried
-        if (fallbackText && retryCountRef.current === 0) {
-          retryCountRef.current = 1;
-          handlePlay(); // Retry with fallback URL
-        } else {
-          setState('error');
-        }
-      };
-
-      audio.load();
-    } catch {
-      setState('error');
-    }
+    speak(text);
   };
 
   const handleRetry = () => {
-    retryCountRef.current = 0;
-    setState('idle');
-    handlePlay();
+    stop();
+    speak(text);
   };
 
   const handleRepeat = () => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => setState('error'));
-      setState('playing');
-    } else {
-      handlePlay();
-    }
+    stop();
+    speak(text);
   };
 
   const handleSpeedChange = (newSpeed: PlaybackSpeed) => {
-    setSpeed(newSpeed);
-    if (audioRef.current) {
-      audioRef.current.playbackRate = newSpeed;
-    }
+    setRate(newSpeed);
     setShowSpeedMenu(false);
   };
 
@@ -159,41 +79,24 @@ export function AudioPlayer({
       {/* Play/Pause/Error Button */}
       <button
         onClick={state === 'error' ? handleRetry : handlePlay}
-        disabled={state === 'loading'}
         className={`flex items-center justify-center rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-card ${sizeClasses[size]} ${
           state === 'error'
             ? 'bg-error/10 text-error hover:bg-error/20'
-            : state === 'playing'
+            : state === 'speaking'
               ? 'bg-brand-muted text-brand'
               : 'text-content-secondary hover:bg-bg-elevated hover:text-brand'
         }`}
         title={
           state === 'error'
             ? 'Retry'
-            : state === 'playing'
+            : state === 'speaking'
               ? 'Pause'
-              : state === 'loading'
-                ? 'Loading...'
+              : state === 'paused'
+                ? 'Resume'
                 : 'Play'
         }
       >
-        {state === 'loading' ? (
-          <svg className={`${iconSizes[size]} animate-spin`} fill="none" viewBox="0 0 24 24">
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            />
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            />
-          </svg>
-        ) : state === 'error' ? (
+        {state === 'error' ? (
           <svg className={iconSizes[size]} fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               strokeLinecap="round"
@@ -202,7 +105,7 @@ export function AudioPlayer({
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
             />
           </svg>
-        ) : state === 'playing' ? (
+        ) : state === 'speaking' ? (
           <svg className={iconSizes[size]} fill="currentColor" viewBox="0 0 24 24">
             <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
           </svg>
@@ -218,8 +121,8 @@ export function AudioPlayer({
         )}
       </button>
 
-      {/* Repeat Button - only show when playing or paused */}
-      {(state === 'playing' || state === 'paused') && (
+      {/* Repeat Button - only show when speaking or paused */}
+      {(state === 'speaking' || state === 'paused') && (
         <button
           onClick={handleRepeat}
           className={`flex items-center justify-center rounded-lg text-content-secondary transition-colors hover:bg-bg-elevated hover:text-brand focus:outline-none ${sizeClasses[size]}`}
@@ -244,7 +147,7 @@ export function AudioPlayer({
             className={`flex items-center justify-center rounded-lg px-2 font-mono text-xs text-content-secondary transition-colors hover:bg-bg-elevated hover:text-brand focus:outline-none ${size === 'sm' ? 'h-8' : 'h-10'}`}
             title="Playback speed"
           >
-            {speed}x
+            {rate}x
           </button>
 
           {showSpeedMenu && (
@@ -254,7 +157,7 @@ export function AudioPlayer({
                   key={s}
                   onClick={() => handleSpeedChange(s)}
                   className={`block w-full px-4 py-1.5 text-left font-mono text-sm transition-colors hover:bg-bg-elevated ${
-                    speed === s ? 'text-brand' : 'text-content-secondary'
+                    rate === s ? 'text-brand' : 'text-content-secondary'
                   }`}
                 >
                   {s}x
