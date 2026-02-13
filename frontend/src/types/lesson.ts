@@ -59,6 +59,7 @@ export interface Exercise {
   id: string;
   type: ExerciseType;
   question: string;
+  correctAnswer: string | null;
   options: string | null;
   matchingPairs: string | null;
   points: number;
