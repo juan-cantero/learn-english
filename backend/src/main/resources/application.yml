@@ -29,12 +29,7 @@ external-apis:
     base-url: https://api.openai.com/v1
     model: gpt-4o-mini
     max-tokens: 4000
-  piper:
-    model-path: ${PIPER_MODEL_PATH:${user.home}/.local/share/piper/en_US-lessac-medium.onnx}
-    timeout-seconds: 10
-    ffmpeg-quality: 6
-
-# Supabase Auth + Storage
+# Supabase Auth
 supabase:
   url: ${SUPABASE_URL:https://localhost}
   service-role-key: ${SUPABASE_SERVICE_ROLE_KEY:}
@@ -43,8 +38,6 @@ supabase:
     issuer: ${SUPABASE_URL:https://localhost}/auth/v1
     ec-public-key-x: ${SUPABASE_JWT_EC_KEY_X:}
     ec-public-key-y: ${SUPABASE_JWT_EC_KEY_Y:}
-  storage:
-    bucket-name: ${SUPABASE_STORAGE_BUCKET:learntv-audio}
 
 ---
 # Development profile - PostgreSQL via Docker
@@ -72,12 +65,6 @@ spring:
     enabled: true
     baseline-on-migrate: true
     locations: classpath:db/migration
-
-# Local audio storage for dev
-audio:
-  local:
-    storage-path: ${AUDIO_LOCAL_PATH:${java.io.tmpdir}/learntv-audio}
-    base-url: http://localhost:8080/api/v1/audio
 
 # Mock auth for development
 auth:
@@ -183,8 +170,6 @@ supabase:
     # EC public key for ES256 (local Supabase default)
     ec-public-key-x: M5Sjqn5zwC9Kl1zVfUUGvv9boQjCGd45G8sdopBExB4
     ec-public-key-y: P6IXMvA2WYXSHSOMTBH2jsw_9rrzGy89FjPf6oOsIxQ
-  storage:
-    bucket-name: learntv-audio
 
 # Disable mock auth - use real Supabase
 auth:

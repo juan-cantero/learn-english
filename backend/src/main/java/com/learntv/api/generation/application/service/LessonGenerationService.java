@@ -35,7 +35,6 @@ public class LessonGenerationService {
     private final ScriptFetchService scriptFetchService;
     private final ContentExtractionPort contentExtractionPort;
     private final ExerciseGenerationPort exerciseGenerationPort;
-    private final AudioGenerationService audioGenerationService;
     private final ShowJpaRepository showRepository;
     private final EpisodeJpaRepository episodeRepository;
     private final VocabularyJpaRepository vocabularyRepository;
@@ -48,7 +47,6 @@ public class LessonGenerationService {
             ScriptFetchService scriptFetchService,
             ContentExtractionPort contentExtractionPort,
             ExerciseGenerationPort exerciseGenerationPort,
-            AudioGenerationService audioGenerationService,
             ShowJpaRepository showRepository,
             EpisodeJpaRepository episodeRepository,
             VocabularyJpaRepository vocabularyRepository,
@@ -59,7 +57,6 @@ public class LessonGenerationService {
         this.scriptFetchService = scriptFetchService;
         this.contentExtractionPort = contentExtractionPort;
         this.exerciseGenerationPort = exerciseGenerationPort;
-        this.audioGenerationService = audioGenerationService;
         this.showRepository = showRepository;
         this.episodeRepository = episodeRepository;
         this.vocabularyRepository = vocabularyRepository;
@@ -111,10 +108,9 @@ public class LessonGenerationService {
         episodeRepository.save(episode);
         log.info("Created episode: {}", episode.getSlug());
 
-        // 5. Extract vocabulary and generate audio
+        // 5. Extract vocabulary
         List<ExtractedVocabulary> extractedVocab = contentExtractionPort.extractVocabulary(script, request.genre());
-        List<ExtractedVocabulary> vocabWithAudio = audioGenerationService.generateAudioForVocabulary(extractedVocab);
-        for (ExtractedVocabulary v : vocabWithAudio) {
+        for (ExtractedVocabulary v : extractedVocab) {
             VocabularyJpaEntity vocab = VocabularyJpaEntity.create(
                     episode.getId(),
                     v.term(),
@@ -122,11 +118,11 @@ public class LessonGenerationService {
                     v.phonetic(),
                     VocabularyCategory.fromString(v.category()),
                     v.exampleSentence(),
-                    v.audioUrl()
+                    null
             );
             vocabularyRepository.save(vocab);
         }
-        log.info("Saved {} vocabulary items", vocabWithAudio.size());
+        log.info("Saved {} vocabulary items", extractedVocab.size());
 
         // 6. Extract and save grammar points
         List<ExtractedGrammar> extractedGrammar = contentExtractionPort.extractGrammar(script);
@@ -143,25 +139,24 @@ public class LessonGenerationService {
         }
         log.info("Saved {} grammar points", extractedGrammar.size());
 
-        // 7. Extract expressions and generate audio
+        // 7. Extract expressions
         List<ExtractedExpression> extractedExpressions = contentExtractionPort.extractExpressions(script);
-        List<ExtractedExpression> expressionsWithAudio = audioGenerationService.generateAudioForExpressions(extractedExpressions);
-        for (ExtractedExpression e : expressionsWithAudio) {
+        for (ExtractedExpression e : extractedExpressions) {
             ExpressionJpaEntity expression = ExpressionJpaEntity.create(
                     episode.getId(),
                     e.phrase(),
                     e.meaning(),
                     e.context(),
                     e.usageNote(),
-                    e.audioUrl()
+                    null
             );
             expressionRepository.save(expression);
         }
-        log.info("Saved {} expressions", expressionsWithAudio.size());
+        log.info("Saved {} expressions", extractedExpressions.size());
 
-        // 8. Generate and save exercises (with audio for LISTENING type)
+        // 8. Generate and save exercises
         List<GeneratedExercise> generatedExercises = exerciseGenerationPort.generateExercises(
-                vocabWithAudio, extractedGrammar, expressionsWithAudio);
+                extractedVocab, extractedGrammar, extractedExpressions);
         for (GeneratedExercise ex : generatedExercises) {
             String optionsJson = null;
             if (ex.options() != null) {
@@ -172,12 +167,6 @@ public class LessonGenerationService {
                 }
             }
 
-            // Generate audio for LISTENING exercises
-            String audioUrl = null;
-            if ("LISTENING".equals(ex.type()) && ex.correctAnswer() != null) {
-                audioUrl = generateAudioForListeningExercise(ex.correctAnswer());
-            }
-
             ExerciseJpaEntity exercise = ExerciseJpaEntity.create(
                     episode.getId(),
                     ExerciseType.valueOf(ex.type()),
@@ -185,7 +174,7 @@ public class LessonGenerationService {
                     ex.correctAnswer(),
                     optionsJson,
                     ex.points(),
-                    audioUrl
+                    null
             );
             exerciseRepository.save(exercise);
         }
@@ -196,9 +185,9 @@ public class LessonGenerationService {
                 show.getSlug(),
                 episode.getSlug(),
                 "Lesson generated successfully",
-                vocabWithAudio.size(),
+                extractedVocab.size(),
                 extractedGrammar.size(),
-                expressionsWithAudio.size(),
+                extractedExpressions.size(),
                 generatedExercises.size()
         );
     }
@@ -223,30 +212,6 @@ public class LessonGenerationService {
                             .build();
                     return showRepository.save(ShowJpaEntity.fromDomain(show));
                 });
-    }
-
-    /**
-     * Generate audio for a listening exercise word.
-     * Returns the audio URL or null if generation fails.
-     */
-    private String generateAudioForListeningExercise(String word) {
-        try {
-            byte[] wav = audioGenerationService.generateWavForText(word);
-            byte[] mp3 = audioGenerationService.convertWavToMp3(wav);
-            String key = "listening/" + slugify(word) + ".mp3";
-            return audioGenerationService.uploadAudio(key, mp3);
-        } catch (Exception e) {
-            log.warn("Failed to generate audio for listening exercise: {}. Error: {}", word, e.getMessage());
-            return null;
-        }
-    }
-
-    private String slugify(String text) {
-        return text.toLowerCase()
-                .replaceAll("[^a-z0-9\\s-]", "")
-                .replaceAll("\\s+", "-")
-                .replaceAll("-+", "-")
-                .replaceAll("^-|-$", "");
     }
 
     private String generateSlug(String title) {

@@ -10,8 +10,7 @@ public enum GenerationProgressStep {
     EXTRACTING_VOCABULARY(40, "Extracting vocabulary..."),
     EXTRACTING_GRAMMAR(55, "Extracting grammar..."),
     EXTRACTING_EXPRESSIONS(70, "Extracting expressions..."),
-    GENERATING_EXERCISES(80, "Generating exercises..."),
-    GENERATING_AUDIO(90, "Generating audio..."),
+    GENERATING_EXERCISES(85, "Generating exercises..."),
     SAVING(95, "Saving..."),
     COMPLETED(100, "Completed");
 

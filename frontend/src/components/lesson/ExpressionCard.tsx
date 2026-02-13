@@ -12,13 +12,7 @@ export function ExpressionCard({ expression }: ExpressionCardProps) {
         <h4 className="text-lg font-semibold text-brand">
           "{expression.phrase}"
         </h4>
-        {expression.audioUrl && (
-          <AudioPlayer
-            src={expression.audioUrl}
-            fallbackText={expression.phrase}
-            size="sm"
-          />
-        )}
+        <AudioPlayer text={expression.phrase} size="sm" />
       </div>
 
       <p className="text-content-primary">{expression.meaning}</p>

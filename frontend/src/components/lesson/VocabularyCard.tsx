@@ -46,11 +46,7 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
           <span className={`rounded-md border px-2 py-1 text-xs ${categoryColor}`}>
             {categoryLabel}
           </span>
-          <AudioPlayer
-            src={vocabulary.audioUrl || ''}
-            fallbackText={vocabulary.term}
-            size="sm"
-          />
+          <AudioPlayer text={vocabulary.term} size="sm" />
         </div>
       </div>
 
