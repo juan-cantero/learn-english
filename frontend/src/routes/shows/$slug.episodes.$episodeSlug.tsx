@@ -141,13 +141,13 @@ export function LessonPage() {
         </div>
       </div>
 
-      <div className="mb-6 border-b border-edge-default">
+      <div className="mb-6 overflow-x-auto border-b border-edge-default">
         <div className="flex gap-1">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`relative px-4 py-3 text-sm font-medium transition-colors ${
+              className={`relative shrink-0 whitespace-nowrap px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === tab.id
                   ? 'text-brand'
                   : 'text-content-secondary hover:text-content-primary'
