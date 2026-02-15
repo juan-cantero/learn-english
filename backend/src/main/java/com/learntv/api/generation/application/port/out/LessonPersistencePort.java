@@ -20,6 +20,7 @@ public interface LessonPersistencePort {
      * @param episodeTitle Episode title (optional)
      * @param genre Show genre
      * @param imageUrl Show image URL (optional)
+     * @param userId User ID to associate with the show
      * @return The ID of the created episode
      */
     UUID save(
@@ -30,6 +31,7 @@ public interface LessonPersistencePort {
             int episodeNumber,
             String episodeTitle,
             String genre,
-            String imageUrl
+            String imageUrl,
+            UUID userId
     );
 }

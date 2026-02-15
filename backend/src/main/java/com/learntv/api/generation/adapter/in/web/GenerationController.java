@@ -25,6 +25,8 @@ import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import com.learntv.api.generation.domain.model.GeneratedExercise;
 import com.learntv.api.generation.domain.model.GenerationJob;
+import com.learntv.api.shared.config.security.AuthenticatedUser;
+import com.learntv.api.shared.config.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -380,6 +382,7 @@ public class GenerationController {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     public ResponseEntity<JobStatusResponse> startLessonGeneration(
+            @CurrentUser AuthenticatedUser authUser,
             @Parameter(description = "TMDB ID of the show", example = "1396")
             @RequestParam String tmdbId,
             @Parameter(description = "Season number", example = "1")
@@ -389,7 +392,7 @@ public class GenerationController {
             @Parameter(description = "Show genre", example = "drama")
             @RequestParam(defaultValue = "drama") String genre) {
 
-        GenerationCommand command = new GenerationCommand(tmdbId, season, episode, genre);
+        GenerationCommand command = new GenerationCommand(tmdbId, season, episode, genre, authUser.id());
         GenerationJob job = generateEpisodeLessonUseCase.startGeneration(command);
 
         return ResponseEntity

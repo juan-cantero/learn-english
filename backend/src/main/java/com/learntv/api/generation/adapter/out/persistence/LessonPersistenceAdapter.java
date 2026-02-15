@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learntv.api.catalog.adapter.out.persistence.ShowJpaEntity;
 import com.learntv.api.catalog.adapter.out.persistence.ShowJpaRepository;
+import com.learntv.api.catalog.application.port.UserShowRepository;
 import com.learntv.api.catalog.domain.model.*;
 import com.learntv.api.generation.application.port.in.GenerationCommand;
 import com.learntv.api.generation.application.port.out.LessonPersistencePort;
@@ -38,6 +39,7 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
     private final GrammarPointJpaRepository grammarRepository;
     private final ExpressionJpaRepository expressionRepository;
     private final ExerciseJpaRepository exerciseRepository;
+    private final UserShowRepository userShowRepository;
     private final ObjectMapper objectMapper;
 
     public LessonPersistenceAdapter(
@@ -48,6 +50,7 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
             GrammarPointJpaRepository grammarRepository,
             ExpressionJpaRepository expressionRepository,
             ExerciseJpaRepository exerciseRepository,
+            UserShowRepository userShowRepository,
             ObjectMapper objectMapper) {
         this.showMetadataPort = showMetadataPort;
         this.showRepository = showRepository;
@@ -56,6 +59,7 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
         this.grammarRepository = grammarRepository;
         this.expressionRepository = expressionRepository;
         this.exerciseRepository = exerciseRepository;
+        this.userShowRepository = userShowRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -69,7 +73,8 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
             int episodeNumber,
             String episodeTitle,
             String genre,
-            String imageUrl) {
+            String imageUrl,
+            UUID userId) {
 
         log.info("Saving lesson for TMDB ID: {}, IMDB ID: {}, S{}E{}",
                 tmdbId, imdbId, seasonNumber, episodeNumber);
@@ -166,6 +171,10 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                 exerciseRepository.save(exercise);
             }
             log.info("Saved {} exercises", lesson.exercises().size());
+
+        // 8. Associate user with show
+        userShowRepository.addUserShow(userId, show.getId());
+        log.info("Associated user {} with show {}", userId, show.getId());
 
         return episode.getId();
     }

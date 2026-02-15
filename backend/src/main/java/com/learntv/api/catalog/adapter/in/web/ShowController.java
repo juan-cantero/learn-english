@@ -5,6 +5,8 @@ import com.learntv.api.catalog.application.usecase.ViewShowDetailsUseCase;
 import com.learntv.api.catalog.domain.model.DifficultyLevel;
 import com.learntv.api.catalog.domain.model.Genre;
 import com.learntv.api.catalog.domain.model.Show;
+import com.learntv.api.shared.config.security.AuthenticatedUser;
+import com.learntv.api.shared.config.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ public class ShowController {
     @GetMapping
     @Operation(summary = "Browse catalog", description = "Returns all available TV shows, optionally filtered")
     public ResponseEntity<List<ShowResponse>> browseShows(
+            @CurrentUser AuthenticatedUser authUser,
             @RequestParam(required = false) String genre,
             @RequestParam(required = false) String difficulty,
             @RequestParam(required = false) String search) {
@@ -39,7 +42,10 @@ public class ShowController {
                 search
         );
 
-        List<Show> shows = browseCatalogUseCase.execute(filter);
+        List<Show> shows = authUser != null
+                ? browseCatalogUseCase.execute(filter, authUser.id())
+                : browseCatalogUseCase.executePublicPreview(filter);
+
         List<ShowResponse> response = shows.stream()
                 .map(ShowResponse::fromDomain)
                 .toList();

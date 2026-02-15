@@ -63,7 +63,7 @@ public class GenerateEpisodeLessonService implements GenerateEpisodeLessonUseCas
         log.info("Created generation job: {} for IMDB ID: {}", job.id(), imdbId);
 
         // Start async processing in separate bean (so @Async works)
-        asyncProcessor.processGeneration(job.id(), imdbId, command);
+        asyncProcessor.processGeneration(job.id(), imdbId, command, command.userId());
 
         return job;
     }
