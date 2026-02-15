@@ -1,5 +1,6 @@
 package com.learntv.api.learning.adapter.in.web;
 
+import com.learntv.api.learning.application.service.PhonemeService;
 import com.learntv.api.learning.application.usecase.ViewEpisodeLessonUseCase;
 import com.learntv.api.learning.domain.model.*;
 import com.learntv.api.progress.domain.model.UserProgress;
@@ -15,12 +16,15 @@ public record LessonWithProgressResponse(
         ProgressSummary progress
 ) {
 
-    public static LessonWithProgressResponse fromDomain(ViewEpisodeLessonUseCase.LessonWithProgress result) {
+    public static LessonWithProgressResponse fromDomain(
+            ViewEpisodeLessonUseCase.LessonWithProgress result, PhonemeService phonemeService) {
         Lesson lesson = result.lesson();
 
         return new LessonWithProgressResponse(
                 EpisodeResponse.fromDomain(lesson.getEpisode()),
-                lesson.getVocabulary().stream().map(VocabularyResponse::fromDomain).toList(),
+                lesson.getVocabulary().stream()
+                        .map(v -> VocabularyResponse.fromDomain(v, phonemeService))
+                        .toList(),
                 lesson.getGrammarPoints().stream().map(GrammarPointResponse::fromDomain).toList(),
                 lesson.getExpressions().stream().map(ExpressionResponse::fromDomain).toList(),
                 lesson.getExercises().stream().map(ExerciseResponse::fromDomain).toList(),
@@ -60,9 +64,10 @@ public record LessonWithProgressResponse(
             String category,
             String exampleSentence,
             String contextTimestamp,
-            String audioUrl
+            String audioUrl,
+            List<String> phonemes
     ) {
-        public static VocabularyResponse fromDomain(Vocabulary vocab) {
+        public static VocabularyResponse fromDomain(Vocabulary vocab, PhonemeService phonemeService) {
             return new VocabularyResponse(
                     vocab.getId().toString(),
                     vocab.getTerm(),
@@ -71,7 +76,8 @@ public record LessonWithProgressResponse(
                     vocab.getCategory().name(),
                     vocab.getExampleSentence(),
                     vocab.getContextTimestamp(),
-                    vocab.getAudioUrl()
+                    vocab.getAudioUrl(),
+                    phonemeService.lookup(vocab.getTerm())
             );
         }
     }

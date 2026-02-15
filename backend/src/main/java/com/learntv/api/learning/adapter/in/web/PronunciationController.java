@@ -52,6 +52,7 @@ public class PronunciationController {
             String expectedText,
             double similarity,
             boolean passed,
+            String expectedIpa,
             List<String> suggestions
     ) {
         public static TranscriptionResponse fromDomain(PronunciationService.PronunciationResult result) {
@@ -60,6 +61,7 @@ public class PronunciationController {
                     result.expectedText(),
                     result.similarity(),
                     result.passed(),
+                    result.expectedIpa(),
                     result.suggestions()
             );
         }

@@ -1,5 +1,6 @@
 package com.learntv.api.learning.adapter.in.web;
 
+import com.learntv.api.learning.application.service.PhonemeService;
 import com.learntv.api.learning.application.usecase.CheckExerciseAnswerUseCase;
 import com.learntv.api.learning.application.usecase.ViewEpisodeLessonUseCase;
 import com.learntv.api.shared.config.security.AuthenticatedUser;
@@ -18,11 +19,14 @@ public class EpisodeController {
 
     private final ViewEpisodeLessonUseCase viewEpisodeLessonUseCase;
     private final CheckExerciseAnswerUseCase checkExerciseAnswerUseCase;
+    private final PhonemeService phonemeService;
 
     public EpisodeController(ViewEpisodeLessonUseCase viewEpisodeLessonUseCase,
-                             CheckExerciseAnswerUseCase checkExerciseAnswerUseCase) {
+                             CheckExerciseAnswerUseCase checkExerciseAnswerUseCase,
+                             PhonemeService phonemeService) {
         this.viewEpisodeLessonUseCase = viewEpisodeLessonUseCase;
         this.checkExerciseAnswerUseCase = checkExerciseAnswerUseCase;
+        this.phonemeService = phonemeService;
     }
 
     @GetMapping("/{episodeSlug}")
@@ -36,7 +40,7 @@ public class EpisodeController {
         ViewEpisodeLessonUseCase.LessonWithProgress result =
                 viewEpisodeLessonUseCase.execute(authUser.id(), showSlug, episodeSlug);
 
-        return ResponseEntity.ok(LessonWithProgressResponse.fromDomain(result));
+        return ResponseEntity.ok(LessonWithProgressResponse.fromDomain(result, phonemeService));
     }
 
     @PostMapping("/{episodeSlug}/exercises/{exerciseId}/check")

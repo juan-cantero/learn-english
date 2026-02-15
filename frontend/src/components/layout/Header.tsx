@@ -43,6 +43,12 @@ export function Header() {
               >
                 My Progress
               </Link>
+              <Link
+                to="/phonemes"
+                className="text-sm font-medium text-content-secondary transition-colors hover:text-content-primary [&.active]:text-brand"
+              >
+                Phonemes
+              </Link>
             </nav>
             <ThemeToggle />
             <UserMenu />
