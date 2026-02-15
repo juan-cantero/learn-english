@@ -20,7 +20,7 @@ import { PhonemesPage } from './phonemes';
 
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="min-h-screen overflow-x-hidden bg-bg-primary">
+    <div className="min-h-screen bg-bg-primary">
       <Header />
       <OfflineBanner />
       <InstallBanner />
