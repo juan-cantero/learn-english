@@ -49,9 +49,9 @@ export function ShowPage() {
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       <Navigation showTitle={show.title} showSlug={show.slug} />
 
-      <div className="mt-8 flex flex-col gap-8 md:flex-row">
+      <div className="mt-8 flex flex-col gap-6 md:flex-row md:gap-8">
         <div className="shrink-0">
-          <div className="h-72 w-48 overflow-hidden rounded-xl bg-bg-card">
+          <div className="mx-auto aspect-[3/4] w-full max-w-[200px] overflow-hidden rounded-xl bg-bg-card md:h-72 md:w-48">
             {show.imageUrl ? (
               <img
                 src={show.imageUrl}
@@ -69,25 +69,25 @@ export function ShowPage() {
         </div>
 
         <div className="flex-1">
-          <h1 className="text-3xl font-bold text-content-primary">{show.title}</h1>
+          <h1 className="text-2xl font-bold text-content-primary md:text-3xl">{show.title}</h1>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-content-secondary">
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <span className="rounded-md bg-bg-card px-2.5 py-1 text-sm text-content-secondary">
               {show.genre}
             </span>
-            <span className="rounded-md bg-bg-card px-3 py-1 text-sm text-content-secondary">
+            <span className="rounded-md bg-bg-card px-2.5 py-1 text-sm text-content-secondary">
               {show.accent} English
             </span>
             <span
-              className={`rounded-md px-3 py-1 text-sm ${difficultyColors[show.difficulty]}`}
+              className={`rounded-md px-2.5 py-1 text-sm ${difficultyColors[show.difficulty]}`}
             >
               {show.difficulty}
             </span>
           </div>
 
-          <p className="mt-4 text-content-secondary">{show.description}</p>
+          <p className="mt-3 text-sm text-content-secondary md:mt-4 md:text-base">{show.description}</p>
 
-          <div className="mt-6 flex gap-6 border-t border-edge-default pt-6">
+          <div className="mt-4 flex gap-6 border-t border-edge-default pt-4 md:mt-6 md:pt-6">
             <div>
               <p className="font-mono text-2xl font-bold text-content-primary">
                 {data.seasonCount}

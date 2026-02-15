@@ -38,7 +38,7 @@ export function EpisodeList({ episodes, showSlug }: EpisodeListProps) {
                   key={episode.id}
                   to="/shows/$slug/episodes/$episodeSlug"
                   params={{ slug: showSlug, episodeSlug: episode.slug }}
-                  className="group flex items-center gap-4 rounded-lg border border-edge-default bg-bg-card p-4 transition-all hover:border-brand/50 hover:bg-bg-card-hover"
+                  className="group flex items-center gap-4 rounded-lg border border-edge-default bg-bg-card p-4 transition-all hover:border-brand/50 hover:bg-bg-card-hover active:scale-[0.98]"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary font-mono text-sm font-medium text-content-secondary group-hover:bg-brand group-hover:text-white">
                     {episode.episodeNumber}

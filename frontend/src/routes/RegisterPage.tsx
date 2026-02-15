@@ -41,7 +41,7 @@ export function RegisterPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
+      <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center p-4">
         <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-8 shadow-xl">
           <div className="mb-8 text-center">
             <h1 className="text-2xl font-semibold text-content-primary">Check Your Email</h1>
@@ -61,7 +61,7 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-bg-primary p-4">
+    <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center p-4">
       <div className="w-full max-w-md rounded-xl border border-edge-default bg-bg-card p-8 shadow-xl">
         <div className="mb-8 text-center">
           <h1 className="text-2xl font-semibold text-content-primary">Create Account</h1>

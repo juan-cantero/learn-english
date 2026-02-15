@@ -1,6 +1,7 @@
-import { createRootRoute, createRoute, Outlet } from '@tanstack/react-router';
+import { createRootRoute, createRoute, redirect, Outlet } from '@tanstack/react-router';
 import { Header } from '../components/layout/Header';
 import { BottomNavigation } from '../components/layout/BottomNavigation';
+import { OfflineBanner } from '../components/shared/OfflineBanner';
 import { ProtectedRoute } from '../components/auth/ProtectedRoute';
 import { HomePage } from './index';
 import { ShowPage } from './shows/$slug';
@@ -20,6 +21,7 @@ const rootRoute = createRootRoute({
   component: () => (
     <div className="min-h-screen bg-bg-primary">
       <Header />
+      <OfflineBanner />
       <main className="pb-20 md:pb-0">
         <Outlet />
       </main>
@@ -58,6 +60,14 @@ const phonemesRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/phonemes',
   component: PhonemesPage,
+});
+
+const showsRedirectRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/shows',
+  beforeLoad: () => {
+    throw redirect({ to: '/' });
+  },
 });
 
 // --- Protected routes ---
@@ -144,6 +154,7 @@ const classroomDetailRoute = createRoute({
 
 export const routeTree = rootRoute.addChildren([
   indexRoute,
+  showsRedirectRoute,
   showRoute,
   lessonRoute,
   progressRoute,
