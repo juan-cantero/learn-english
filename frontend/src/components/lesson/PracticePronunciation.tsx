@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSpeechSynthesis } from '../../hooks/useSpeechSynthesis';
+import { useMediaRecorder } from '../../hooks/useMediaRecorder';
+import { useTranscribePronunciation } from '../../hooks/usePronunciation';
 import type { Vocabulary, Expression } from '../../types/lesson';
+import type { TranscriptionResult } from '../../api/pronunciation';
 
 type PlaybackSpeed = 0.5 | 0.75 | 1 | 1.25 | 1.5;
 type PracticeItem = {
@@ -43,11 +46,18 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
   const [isShuffled, setIsShuffled] = useState(false);
   const [practicedIds, setPracticedIds] = useState<Set<string>>(new Set());
   const [showSettings, setShowSettings] = useState(false);
+  const [recordingItemId, setRecordingItemId] = useState<string | null>(null);
+  const [pronunciationResults, setPronunciationResults] = useState<Map<string, TranscriptionResult>>(
+    new Map()
+  );
+  const [pronunciationScores, setPronunciationScores] = useState<Map<string, number>>(new Map());
 
   const shouldStopRef = useRef(false);
   const isPausedRef = useRef(false);
 
   const tts = useSpeechSynthesis();
+  const recorder = useMediaRecorder();
+  const transcribeMutation = useTranscribePronunciation();
 
   // Keep isPausedRef in sync
   useEffect(() => {
@@ -60,6 +70,40 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
       speechSynthesis.cancel();
     };
   }, []);
+
+  // Auto-submit recording when stopped
+  useEffect(() => {
+    if (recorder.state === 'stopped' && recorder.audioBlob && recordingItemId) {
+      const item = items.find((i) => i.id === recordingItemId);
+      if (item) {
+        transcribeMutation.mutate(
+          {
+            expectedText: item.text,
+            audioBlob: recorder.audioBlob,
+          },
+          {
+            onSuccess: (result) => {
+              setPronunciationResults((prev) => new Map(prev).set(recordingItemId, result));
+              // Update best score
+              setPronunciationScores((prev) => {
+                const newScores = new Map(prev);
+                const currentBest = newScores.get(recordingItemId) ?? 0;
+                if (result.similarity > currentBest) {
+                  newScores.set(recordingItemId, result.similarity);
+                }
+                return newScores;
+              });
+              recorder.reset();
+            },
+            onError: () => {
+              recorder.reset();
+            },
+          }
+        );
+      }
+      setRecordingItemId(null);
+    }
+  }, [recorder.state, recorder.audioBlob, recordingItemId, items, transcribeMutation, recorder]);
 
   const shuffleArray = <T,>(array: T[]): T[] => {
     const shuffled = [...array];
@@ -211,6 +255,30 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
   const resetProgress = () => {
     setPracticedIds(new Set());
+  };
+
+  const handleMicClick = (itemId: string) => {
+    if (recorder.state === 'recording' && recordingItemId === itemId) {
+      // Stop recording for this item
+      recorder.stopRecording();
+    } else if (recorder.state === 'idle') {
+      // Start recording for this item
+      setRecordingItemId(itemId);
+      setPronunciationResults((prev) => {
+        const newMap = new Map(prev);
+        newMap.delete(itemId);
+        return newMap;
+      });
+      recorder.startRecording();
+    }
+  };
+
+  const handleTryAgain = (itemId: string) => {
+    setPronunciationResults((prev) => {
+      const newMap = new Map(prev);
+      newMap.delete(itemId);
+      return newMap;
+    });
   };
 
   const progressPercentage =
@@ -424,86 +492,215 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
 
       {/* Items List */}
       <div className="space-y-2">
-        {items.map((item, index) => (
-          <div
-            key={item.id}
-            className={`flex items-center gap-4 rounded-xl border p-4 transition-all ${
-              currentIndex === index
-                ? 'border-brand bg-brand-muted'
-                : practicedIds.has(item.id)
-                  ? 'border-success/30 bg-success/5'
-                  : 'border-edge-default bg-bg-card hover:border-brand/30'
-            }`}
-          >
-            {/* Index */}
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-inset font-mono text-sm text-content-secondary">
-              {index + 1}
-            </span>
+        {items.map((item, index) => {
+          const isRecording = recorder.state === 'recording' && recordingItemId === item.id;
+          const isProcessing = transcribeMutation.isPending && recordingItemId === item.id;
+          const result = pronunciationResults.get(item.id);
+          const bestScore = pronunciationScores.get(item.id);
+          const isRecordingAny = recorder.state === 'recording';
 
-            {/* Content */}
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-content-primary">{item.text}</span>
-                <span
-                  className={`rounded px-1.5 py-0.5 text-xs ${
-                    item.type === 'vocabulary'
-                      ? 'bg-info-muted text-info'
-                      : 'bg-brand-muted text-brand'
-                  }`}
-                >
-                  {item.type}
+          return (
+            <div
+              key={item.id}
+              className={`rounded-xl border p-4 transition-all ${
+                currentIndex === index
+                  ? 'border-brand bg-brand-muted'
+                  : practicedIds.has(item.id)
+                    ? 'border-success/30 bg-success/5'
+                    : 'border-edge-default bg-bg-card hover:border-brand/30'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                {/* Index */}
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-inset font-mono text-sm text-content-secondary">
+                  {index + 1}
                 </span>
-                {practicedIds.has(item.id) && (
-                  <svg className="h-4 w-4 text-success" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
+
+                {/* Content */}
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-content-primary">{item.text}</span>
+                    <span
+                      className={`rounded px-1.5 py-0.5 text-xs ${
+                        item.type === 'vocabulary'
+                          ? 'bg-info-muted text-info'
+                          : 'bg-brand-muted text-brand'
+                      }`}
+                    >
+                      {item.type}
+                    </span>
+                    {practicedIds.has(item.id) && (
+                      <svg className="h-4 w-4 text-success" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    )}
+                    {bestScore !== undefined && (
+                      <span className="font-mono text-xs text-success">
+                        {Math.round(bestScore * 100)}%
+                      </span>
+                    )}
+                  </div>
+                  <p className="truncate text-sm text-content-secondary">{item.definition}</p>
+                </div>
+
+                {/* Microphone Button */}
+                <button
+                  onClick={() => handleMicClick(item.id)}
+                  disabled={isPlaying || isProcessing || (isRecordingAny && !isRecording)}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                    isRecording
+                      ? 'animate-pulse bg-error text-white'
+                      : isProcessing
+                        ? 'bg-bg-inset text-content-secondary'
+                        : 'text-content-secondary hover:bg-bg-inset hover:text-brand disabled:opacity-50'
+                  }`}
+                  title={isRecording ? 'Stop recording' : 'Record pronunciation'}
+                >
+                  {isProcessing ? (
+                    <svg
+                      className="h-5 w-5 animate-spin"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
+                      />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Play Button */}
+                <button
+                  onClick={() => handlePlaySingle(item, index)}
+                  disabled={(isPlaying && currentIndex !== index) || isRecordingAny}
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                    currentIndex === index
+                      ? 'bg-brand text-white'
+                      : 'text-content-secondary hover:bg-bg-inset hover:text-brand disabled:opacity-50'
+                  }`}
+                  title="Play"
+                >
+                  {currentIndex === index ? (
+                    <div className="flex items-center gap-0.5">
+                      <span className="inline-block h-3 w-1 animate-pulse rounded-full bg-current" />
+                      <span
+                        className="inline-block h-3 w-1 animate-pulse rounded-full bg-current"
+                        style={{ animationDelay: '150ms' }}
+                      />
+                      <span
+                        className="inline-block h-3 w-1 animate-pulse rounded-full bg-current"
+                        style={{ animationDelay: '300ms' }}
+                      />
+                    </div>
+                  ) : (
+                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
+                </button>
+
+                {/* Recording duration or repeat indicator */}
+                {isRecording ? (
+                  <span className="shrink-0 font-mono text-sm text-error">
+                    0:{recorder.duration.toString().padStart(2, '0')}
+                  </span>
+                ) : currentIndex === index && repeatCount > 1 ? (
+                  <span className="shrink-0 font-mono text-sm text-brand">
+                    {currentRepeat}/{repeatCount}
+                  </span>
+                ) : (
+                  <div className="w-12" />
                 )}
               </div>
-              <p className="truncate text-sm text-content-secondary">{item.definition}</p>
-            </div>
 
-            {/* Play Button */}
-            <button
-              onClick={() => handlePlaySingle(item, index)}
-              disabled={isPlaying && currentIndex !== index}
-              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
-                currentIndex === index
-                  ? 'bg-brand text-white'
-                  : 'text-content-secondary hover:bg-bg-inset hover:text-brand disabled:opacity-50'
-              }`}
-              title="Play"
-            >
-              {currentIndex === index ? (
-                <div className="flex items-center gap-0.5">
-                  <span className="inline-block h-3 w-1 animate-pulse rounded-full bg-current" />
-                  <span
-                    className="inline-block h-3 w-1 animate-pulse rounded-full bg-current"
-                    style={{ animationDelay: '150ms' }}
-                  />
-                  <span
-                    className="inline-block h-3 w-1 animate-pulse rounded-full bg-current"
-                    style={{ animationDelay: '300ms' }}
-                  />
+              {/* Pronunciation Result */}
+              {result && (
+                <div
+                  className={`mt-3 rounded-lg border p-3 ${
+                    result.passed
+                      ? 'border-success/30 bg-success/10'
+                      : 'border-error/30 bg-error/10'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <div className="mb-1 flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded px-2 py-0.5 font-mono text-sm font-medium ${
+                            result.passed
+                              ? 'bg-success/20 text-success'
+                              : 'bg-error/20 text-error'
+                          }`}
+                        >
+                          {Math.round(result.similarity * 100)}% match
+                          {result.passed && (
+                            <svg className="h-3.5 w-3.5" fill="currentColor" viewBox="0 0 20 20">
+                              <path
+                                fillRule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-sm text-content-secondary">
+                        You said: <span className="text-content-primary">{result.transcription}</span>
+                      </p>
+                      {!result.passed && (
+                        <p className="text-sm text-content-secondary">
+                          Expected: <span className="text-content-primary">{result.expectedText}</span>
+                        </p>
+                      )}
+                      {result.suggestions && result.suggestions.length > 0 && (
+                        <ul className="mt-2 space-y-1">
+                          {result.suggestions.map((tip, i) => (
+                            <li key={i} className="flex items-start gap-1.5 text-sm text-content-secondary">
+                              <span className="mt-0.5 shrink-0 text-brand">&#x2022;</span>
+                              {tip}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                    {!result.passed && (
+                      <button
+                        onClick={() => handleTryAgain(item.id)}
+                        className="shrink-0 rounded px-3 py-1 text-sm font-medium text-error transition-colors hover:bg-error/20"
+                      >
+                        Try Again
+                      </button>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
               )}
-            </button>
 
-            {/* Repeat indicator when playing */}
-            {currentIndex === index && repeatCount > 1 && (
-              <span className="shrink-0 font-mono text-sm text-brand">
-                {currentRepeat}/{repeatCount}
-              </span>
-            )}
-          </div>
-        ))}
+              {/* Error Display */}
+              {recorder.error && recordingItemId === item.id && (
+                <div className="mt-3 rounded-lg border border-error/30 bg-error/10 p-3">
+                  <p className="text-sm text-error">{recorder.error}</p>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
