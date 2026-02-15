@@ -145,22 +145,27 @@ export function PhonemesPage() {
         </p>
       </div>
 
-      {/* Category Filter Tabs */}
-      <div className="-mx-4 mb-8 overflow-x-auto px-4 sm:mx-0 sm:px-0">
-        <div className="flex gap-2 sm:flex-wrap">
-          {FILTER_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => setFilter(option.value)}
-              className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors active:scale-95 ${
-                filter === option.value
-                  ? 'bg-brand text-white'
-                  : 'bg-bg-card text-content-secondary hover:bg-bg-inset hover:text-content-primary'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+      {/* Category Filter Tabs — sticky below header */}
+      <div className="sticky top-16 z-40 -mx-4 mb-8 border-b border-edge-default bg-bg-primary/95 px-4 py-3 backdrop-blur-md sm:mx-0 sm:px-0 sm:static sm:border-0 sm:bg-transparent sm:py-0 sm:backdrop-blur-none">
+        <div className="overflow-x-auto">
+          <div className="flex gap-2 sm:flex-wrap">
+            {FILTER_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => {
+                  setFilter(option.value);
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }}
+                className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors active:scale-95 ${
+                  filter === option.value
+                    ? 'bg-brand text-white'
+                    : 'bg-bg-card text-content-secondary hover:bg-bg-inset hover:text-content-primary'
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
