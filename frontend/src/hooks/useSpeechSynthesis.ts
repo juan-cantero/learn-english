@@ -28,13 +28,12 @@ function loadVoices() {
   if (voices.length === 0) return;
 
   voicesLoaded = true;
-  // Prefer remote (higher quality) English voices
+  // Prefer remote (higher quality) English voices, fall back to local
   const remote = voices.find((v) => v.lang.startsWith('en') && !v.localService);
   if (remote) {
     cachedVoice = remote;
     return;
   }
-  // Fall back to any English voice
   cachedVoice = voices.find((v) => v.lang.startsWith('en')) ?? null;
 }
 
@@ -97,7 +96,6 @@ export function useSpeechSynthesis(
       utterance.onerror = (e) => {
         // 'canceled' is not a real error — it fires when we call cancel() before speaking again
         if (e.error === 'canceled') return;
-        console.error('SpeechSynthesis error:', e.error);
         setState('error');
       };
 
