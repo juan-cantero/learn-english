@@ -64,7 +64,7 @@ function PhonemeCard({
             key={word}
             onClick={() => onSpeak(word)}
             disabled={isSpeaking}
-            className="group flex items-center gap-1.5 rounded-lg border border-edge-default bg-bg-inset px-3 py-1.5 text-sm transition-colors hover:border-brand/50 hover:text-brand disabled:opacity-50"
+            className="group flex min-h-[44px] items-center gap-1.5 rounded-lg border border-edge-default bg-bg-inset px-3 py-2 text-sm transition-colors hover:border-brand/50 hover:text-brand active:bg-brand/10 disabled:opacity-50"
           >
             <svg
               className="h-3.5 w-3.5 text-content-secondary group-hover:text-brand"
@@ -146,20 +146,22 @@ export function PhonemesPage() {
       </div>
 
       {/* Category Filter Tabs */}
-      <div className="mb-8 flex flex-wrap gap-2">
-        {FILTER_OPTIONS.map((option) => (
-          <button
-            key={option.value}
-            onClick={() => setFilter(option.value)}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              filter === option.value
-                ? 'bg-brand text-white'
-                : 'bg-bg-card text-content-secondary hover:bg-bg-inset hover:text-content-primary'
-            }`}
-          >
-            {option.label}
-          </button>
-        ))}
+      <div className="-mx-4 mb-8 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-2 sm:flex-wrap">
+          {FILTER_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              onClick={() => setFilter(option.value)}
+              className={`shrink-0 rounded-lg px-4 py-2 text-sm font-medium transition-colors active:scale-95 ${
+                filter === option.value
+                  ? 'bg-brand text-white'
+                  : 'bg-bg-card text-content-secondary hover:bg-bg-inset hover:text-content-primary'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Phoneme Cards grouped by category */}

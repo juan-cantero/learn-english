@@ -11,20 +11,19 @@ interface PhonemeTooltipProps {
 export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
   const [show, setShow] = useState(false);
   const [position, setPosition] = useState<'above' | 'below'>('above');
-  const triggerRef = useRef<HTMLSpanElement>(null);
-  const tooltipRef = useRef<HTMLDivElement>(null);
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const containerRef = useRef<HTMLSpanElement>(null);
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tts = useSpeechSynthesis();
 
   const phoneme = phonemeMap.get(symbol);
 
   const updatePosition = useCallback(() => {
-    if (!triggerRef.current) return;
-    const rect = triggerRef.current.getBoundingClientRect();
-    // Show below if too close to top of viewport
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
     setPosition(rect.top < 220 ? 'below' : 'above');
   }, []);
 
+  // Hover handlers (desktop)
   const handleMouseEnter = useCallback(() => {
     clearTimeout(hideTimeoutRef.current);
     updatePosition();
@@ -35,13 +34,38 @@ export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
     hideTimeoutRef.current = setTimeout(() => setShow(false), 150);
   }, []);
 
-  const handleTooltipEnter = useCallback(() => {
-    clearTimeout(hideTimeoutRef.current);
-  }, []);
+  // Tap handler (mobile) — toggle on tap
+  const handleTap = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (show) {
+        setShow(false);
+      } else {
+        updatePosition();
+        setShow(true);
+      }
+    },
+    [show, updatePosition],
+  );
 
-  const handleTooltipLeave = useCallback(() => {
-    hideTimeoutRef.current = setTimeout(() => setShow(false), 150);
-  }, []);
+  // Close on tap outside
+  useEffect(() => {
+    if (!show) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setShow(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [show]);
 
   useEffect(() => {
     return () => clearTimeout(hideTimeoutRef.current);
@@ -56,20 +80,21 @@ export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
   );
 
   return (
-    <span className="relative inline-flex" ref={triggerRef}>
+    <span
+      className="relative inline-flex"
+      ref={containerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <span
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className="inline-flex cursor-default items-center rounded-full bg-brand-muted px-2 py-0.5 font-mono text-xs text-brand transition-colors hover:bg-brand/20"
+        onClick={handleTap}
+        className="inline-flex cursor-pointer items-center rounded-full bg-brand-muted px-2 py-0.5 font-mono text-xs text-brand transition-colors hover:bg-brand/20 active:bg-brand/30"
       >
         {symbol}
       </span>
 
       {show && phoneme && (
         <div
-          ref={tooltipRef}
-          onMouseEnter={handleTooltipEnter}
-          onMouseLeave={handleTooltipLeave}
           className={`absolute left-1/2 z-50 w-72 -translate-x-1/2 rounded-xl border border-edge-default bg-bg-card p-4 shadow-lg ${
             position === 'above' ? 'bottom-full mb-2' : 'top-full mt-2'
           }`}
@@ -86,7 +111,7 @@ export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
               <button
                 key={word}
                 onClick={(e) => handleSpeak(word, e)}
-                className="group flex items-center gap-1 rounded-lg border border-edge-default bg-bg-inset px-2 py-1 text-xs transition-colors hover:border-brand/50 hover:text-brand"
+                className="group flex items-center gap-1 rounded-lg border border-edge-default bg-bg-inset px-2 py-1 text-xs transition-colors hover:border-brand/50 hover:text-brand active:bg-brand/10"
               >
                 <svg
                   className="h-3 w-3 text-content-secondary group-hover:text-brand"
