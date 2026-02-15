@@ -1,5 +1,6 @@
 import type { Vocabulary } from '../../types/lesson';
 import { AudioPlayer } from '../shared/AudioPlayer';
+import { PhonemeTooltip } from './PhonemeTooltip';
 
 interface VocabularyCardProps {
   vocabulary: Vocabulary;
@@ -40,6 +41,13 @@ export function VocabularyCard({ vocabulary }: VocabularyCardProps) {
           <h4 className="text-lg font-semibold text-content-primary">{vocabulary.term}</h4>
           {vocabulary.phonetic && (
             <p className="font-mono text-sm text-content-secondary">{vocabulary.phonetic}</p>
+          )}
+          {vocabulary.phonemes && vocabulary.phonemes.length > 0 && (
+            <div className="mt-1 flex flex-wrap gap-1">
+              {vocabulary.phonemes.map((phoneme) => (
+                <PhonemeTooltip key={phoneme} symbol={phoneme} />
+              ))}
+            </div>
           )}
         </div>
         <div className="flex items-center gap-2">

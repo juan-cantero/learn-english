@@ -14,6 +14,7 @@ import { LoginPage } from './LoginPage';
 import { RegisterPage } from './RegisterPage';
 import { ClassroomsPage } from './classrooms';
 import { ClassroomDetailPage } from './classrooms.$classroomId';
+import { PhonemesPage } from './phonemes';
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -51,6 +52,12 @@ const registerRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/register',
   component: RegisterPage,
+});
+
+const phonemesRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/phonemes',
+  component: PhonemesPage,
 });
 
 // --- Protected routes ---
@@ -148,4 +155,5 @@ export const routeTree = rootRoute.addChildren([
   classroomDetailRoute,
   loginRoute,
   registerRoute,
+  phonemesRoute,
 ]);

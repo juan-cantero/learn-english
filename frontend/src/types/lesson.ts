@@ -35,6 +35,7 @@ export interface Vocabulary {
   exampleSentence: string | null;
   contextTimestamp: string | null;
   audioUrl: string | null;
+  phonemes: string[];
 }
 
 export interface GrammarPoint {

@@ -48,9 +48,10 @@ public class PronunciationService {
         log.info("Pronunciation evaluation - Expected: '{}', Transcribed: '{}', Similarity: {}, Passed: {}",
                 expectedText, transcription, similarity, passed);
 
-        List<String> suggestions = generateFeedback(transcription, expectedText, similarity);
+        FeedbackResult feedback = generateFeedback(transcription, expectedText, similarity);
 
-        return new PronunciationResult(transcription, expectedText, similarity, passed, suggestions);
+        return new PronunciationResult(transcription, expectedText, similarity, passed,
+                feedback.expectedIpa(), feedback.suggestions());
     }
 
     /**
@@ -113,9 +114,11 @@ public class PronunciationService {
         return dp[a.length()][b.length()];
     }
 
-    private List<String> generateFeedback(String transcription, String expectedText, double similarity) {
+    private record FeedbackResult(String expectedIpa, List<String> suggestions) {}
+
+    private FeedbackResult generateFeedback(String transcription, String expectedText, double similarity) {
         if (similarity >= 0.95) {
-            return List.of();
+            return new FeedbackResult(null, List.of());
         }
 
         String normalizedTranscription = normalize(transcription);
@@ -130,17 +133,22 @@ public class PronunciationService {
                 Note: the transcription may be inaccurate — it's from speech recognition, not perfect.
 
                 Your job:
-                1. Infer what the student likely mispronounced based on what was heard vs expected.
-                2. Give 1-3 specific, actionable tips focused on the EXPECTED word/phrase.
-                3. Explain HOW to physically produce the correct sounds (tongue position, lip shape, etc.).
-                4. If relevant, mention common mistakes Spanish speakers make with these sounds.
+                1. Provide the IPA transcription of the EXPECTED text.
+                2. Infer what the student likely mispronounced based on what was heard vs expected.
+                3. Give 1-3 specific, actionable tips focused on the EXPECTED word/phrase.
+                4. Explain HOW to physically produce the correct sounds (tongue position, lip shape, etc.).
+                5. If relevant, mention common mistakes Spanish speakers make with these sounds.
 
                 Important observations to consider:
                 - If the word count differs (e.g. heard 1 word but expected 2), the student may have merged words together.
                 - If the transcription is completely unrelated, the student's pronunciation was likely very far off — focus tips on the expected text.
 
-                Respond in JSON: {"suggestions": ["tip1", "tip2"]}
-                Keep each tip under 25 words. Be specific, not generic.
+                Respond in JSON:
+                {
+                  "expectedIpa": "/ðə kæt/",
+                  "suggestions": ["Place tongue between teeth for 'th' sound."]
+                }
+                Keep each tip under 30 words. Be specific, not generic.
                 """;
 
             String userPrompt = String.format(
@@ -151,18 +159,20 @@ public class PronunciationService {
 
             String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
             JsonNode root = objectMapper.readTree(response);
-            JsonNode suggestionsNode = root.path("suggestions");
 
+            String expectedIpa = root.has("expectedIpa") ? root.get("expectedIpa").asText() : null;
+
+            JsonNode suggestionsNode = root.path("suggestions");
             List<String> suggestions = new ArrayList<>();
             if (suggestionsNode.isArray()) {
                 for (JsonNode node : suggestionsNode) {
                     suggestions.add(node.asText());
                 }
             }
-            return suggestions;
+            return new FeedbackResult(expectedIpa, suggestions);
         } catch (Exception e) {
             log.warn("Failed to generate pronunciation feedback: {}", e.getMessage());
-            return List.of();
+            return new FeedbackResult(null, List.of());
         }
     }
 
@@ -173,13 +183,15 @@ public class PronunciationService {
      * @param expectedText  What should have been said
      * @param similarity    Similarity score (0.0 to 1.0)
      * @param passed        Whether similarity meets threshold
-     * @param suggestions   Pronunciation improvement tips from AI
+     * @param expectedIpa   IPA transcription of the expected text
+     * @param suggestions   Pronunciation improvement tips
      */
     public record PronunciationResult(
             String transcription,
             String expectedText,
             double similarity,
             boolean passed,
+            String expectedIpa,
             List<String> suggestions
     ) {}
 }

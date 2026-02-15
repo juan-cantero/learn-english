@@ -667,14 +667,19 @@ export function PracticePronunciation({ vocabulary, expressions }: PracticePronu
                       {!result.passed && (
                         <p className="text-sm text-content-secondary">
                           Expected: <span className="text-content-primary">{result.expectedText}</span>
+                          {result.expectedIpa && (
+                            <span className="ml-2 font-mono text-xs text-content-secondary">
+                              {result.expectedIpa}
+                            </span>
+                          )}
                         </p>
                       )}
                       {result.suggestions && result.suggestions.length > 0 && (
                         <ul className="mt-2 space-y-1">
-                          {result.suggestions.map((tip, i) => (
+                          {result.suggestions.map((suggestion, i) => (
                             <li key={i} className="flex items-start gap-1.5 text-sm text-content-secondary">
                               <span className="mt-0.5 shrink-0 text-brand">&#x2022;</span>
-                              {tip}
+                              {suggestion.tip}
                             </li>
                           ))}
                         </ul>
