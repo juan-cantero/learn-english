@@ -69,6 +69,21 @@ export async function apiPut<T, R>(endpoint: string, body: T): Promise<R> {
   return handleResponse<R>(response);
 }
 
+export async function apiPostMultipart<R>(endpoint: string, formData: FormData): Promise<R> {
+  const headers: Record<string, string> = {};
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session?.access_token) {
+    headers['Authorization'] = `Bearer ${session.access_token}`;
+  }
+  // Do NOT set Content-Type — browser sets multipart/form-data with boundary
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    method: 'POST',
+    headers,
+    body: formData,
+  });
+  return handleResponse<R>(response);
+}
+
 export async function apiDelete<T>(endpoint: string): Promise<T> {
   const headers = await getAuthHeaders();
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
