@@ -1,6 +1,7 @@
 package com.learntv.api.shared.config;
 
 import com.learntv.api.catalog.application.port.ShowRepository;
+import com.learntv.api.catalog.application.port.UserShowRepository;
 import com.learntv.api.catalog.application.usecase.BrowseCatalogUseCase;
 import com.learntv.api.catalog.application.usecase.ViewShowDetailsUseCase;
 import com.learntv.api.generation.domain.service.EpisodeLessonGenerator;
@@ -28,8 +29,9 @@ public class BeanConfiguration {
     // ==================== Catalog Use Cases ====================
 
     @Bean
-    public BrowseCatalogUseCase browseCatalogUseCase(ShowRepository showRepository) {
-        return new BrowseCatalogUseCase(showRepository);
+    public BrowseCatalogUseCase browseCatalogUseCase(ShowRepository showRepository,
+                                                      UserShowRepository userShowRepository) {
+        return new BrowseCatalogUseCase(showRepository, userShowRepository);
     }
 
     @Bean
