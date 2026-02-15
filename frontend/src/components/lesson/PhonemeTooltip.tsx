@@ -13,7 +13,7 @@ export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
   const [position, setPosition] = useState<'above' | 'below'>('above');
   const triggerRef = useRef<HTMLSpanElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const hideTimeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const tts = useSpeechSynthesis();
 
   const phoneme = phonemeMap.get(symbol);
