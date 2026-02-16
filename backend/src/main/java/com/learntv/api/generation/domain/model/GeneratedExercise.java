@@ -7,5 +7,8 @@ public record GeneratedExercise(
     String question,
     String correctAnswer,
     List<String> options,
-    int points
-) {}
+    int points,
+    List<MatchingPair> matchingPairs
+) {
+    public record MatchingPair(String term, String definition) {}
+}

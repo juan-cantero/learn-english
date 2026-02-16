@@ -9,9 +9,10 @@ import { ExpressionCard } from '../../components/lesson/ExpressionCard';
 import { CategoryFilter } from '../../components/lesson/CategoryFilter';
 import { ExerciseSection } from '../../components/exercises/ExerciseSection';
 import { PracticePronunciation } from '../../components/lesson/PracticePronunciation';
+import { ShadowingPractice } from '../../components/lesson/ShadowingPractice';
 import type { VocabularyCategory } from '../../types/lesson';
 
-type TabId = 'vocabulary' | 'grammar' | 'expressions' | 'exercises' | 'practice';
+type TabId = 'vocabulary' | 'grammar' | 'expressions' | 'exercises' | 'practice' | 'shadowing';
 
 interface Tab {
   id: TabId;
@@ -36,13 +37,17 @@ export function LessonPage() {
 
   const tabs: Tab[] = useMemo(() => {
     if (!lesson) return [];
-    return [
+    const baseTabs: Tab[] = [
       { id: 'vocabulary', label: 'Vocabulary', count: lesson.vocabulary.length },
       { id: 'grammar', label: 'Grammar', count: lesson.grammarPoints.length },
       { id: 'expressions', label: 'Expressions', count: lesson.expressions.length },
       { id: 'exercises', label: 'Exercises', count: lesson.exercises.length },
       { id: 'practice', label: 'Practice', count: audioItemsCount },
     ];
+    if (lesson.progress.isComplete) {
+      baseTabs.push({ id: 'shadowing', label: 'Shadowing', count: 0 });
+    }
+    return baseTabs;
   }, [lesson, audioItemsCount]);
 
   const vocabularyCategories = useMemo(() => {
@@ -225,6 +230,13 @@ export function LessonPage() {
           <PracticePronunciation
             vocabulary={lesson.vocabulary}
             expressions={lesson.expressions}
+          />
+        )}
+
+        {activeTab === 'shadowing' && (
+          <ShadowingPractice
+            showSlug={slug}
+            episodeSlug={episodeSlug}
           />
         )}
       </div>

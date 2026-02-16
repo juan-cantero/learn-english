@@ -42,6 +42,13 @@ public class ExerciseJpaEntity {
     public static ExerciseJpaEntity create(UUID episodeId, ExerciseType type, String question,
                                             String correctAnswer, String options, int points,
                                             String audioUrl) {
+        return create(episodeId, type, question, correctAnswer, options, null, points, audioUrl);
+    }
+
+    public static ExerciseJpaEntity create(UUID episodeId, ExerciseType type, String question,
+                                            String correctAnswer, String options,
+                                            String matchingPairs, int points,
+                                            String audioUrl) {
         ExerciseJpaEntity entity = new ExerciseJpaEntity();
         entity.id = UUID.randomUUID();
         entity.episodeId = episodeId;
@@ -49,6 +56,7 @@ public class ExerciseJpaEntity {
         entity.question = question;
         entity.correctAnswer = correctAnswer;
         entity.options = options;
+        entity.matchingPairs = matchingPairs;
         entity.points = points;
         entity.audioUrl = audioUrl;
         return entity;

@@ -55,10 +55,10 @@ public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
                - Question asks about meaning or correct usage
                - 4 options with one correct answer
             
-            3. MATCHING (2-3 exercises): Match terms with their definitions
-               - question contains the term to match
-               - options contain possible definitions
-               - correctAnswer is the matching definition
+            3. MATCHING (1-2 exercises): Match terms with their definitions
+               - question is a description like "Match the vocabulary terms with their definitions"
+               - matchingPairs is an array of objects with "term" and "definition" fields (3-5 pairs per exercise)
+               - correctAnswer and options should be null for MATCHING type
             
             4. LISTENING (2-3 exercises): Type what you hear exercises
                - question is "Listen and type what you hear: [word]"
@@ -68,10 +68,11 @@ public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
             Each exercise should have:
             - type: one of "FILL_IN_BLANK", "MULTIPLE_CHOICE", "MATCHING", "LISTENING"
             - question: the exercise prompt
-            - correctAnswer: the correct response
-            - options: array of 4 choices (can be null for LISTENING)
+            - correctAnswer: the correct response (null for MATCHING)
+            - options: array of 4 choices (null for LISTENING and MATCHING)
+            - matchingPairs: array of {"term": "...", "definition": "..."} objects (only for MATCHING, null for others)
             - points: difficulty score (1-3 points)
-            
+
             Return a JSON object with an "exercises" array.
             """;
 

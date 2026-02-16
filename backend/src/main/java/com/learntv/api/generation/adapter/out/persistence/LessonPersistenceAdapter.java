@@ -159,12 +159,21 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                         optionsJson = String.join(",", ex.options());
                     }
                 }
+                String matchingPairsJson = null;
+                if (ex.matchingPairs() != null) {
+                    try {
+                        matchingPairsJson = objectMapper.writeValueAsString(ex.matchingPairs());
+                    } catch (JsonProcessingException e) {
+                        log.warn("Failed to serialize matchingPairs", e);
+                    }
+                }
                 ExerciseJpaEntity exercise = ExerciseJpaEntity.create(
                         episode.getId(),
                         ExerciseType.valueOf(ex.type()),
                         ex.question(),
                         ex.correctAnswer(),
                         optionsJson,
+                        matchingPairsJson,
                         ex.points(),
                         null // audioUrl generated separately
                 );

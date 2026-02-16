@@ -1,5 +1,5 @@
 import { apiGet, apiPost } from './client';
-import type { Lesson, AnswerResult, CheckAnswerRequest } from '../types/lesson';
+import type { Lesson, AnswerResult, CheckAnswerRequest, ShadowingScene } from '../types/lesson';
 
 export async function getLesson(
   showSlug: string,
@@ -19,4 +19,11 @@ export async function checkAnswer(
     `/shows/${showSlug}/episodes/${episodeSlug}/exercises/${exerciseId}/check`,
     request
   );
+}
+
+export async function getShadowingScenes(
+  showSlug: string,
+  episodeSlug: string
+): Promise<ShadowingScene[]> {
+  return apiGet<ShadowingScene[]>(`/shows/${showSlug}/episodes/${episodeSlug}/shadowing`);
 }

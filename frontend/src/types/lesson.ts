@@ -102,3 +102,16 @@ export interface AnswerResult {
 export interface CheckAnswerRequest {
   answer: string;
 }
+
+export interface ShadowingDialogueLine {
+  character: string;
+  text: string;
+  startTime: string;
+}
+
+export interface ShadowingScene {
+  id: string;
+  title: string;
+  lines: ShadowingDialogueLine[];
+  characters: string[];
+}

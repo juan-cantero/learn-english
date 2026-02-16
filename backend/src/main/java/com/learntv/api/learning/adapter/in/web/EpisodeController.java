@@ -1,7 +1,9 @@
 package com.learntv.api.learning.adapter.in.web;
 
+import com.learntv.api.learning.application.port.ShadowingSceneRepository.ShadowingScene;
 import com.learntv.api.learning.application.service.PhonemeService;
 import com.learntv.api.learning.application.usecase.CheckExerciseAnswerUseCase;
+import com.learntv.api.learning.application.usecase.GetShadowingScenesUseCase;
 import com.learntv.api.learning.application.usecase.ViewEpisodeLessonUseCase;
 import com.learntv.api.shared.config.security.AuthenticatedUser;
 import com.learntv.api.shared.config.security.CurrentUser;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -19,13 +22,16 @@ public class EpisodeController {
 
     private final ViewEpisodeLessonUseCase viewEpisodeLessonUseCase;
     private final CheckExerciseAnswerUseCase checkExerciseAnswerUseCase;
+    private final GetShadowingScenesUseCase getShadowingScenesUseCase;
     private final PhonemeService phonemeService;
 
     public EpisodeController(ViewEpisodeLessonUseCase viewEpisodeLessonUseCase,
                              CheckExerciseAnswerUseCase checkExerciseAnswerUseCase,
+                             GetShadowingScenesUseCase getShadowingScenesUseCase,
                              PhonemeService phonemeService) {
         this.viewEpisodeLessonUseCase = viewEpisodeLessonUseCase;
         this.checkExerciseAnswerUseCase = checkExerciseAnswerUseCase;
+        this.getShadowingScenesUseCase = getShadowingScenesUseCase;
         this.phonemeService = phonemeService;
     }
 
@@ -57,5 +63,20 @@ public class EpisodeController {
                 checkExerciseAnswerUseCase.execute(authUser.id(), showSlug, episodeSlug, exerciseId, request.answer());
 
         return ResponseEntity.ok(AnswerResultResponse.fromDomain(result));
+    }
+
+    @GetMapping("/{episodeSlug}/shadowing")
+    @Operation(summary = "Get shadowing scenes",
+               description = "Returns shadowing practice scenes for an episode. Generates them on first request.")
+    public ResponseEntity<List<ShadowingSceneResponse>> getShadowingScenes(
+            @CurrentUser AuthenticatedUser authUser,
+            @PathVariable String showSlug,
+            @PathVariable String episodeSlug) {
+
+        List<ShadowingScene> scenes = getShadowingScenesUseCase.execute(showSlug, episodeSlug);
+        List<ShadowingSceneResponse> response = scenes.stream()
+                .map(ShadowingSceneResponse::fromDomain)
+                .toList();
+        return ResponseEntity.ok(response);
     }
 }
