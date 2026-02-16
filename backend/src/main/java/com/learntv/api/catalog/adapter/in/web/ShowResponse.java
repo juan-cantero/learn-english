@@ -12,7 +12,8 @@ public record ShowResponse(
         String difficulty,
         String imageUrl,
         int totalSeasons,
-        int totalEpisodes
+        int totalEpisodes,
+        String tmdbId
 ) {
 
     public static ShowResponse fromDomain(Show show) {
@@ -26,7 +27,8 @@ public record ShowResponse(
                 show.getDifficulty().name(),
                 show.getImageUrl(),
                 show.getTotalSeasons(),
-                show.getTotalEpisodes()
+                show.getTotalEpisodes(),
+                show.getTmdbId()
         );
     }
 }

@@ -25,6 +25,7 @@ export interface Show {
   imageUrl: string;
   totalSeasons: number;
   totalEpisodes: number;
+  tmdbId: string | null;
 }
 
 export interface EpisodeSummary {
@@ -34,6 +35,14 @@ export interface EpisodeSummary {
   title: string;
   slug: string;
   durationMinutes: number;
+}
+
+export interface SeasonEpisodeInfo {
+  episodeNumber: number;
+  title: string;
+  runtime: number;
+  generated: boolean;
+  slug: string | null;
 }
 
 export interface ShowWithEpisodes {
