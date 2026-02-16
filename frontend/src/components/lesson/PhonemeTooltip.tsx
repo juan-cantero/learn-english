@@ -95,8 +95,8 @@ export function PhonemeTooltip({ symbol }: PhonemeTooltipProps) {
 
       {show && phoneme && (
         <div
-          className={`absolute left-1/2 z-50 w-72 -translate-x-1/2 rounded-xl border border-edge-default bg-bg-card p-4 shadow-lg ${
-            position === 'above' ? 'bottom-full mb-2' : 'top-full mt-2'
+          className={`z-50 w-72 rounded-xl border border-edge-default bg-bg-card p-4 shadow-lg fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 md:absolute md:top-auto md:left-1/2 md:-translate-y-0 ${
+            position === 'above' ? 'md:bottom-full md:mb-2' : 'md:top-full md:mt-2'
           }`}
         >
           {/* Header */}
