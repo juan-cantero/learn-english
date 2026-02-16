@@ -233,6 +233,7 @@ public class LessonPersistenceAdapter implements LessonPersistencePort {
                             .imageUrl(posterUrl)
                             .totalSeasons(totalSeasons)
                             .totalEpisodes(totalEpisodes)
+                            .tmdbId(tmdbId)
                             .build();
                     return showRepository.save(ShowJpaEntity.fromDomain(show));
                 });

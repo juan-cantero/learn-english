@@ -58,4 +58,14 @@ public class ShowController {
         ViewShowDetailsUseCase.ShowWithEpisodes result = viewShowDetailsUseCase.execute(slug);
         return ResponseEntity.ok(ShowWithEpisodesResponse.fromDomain(result));
     }
+
+    @GetMapping("/{slug}/seasons/{season}/episodes")
+    @Operation(summary = "Get season episodes", description = "Returns all episodes for a season with generation status")
+    public ResponseEntity<List<ViewShowDetailsUseCase.SeasonEpisodeInfo>> getSeasonEpisodes(
+            @PathVariable String slug,
+            @PathVariable int season) {
+        List<ViewShowDetailsUseCase.SeasonEpisodeInfo> episodes =
+                viewShowDetailsUseCase.getSeasonEpisodes(slug, season);
+        return ResponseEntity.ok(episodes);
+    }
 }

@@ -14,6 +14,7 @@ public class Show {
     private final String imageUrl;
     private final int totalSeasons;
     private final int totalEpisodes;
+    private final String tmdbId;
 
     private Show(Builder builder) {
         this.id = Objects.requireNonNull(builder.id, "id is required");
@@ -26,6 +27,7 @@ public class Show {
         this.imageUrl = builder.imageUrl;
         this.totalSeasons = builder.totalSeasons;
         this.totalEpisodes = builder.totalEpisodes;
+        this.tmdbId = builder.tmdbId;
     }
 
     public static Builder builder() {
@@ -72,6 +74,10 @@ public class Show {
         return totalEpisodes;
     }
 
+    public String getTmdbId() {
+        return tmdbId;
+    }
+
     public static class Builder {
         private ShowId id;
         private String title;
@@ -83,6 +89,7 @@ public class Show {
         private String imageUrl;
         private int totalSeasons;
         private int totalEpisodes;
+        private String tmdbId;
 
         public Builder id(ShowId id) {
             this.id = id;
@@ -131,6 +138,11 @@ public class Show {
 
         public Builder totalEpisodes(int totalEpisodes) {
             this.totalEpisodes = totalEpisodes;
+            return this;
+        }
+
+        public Builder tmdbId(String tmdbId) {
+            this.tmdbId = tmdbId;
             return this;
         }
 

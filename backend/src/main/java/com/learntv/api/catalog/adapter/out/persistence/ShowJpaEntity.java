@@ -39,6 +39,9 @@ public class ShowJpaEntity {
 
     private int totalEpisodes;
 
+    @Column(name = "tmdb_id")
+    private String tmdbId;
+
     protected ShowJpaEntity() {
     }
 
@@ -54,6 +57,7 @@ public class ShowJpaEntity {
         entity.imageUrl = show.getImageUrl();
         entity.totalSeasons = show.getTotalSeasons();
         entity.totalEpisodes = show.getTotalEpisodes();
+        entity.tmdbId = show.getTmdbId();
         return entity;
     }
 
@@ -69,6 +73,7 @@ public class ShowJpaEntity {
                 .imageUrl(imageUrl)
                 .totalSeasons(totalSeasons)
                 .totalEpisodes(totalEpisodes)
+                .tmdbId(tmdbId)
                 .build();
     }
 
@@ -111,5 +116,9 @@ public class ShowJpaEntity {
 
     public int getTotalEpisodes() {
         return totalEpisodes;
+    }
+
+    public String getTmdbId() {
+        return tmdbId;
     }
 }

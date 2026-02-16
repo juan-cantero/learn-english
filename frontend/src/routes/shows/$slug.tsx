@@ -110,7 +110,7 @@ export function ShowPage() {
 
       <div className="mt-12">
         <h2 className="mb-6 text-2xl font-bold text-content-primary">Episodes</h2>
-        <EpisodeList episodes={episodes} showSlug={show.slug} />
+        <EpisodeList episodes={episodes} showSlug={show.slug} tmdbId={show.tmdbId} />
       </div>
     </div>
   );

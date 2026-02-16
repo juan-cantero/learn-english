@@ -4,6 +4,7 @@ import com.learntv.api.catalog.application.port.ShowRepository;
 import com.learntv.api.catalog.application.port.UserShowRepository;
 import com.learntv.api.catalog.application.usecase.BrowseCatalogUseCase;
 import com.learntv.api.catalog.application.usecase.ViewShowDetailsUseCase;
+import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.domain.service.EpisodeLessonGenerator;
 import com.learntv.api.learning.application.port.EpisodeRepository;
 import com.learntv.api.learning.application.port.LessonQueryPort;
@@ -36,8 +37,9 @@ public class BeanConfiguration {
 
     @Bean
     public ViewShowDetailsUseCase viewShowDetailsUseCase(ShowRepository showRepository,
-                                                          EpisodeRepository episodeRepository) {
-        return new ViewShowDetailsUseCase(showRepository, episodeRepository);
+                                                          EpisodeRepository episodeRepository,
+                                                          ShowMetadataPort showMetadataPort) {
+        return new ViewShowDetailsUseCase(showRepository, episodeRepository, showMetadataPort);
     }
 
     // ==================== Learning Use Cases ====================

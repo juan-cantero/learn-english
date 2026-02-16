@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { getShows, getShowBySlug } from '../api/shows';
+import { getShows, getShowBySlug, getSeasonEpisodes } from '../api/shows';
 import { useAuth } from '../context/AuthContext';
-import type { Show, ShowWithEpisodes } from '../types/show';
+import type { Show, ShowWithEpisodes, SeasonEpisodeInfo } from '../types/show';
 
 export function useShows() {
   const { user } = useAuth();
@@ -16,5 +16,12 @@ export function useShow(slug: string | undefined) {
     queryKey: ['shows', slug],
     queryFn: () => getShowBySlug(slug!),
     enabled: !!slug,
+  });
+}
+
+export function useSeasonEpisodes(slug: string, season: number) {
+  return useQuery<SeasonEpisodeInfo[], Error>({
+    queryKey: ['shows', slug, 'seasons', season, 'episodes'],
+    queryFn: () => getSeasonEpisodes(slug, season),
   });
 }
