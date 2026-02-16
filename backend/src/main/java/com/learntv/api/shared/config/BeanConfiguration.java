@@ -6,9 +6,13 @@ import com.learntv.api.catalog.application.usecase.BrowseCatalogUseCase;
 import com.learntv.api.catalog.application.usecase.ViewShowDetailsUseCase;
 import com.learntv.api.generation.application.port.out.ShowMetadataPort;
 import com.learntv.api.generation.domain.service.EpisodeLessonGenerator;
+import com.learntv.api.generation.adapter.out.persistence.EpisodeScriptRepository;
+import com.learntv.api.generation.application.port.out.ShadowingExtractionPort;
 import com.learntv.api.learning.application.port.EpisodeRepository;
 import com.learntv.api.learning.application.port.LessonQueryPort;
+import com.learntv.api.learning.application.port.ShadowingSceneRepository;
 import com.learntv.api.learning.application.usecase.CheckExerciseAnswerUseCase;
+import com.learntv.api.learning.application.usecase.GetShadowingScenesUseCase;
 import com.learntv.api.learning.application.usecase.ViewEpisodeLessonUseCase;
 import com.learntv.api.progress.application.port.UserProgressRepository;
 import com.learntv.api.progress.application.usecase.GetUserProgressUseCase;
@@ -54,6 +58,18 @@ public class BeanConfiguration {
     public CheckExerciseAnswerUseCase checkExerciseAnswerUseCase(LessonQueryPort lessonQueryPort,
                                                                    UserProgressRepository progressRepository) {
         return new CheckExerciseAnswerUseCase(lessonQueryPort, progressRepository);
+    }
+
+    @Bean
+    public GetShadowingScenesUseCase getShadowingScenesUseCase(ShadowingSceneRepository shadowingSceneRepository,
+                                                                 EpisodeRepository episodeRepository,
+                                                                 ShowRepository showRepository,
+                                                                 ShowMetadataPort showMetadataPort,
+                                                                 EpisodeScriptRepository episodeScriptRepository,
+                                                                 LessonQueryPort lessonQueryPort,
+                                                                 ShadowingExtractionPort shadowingExtractionPort) {
+        return new GetShadowingScenesUseCase(shadowingSceneRepository, episodeRepository, showRepository,
+                showMetadataPort, episodeScriptRepository, lessonQueryPort, shadowingExtractionPort);
     }
 
     // ==================== Progress Use Cases ====================
