@@ -8,12 +8,14 @@ import com.learntv.api.generation.domain.model.ExtractedExpression;
 import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import com.learntv.api.generation.domain.model.GeneratedExercise;
+import com.learntv.api.shared.config.PromptSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.learntv.api.shared.config.PromptSanitizer.sanitizeShortInput;
 
 /**
  * OpenAI implementation of ExerciseGenerationPort.
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
 
     private static final Logger log = LoggerFactory.getLogger(ExerciseGenerationAdapter.class);
+    private static final int MAX_FIELD_LENGTH = 500;
 
     private final OpenAiClient openAiClient;
     private final ObjectMapper objectMapper;
@@ -44,27 +47,27 @@ public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
         String systemPrompt = """
             You are an expert English teacher creating exercises for intermediate learners.
             Generate 12-15 varied exercises based on the provided vocabulary, grammar points, and expressions.
-            
+
             Exercise types to include:
             1. FILL_IN_BLANK (5-6 exercises): Sentences with a blank to fill with vocabulary words
                - Provide the sentence with "___" for the blank
                - correctAnswer is the word that fills the blank
                - options should include 4 choices (including the correct one)
-            
+
             2. MULTIPLE_CHOICE (4-5 exercises): Questions about definitions or grammar usage
                - Question asks about meaning or correct usage
                - 4 options with one correct answer
-            
+
             3. MATCHING (1-2 exercises): Match terms with their definitions
                - question is a description like "Match the vocabulary terms with their definitions"
                - matchingPairs is an array of objects with "term" and "definition" fields (3-5 pairs per exercise)
                - correctAnswer and options should be null for MATCHING type
-            
+
             4. LISTENING (2-3 exercises): Type what you hear exercises
                - question is "Listen and type what you hear: [word]"
                - correctAnswer is the vocabulary term
                - options should be null or empty for listening exercises
-            
+
             Each exercise should have:
             - type: one of "FILL_IN_BLANK", "MULTIPLE_CHOICE", "MATCHING", "LISTENING"
             - question: the exercise prompt
@@ -93,20 +96,26 @@ public class ExerciseGenerationAdapter implements ExerciseGenerationPort {
         sb.append("## Vocabulary\n");
         for (ExtractedVocabulary v : vocabulary) {
             sb.append(String.format("- %s: %s (Example: %s)\n",
-                    v.term(), v.definition(), v.exampleSentence()));
+                    sanitizeShortInput(v.term(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(v.definition(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(v.exampleSentence(), MAX_FIELD_LENGTH)));
         }
 
         sb.append("\n## Grammar Points\n");
         for (ExtractedGrammar g : grammar) {
             sb.append(String.format("- %s: %s\n  Structure: %s\n  Examples: %s\n",
-                    g.title(), g.explanation(), g.structure(),
-                    String.join("; ", g.examples())));
+                    sanitizeShortInput(g.title(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(g.explanation(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(g.structure(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(String.join("; ", g.examples()), MAX_FIELD_LENGTH)));
         }
 
         sb.append("\n## Expressions\n");
         for (ExtractedExpression e : expressions) {
             sb.append(String.format("- \"%s\": %s\n  Usage: %s\n",
-                    e.phrase(), e.meaning(), e.usageNote()));
+                    sanitizeShortInput(e.phrase(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(e.meaning(), MAX_FIELD_LENGTH),
+                    sanitizeShortInput(e.usageNote(), MAX_FIELD_LENGTH)));
         }
 
         return sb.toString();

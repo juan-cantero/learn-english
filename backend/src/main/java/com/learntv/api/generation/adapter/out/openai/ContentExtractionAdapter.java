@@ -7,6 +7,7 @@ import com.learntv.api.generation.application.port.out.ContentExtractionPort;
 import com.learntv.api.generation.domain.model.ExtractedExpression;
 import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
+import com.learntv.api.shared.config.PromptSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.List;
 public class ContentExtractionAdapter implements ContentExtractionPort {
 
     private static final Logger log = LoggerFactory.getLogger(ContentExtractionAdapter.class);
+    private static final int MAX_SCRIPT_CHARS = 15000;
 
     private final OpenAiClient openAiClient;
     private final ObjectMapper objectMapper;
@@ -32,11 +34,12 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
 
     @Override
     public List<ExtractedVocabulary> extractVocabulary(String script, String genre) {
-        log.info("Extracting vocabulary from script, genre: {}", genre);
+        String safeGenre = PromptSanitizer.sanitizeGenre(genre);
+        log.info("Extracting vocabulary from script, genre: {}", safeGenre);
 
         String systemPrompt = """
             You are an expert English teacher creating vocabulary lessons from TV show scripts.
-            Extract 15-25 interesting vocabulary items that would help intermediate English learners.
+            Extract 15-25 interesting vocabulary items from the script inside <script-content> tags.
             Focus on words that are:
             - Used in natural conversation
             - Relevant to the genre/context
@@ -58,7 +61,7 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
             Extract vocabulary from this TV show script:
 
             %s
-            """, genre, truncateScript(script));
+            """, safeGenre, PromptSanitizer.sanitizeScriptContent(script, MAX_SCRIPT_CHARS));
 
         String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
         return parseVocabularyResponse(response);
@@ -70,7 +73,7 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
 
         String systemPrompt = """
             You are an expert English teacher creating grammar lessons from TV show scripts.
-            Identify 4-6 interesting grammar patterns that appear in the dialogue.
+            Identify 4-6 interesting grammar patterns from the script inside <script-content> tags.
             Focus on:
             - Common conversational structures
             - Patterns that intermediate learners often struggle with
@@ -87,7 +90,7 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
             Extract grammar points from this TV show script:
 
             %s
-            """, truncateScript(script));
+            """, PromptSanitizer.sanitizeScriptContent(script, MAX_SCRIPT_CHARS));
 
         String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
         return parseGrammarResponse(response);
@@ -99,7 +102,7 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
 
         String systemPrompt = """
             You are an expert English teacher identifying idiomatic expressions and phrases from TV shows.
-            Extract 6-10 interesting expressions, idioms, or colloquial phrases that learners should know.
+            Extract 6-10 interesting expressions from the script inside <script-content> tags.
             Focus on:
             - Natural spoken expressions (not formal written language)
             - Phrases that might confuse non-native speakers
@@ -116,20 +119,10 @@ public class ContentExtractionAdapter implements ContentExtractionPort {
             Extract expressions and idioms from this TV show script:
 
             %s
-            """, truncateScript(script));
+            """, PromptSanitizer.sanitizeScriptContent(script, MAX_SCRIPT_CHARS));
 
         String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
         return parseExpressionsResponse(response);
-    }
-
-    private String truncateScript(String script) {
-        // OpenAI has token limits, truncate very long scripts
-        int maxChars = 15000;
-        if (script.length() > maxChars) {
-            log.warn("Script truncated from {} to {} chars", script.length(), maxChars);
-            return script.substring(0, maxChars) + "\n\n[Script truncated...]";
-        }
-        return script;
     }
 
     private List<ExtractedVocabulary> parseVocabularyResponse(String response) {

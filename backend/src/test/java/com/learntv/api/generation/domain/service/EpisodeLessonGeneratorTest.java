@@ -135,9 +135,9 @@ class EpisodeLessonGeneratorTest {
         List<ExtractedGrammar> grammar = createGrammar(5);
         List<ExtractedExpression> expressions = createExpressions(8);
         List<GeneratedExercise> exercises = new ArrayList<>();
-        exercises.add(new GeneratedExercise("FILL_IN_BLANK", "Question 1", "answer", null, 10));
-        exercises.add(new GeneratedExercise("MULTIPLE_CHOICE", "Question 2", "answer", List.of("a", "b"), 15));
-        exercises.add(new GeneratedExercise("MATCHING", "Question 3", "answer", null, 20));
+        exercises.add(new GeneratedExercise("FILL_IN_BLANK", "Question 1", "answer", null, 10, null));
+        exercises.add(new GeneratedExercise("MULTIPLE_CHOICE", "Question 2", "answer", List.of("a", "b"), 15, null));
+        exercises.add(new GeneratedExercise("MATCHING", "Question 3", "answer", null, 20, null));
         exercises.addAll(createExercises(7)); // Add 7 more to meet minimum of 10
 
         GeneratedLesson lesson = generator.generate(vocabulary, grammar, expressions, exercises);
@@ -252,7 +252,8 @@ class EpisodeLessonGeneratorTest {
                     "Question " + i,
                     "answer" + i,
                     null,
-                    10
+                    10,
+                    null
             ));
         }
         return list;
