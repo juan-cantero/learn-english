@@ -5,16 +5,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learntv.api.generation.application.port.out.ShadowingExtractionPort;
 import com.learntv.api.generation.domain.model.ExtractedScene;
+import com.learntv.api.shared.config.PromptSanitizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class ShadowingExtractionAdapter implements ShadowingExtractionPort {
 
     private static final Logger log = LoggerFactory.getLogger(ShadowingExtractionAdapter.class);
+    private static final int MAX_SRT_CHARS = 15000;
+    private static final int MAX_TERM_LENGTH = 200;
 
     private final OpenAiClient openAiClient;
     private final ObjectMapper objectMapper;
@@ -33,7 +37,7 @@ public class ShadowingExtractionAdapter implements ShadowingExtractionPort {
         String systemPrompt = """
             You are an expert English teacher designing shadowing practice exercises from TV show scripts.
 
-            Given an SRT subtitle file (with timestamps and character names) and a list of vocabulary/expressions
+            Given an SRT subtitle file (inside <script-content> tags) and a list of vocabulary/expressions
             the student has been learning, select the 2-3 BEST dialogue scenes for shadowing practice.
 
             Each scene should:
@@ -55,8 +59,14 @@ public class ShadowingExtractionAdapter implements ShadowingExtractionPort {
             - characters: Array of unique character names in the scene
             """;
 
-        String vocabList = vocabularyTerms.isEmpty() ? "none" : String.join(", ", vocabularyTerms);
-        String exprList = expressions.isEmpty() ? "none" : String.join(", ", expressions);
+        String vocabList = vocabularyTerms.isEmpty() ? "none" :
+                vocabularyTerms.stream()
+                        .map(t -> PromptSanitizer.sanitizeShortInput(t, MAX_TERM_LENGTH))
+                        .collect(Collectors.joining(", "));
+        String exprList = expressions.isEmpty() ? "none" :
+                expressions.stream()
+                        .map(e -> PromptSanitizer.sanitizeShortInput(e, MAX_TERM_LENGTH))
+                        .collect(Collectors.joining(", "));
 
         String userPrompt = String.format("""
             Vocabulary terms from the lesson: %s
@@ -66,19 +76,10 @@ public class ShadowingExtractionAdapter implements ShadowingExtractionPort {
             Select 2-3 best shadowing scenes from this SRT script:
 
             %s
-            """, vocabList, exprList, truncateSrt(rawSrt));
+            """, vocabList, exprList, PromptSanitizer.sanitizeScriptContent(rawSrt, MAX_SRT_CHARS));
 
         String response = openAiClient.chatCompletion(systemPrompt, userPrompt);
         return parseScenesResponse(response);
-    }
-
-    private String truncateSrt(String srt) {
-        int maxChars = 15000;
-        if (srt.length() > maxChars) {
-            log.warn("SRT truncated from {} to {} chars", srt.length(), maxChars);
-            return srt.substring(0, maxChars) + "\n\n[Script truncated...]";
-        }
-        return srt;
     }
 
     private List<ExtractedScene> parseScenesResponse(String response) {

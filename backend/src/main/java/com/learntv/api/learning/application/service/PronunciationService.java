@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.learntv.api.generation.adapter.out.openai.OpenAiClient;
 import com.learntv.api.learning.adapter.out.openai.WhisperAdapter;
+import com.learntv.api.shared.config.PromptSanitizer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -151,10 +152,13 @@ public class PronunciationService {
                 Keep each tip under 30 words. Be specific, not generic.
                 """;
 
+            String safeTranscription = PromptSanitizer.sanitizeShortInput(transcription, 500);
+            String safeExpected = PromptSanitizer.sanitizeShortInput(expectedText, 500);
+
             String userPrompt = String.format(
                     "Heard: \"%s\" (%d word%s)\nExpected: \"%s\" (%d word%s)\nSimilarity: %.0f%%",
-                    transcription, spokenWords, spokenWords != 1 ? "s" : "",
-                    expectedText, expectedWords, expectedWords != 1 ? "s" : "",
+                    safeTranscription, spokenWords, spokenWords != 1 ? "s" : "",
+                    safeExpected, expectedWords, expectedWords != 1 ? "s" : "",
                     similarity * 100);
 
             String response = openAiClient.chatCompletion(systemPrompt, userPrompt);

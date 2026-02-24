@@ -25,6 +25,7 @@ import com.learntv.api.generation.domain.model.ExtractedGrammar;
 import com.learntv.api.generation.domain.model.ExtractedVocabulary;
 import com.learntv.api.generation.domain.model.GeneratedExercise;
 import com.learntv.api.generation.domain.model.GenerationJob;
+import com.learntv.api.shared.config.PromptSanitizer;
 import com.learntv.api.shared.config.security.AuthenticatedUser;
 import com.learntv.api.shared.config.security.CurrentUser;
 import io.swagger.v3.oas.annotations.Operation;
@@ -237,9 +238,10 @@ public class GenerationController {
             @Parameter(description = "Show genre for context", example = "drama")
             @RequestParam(defaultValue = "drama") String genre) {
 
+        String safeGenre = PromptSanitizer.sanitizeGenre(genre);
         return scriptFetchService.fetchScript(imdbId, season, episode)
                 .map(script -> {
-                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, genre);
+                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, safeGenre);
                     return ResponseEntity.ok(ContentExtractionResponse.ofVocabulary(vocabulary));
                 })
                 .orElse(ResponseEntity.notFound().build());
@@ -315,10 +317,11 @@ public class GenerationController {
             @Parameter(description = "Show genre for context", example = "drama")
             @RequestParam(defaultValue = "drama") String genre) {
 
+        String safeGenreForExercises = PromptSanitizer.sanitizeGenre(genre);
         return scriptFetchService.fetchScript(imdbId, season, episode)
                 .map(script -> {
                     // Extract content first
-                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, genre);
+                    List<ExtractedVocabulary> vocabulary = contentExtractionPort.extractVocabulary(script, safeGenreForExercises);
                     List<ExtractedGrammar> grammar = contentExtractionPort.extractGrammar(script);
                     List<ExtractedExpression> expressions = contentExtractionPort.extractExpressions(script);
 
@@ -359,8 +362,9 @@ public class GenerationController {
             @Parameter(description = "Show image URL (optional)")
             @RequestParam(required = false) String imageUrl) {
 
+        String safeGenreForLesson = PromptSanitizer.sanitizeGenre(genre);
         LessonGenerationRequest request = new LessonGenerationRequest(
-                imdbId, season, episode, showTitle, episodeTitle, genre, imageUrl
+                imdbId, season, episode, showTitle, episodeTitle, safeGenreForLesson, imageUrl
         );
 
         GeneratedLessonResult result = lessonGenerationService.generateAndSaveLesson(request);
@@ -392,7 +396,8 @@ public class GenerationController {
             @Parameter(description = "Show genre", example = "drama")
             @RequestParam(defaultValue = "drama") String genre) {
 
-        GenerationCommand command = new GenerationCommand(tmdbId, season, episode, genre, authUser.id());
+        String safeGenre = PromptSanitizer.sanitizeGenre(genre);
+        GenerationCommand command = new GenerationCommand(tmdbId, season, episode, safeGenre, authUser.id());
         GenerationJob job = generateEpisodeLessonUseCase.startGeneration(command);
 
         return ResponseEntity
