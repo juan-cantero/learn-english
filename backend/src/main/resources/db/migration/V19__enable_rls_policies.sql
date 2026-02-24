@@ -56,13 +56,8 @@ ALTER TABLE classroom_students ENABLE ROW LEVEL SECURITY;
 ALTER TABLE assignments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE assignment_submissions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE generation_jobs ENABLE ROW LEVEL SECURITY;
-ALTER TABLE flyway_schema_history ENABLE ROW LEVEL SECURITY;
-
--- ============================================================================
--- 2. SYSTEM/INTERNAL TABLES — no policies = default deny for non-superusers
--- ============================================================================
--- flyway_schema_history: no policies needed
--- generation_jobs: no policies needed
+-- NOTE: flyway_schema_history is excluded — Flyway holds a lock on it during
+-- migration execution, so ALTER TABLE on it would deadlock/timeout.
 
 -- ============================================================================
 -- 3. SHARED CONTENT TABLES — authenticated read-only
