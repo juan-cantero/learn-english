@@ -6,14 +6,22 @@
 -- 0. PREREQUISITES — stub auth.uid() and roles for local dev (Supabase provides these)
 -- ============================================================================
 
--- Create auth schema if it doesn't exist (Supabase has this natively)
-CREATE SCHEMA IF NOT EXISTS auth;
-
--- Stub auth.uid() — returns NULL in local dev (policies won't match, but learntv
--- role bypasses RLS anyway). On Supabase this function already exists.
-CREATE OR REPLACE FUNCTION auth.uid() RETURNS UUID AS $$
-    SELECT NULLIF(current_setting('request.jwt.claims', true)::json->>'sub', '')::uuid;
-$$ LANGUAGE sql STABLE;
+-- On Supabase: auth schema, auth.uid(), and authenticated role already exist.
+-- On local dev: create stubs so the migration and policies are valid.
+-- Wrapped in exception handlers to gracefully skip on Supabase (permission denied).
+DO $$
+BEGIN
+    -- Create auth schema + uid() stub for local dev
+    CREATE SCHEMA IF NOT EXISTS auth;
+    CREATE OR REPLACE FUNCTION auth.uid() RETURNS UUID AS $func$
+        SELECT NULLIF(current_setting('request.jwt.claims', true)::json->>'sub', '')::uuid;
+    $func$ LANGUAGE sql STABLE;
+EXCEPTION
+    WHEN insufficient_privilege THEN
+        -- On Supabase: auth schema is managed, skip silently
+        NULL;
+END
+$$;
 
 -- Create authenticated role if it doesn't exist (Supabase has this natively)
 DO $$
@@ -21,6 +29,9 @@ BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'authenticated') THEN
         CREATE ROLE authenticated NOLOGIN;
     END IF;
+EXCEPTION
+    WHEN insufficient_privilege THEN
+        NULL;
 END
 $$;
 
@@ -210,4 +221,10 @@ CREATE POLICY "Teachers can read submissions for their classrooms"
 -- ============================================================================
 -- 6. LOCAL DEV ROLE — bypass RLS so JDBC connection is unaffected
 -- ============================================================================
-ALTER ROLE learntv BYPASSRLS;
+DO $$
+BEGIN
+    IF EXISTS (SELECT FROM pg_roles WHERE rolname = 'learntv') THEN
+        ALTER ROLE learntv BYPASSRLS;
+    END IF;
+END
+$$;
